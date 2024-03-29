@@ -1,8 +1,6 @@
 {
-  "name": "@ts-fluentvalidation/source",
-  "version": "0.0.0",
+  "name": "ts-fluentvalidation",
   "license": "MIT",
-  "scripts": {},
   "private": true,
   "dependencies": {},
   "devDependencies": {
