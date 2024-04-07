@@ -39,3 +39,8 @@ testem.log
 Thumbs.db
 
 .nx/cache
+.angular
+
+
+# NgDoc files
+/ng-doc
