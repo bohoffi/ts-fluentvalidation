@@ -34,7 +34,7 @@ export class PropertyValidator<T, P> {
         this.messageFormatter.appendPropertyValue(value);
         rule.appendArguments?.(this.messageFormatter);
         failures.push({
-          propertyName: rule.propertyName || (this.propertyName as string),
+          propertyName: this.propertyName as string,
           message: this.messageFormatter.formatWithPlaceholders(rule.message || rule.errorMessage),
           attemptedValue: value as unknown
         });
