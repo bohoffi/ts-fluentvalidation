@@ -2,7 +2,22 @@
 
 `@ts-fluentvalidation/core` is a TypeScript library for building strongly-typed human-readable validators without any further depedencies. The goal is to create a TypeScript port of the .NET library FluentValidation.
 
-### Example
+## Features
+
+- strongly-typed
+- dependency-less
+- reusable
+- extensible
+
+## Roadmap
+
+- object rules (child validators)
+- array validations
+- custom rules (beyond `.must` including placeholder support)
+- async validation
+- severity level
+
+## Example
 
 ```typescript
 interface Person {
@@ -29,7 +44,7 @@ if (!validationResult.isValid) {
 }
 ```
 
-### Credits
+## Credits
 
 - [FluentValidation](https://docs.fluentvalidation.net/)
   - .NET validation using a fluent API

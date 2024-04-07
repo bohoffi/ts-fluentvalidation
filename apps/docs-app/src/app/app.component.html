@@ -1,9 +1,13 @@
-<ng-doc-root>
-  <ng-doc-navbar [leftContent]="leftContent">
+<ng-doc-root [footerContent]="footerContent">
+  <ng-doc-navbar [leftContent]="leftContent" [glassEffect]="true" [search]="true">
     <ng-template #leftContent>
-      <h3 class="brand" style="margin: 0">MyDocs</h3>
+      <h3 class="brand" style="margin: 0">{{ libName }}</h3>
     </ng-template>
   </ng-doc-navbar>
   <ng-doc-sidebar></ng-doc-sidebar>
   <router-outlet></router-outlet>
 </ng-doc-root>
+
+<ng-template #footerContent>
+  <div class="doc-footer">Library version: {{ libVersion.fullVersion }}</div>
+</ng-template>
