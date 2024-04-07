@@ -14,15 +14,13 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/esbuild:esbuild",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/core",
         "main": "libs/core/src/index.ts",
         "tsConfig": "libs/core/tsconfig.lib.json",
-        "assets": [],
-        "generatePackageJson": true,
-        "format": ["cjs"]
+        "assets": ["libs/core/*.md"]
       }
     },
     "nx-release-publish": {
