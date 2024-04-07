@@ -1,5 +1,5 @@
-import { createPersonWith } from './testing/test-data';
-import { Person } from './testing/test-models';
+import { createEmployeeWith, createPersonWith } from './testing/test-data';
+import { Employee, Person } from './testing/test-models';
 import { createValidator } from './validator';
 
 describe('validator', () => {
@@ -124,6 +124,25 @@ describe('validator', () => {
       const resultTwo = validatorTwo.validate(person);
       expect(resultTwo.isValid).toBe(false);
       expect(resultTwo.failures.length).toBe(1);
+    });
+  });
+
+  describe('predefined rules', () => {
+    function createBaseValidator<T extends Person>() {
+      return createValidator<T>(val => val.ruleFor(p => p.name).notEmpty());
+    }
+    it('should validate value with predefined rule', () => {
+      const employee = createEmployeeWith({ name: '', department: '' });
+
+      const employeeValidator = createBaseValidator<Employee>();
+      employeeValidator.ruleFor(p => p.department).notEmpty();
+
+      const result = employeeValidator.validate(employee);
+
+      expect(result.isValid).toBeFalsy();
+      expect(result.failures.length).toBe(2);
+      expect(result.failures[0].propertyName).toBe('name');
+      expect(result.failures[1].propertyName).toBe('department');
     });
   });
 });

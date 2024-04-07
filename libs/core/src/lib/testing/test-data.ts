@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Address, Person } from './test-models';
+import { Address, Employee, Person } from './test-models';
 
 export function createPersonWith(overrides: Partial<Person> = {}): Person {
   return {
@@ -18,6 +18,15 @@ export function createAddressWith(overrides: Partial<Address> = {}): Address {
     city: faker.location.city(),
     state: faker.location.state(),
     zip: faker.location.zipCode(),
+    ...overrides
+  };
+}
+
+export function createEmployeeWith(overrides: Partial<Employee> = {}): Employee {
+  return {
+    ...createPersonWith(overrides),
+    department: faker.company.name(),
+    jobTitle: faker.person.jobTitle(),
     ...overrides
   };
 }

@@ -10,3 +10,8 @@ export interface Address {
   state: string;
   zip: string;
 }
+
+export interface Employee extends Person {
+  department: string;
+  jobTitle: string;
+}
