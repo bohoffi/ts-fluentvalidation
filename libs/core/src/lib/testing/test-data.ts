@@ -9,6 +9,7 @@ export function createPersonWith(overrides: Partial<Person> = {}): Person {
       max: 65
     }),
     address: createAddressWith(overrides.address),
+    pets: [],
     ...overrides
   };
 }
@@ -22,7 +23,7 @@ export function createAddressWith(overrides: Partial<Address> = {}): Address {
   };
 }
 
-export function createEmployeeWith(overrides: Partial<Employee> = {}): Employee {
+export function createEmployeeWith(overrides: Partial<Employee>): Employee {
   return {
     ...createPersonWith(overrides),
     department: faker.company.name(),
