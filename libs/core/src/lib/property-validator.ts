@@ -1,12 +1,10 @@
-import { createMessageFormatter } from './message-formatter';
-import { CascadeMode, ValidationContext } from './models';
+import { CascadeMode } from './models';
 import { AbstractRule } from './rules/rule';
 import { KeyOf } from './ts-helpers';
-import { ValidationFailure } from './result/validation-failure';
+import { ValidationContext } from './validation-context';
 
 export class PropertyValidator<T, P> {
   public readonly propertyRules: AbstractRule<T, P>[] = [];
-  private readonly messageFormatter = createMessageFormatter();
   private cascadeMode: CascadeMode = 'Continue';
 
   constructor(public readonly propertyName: KeyOf<T>) {}
@@ -19,37 +17,22 @@ export class PropertyValidator<T, P> {
     this.cascadeMode = cascadeMode;
   }
 
-  public validate(value: P, validationContext: ValidationContext<T>): ValidationFailure[] {
-    const failures: ValidationFailure[] = [];
-
+  public validateProperty(propertyValue: P, validationContext: ValidationContext<T>): void {
     for (const rule of this.propertyRules) {
       if (!processRuleWhen(rule, validationContext) || !processRuleUnless(rule, validationContext)) {
         continue;
       }
 
-      const result = rule.validate(value, validationContext);
+      const result = rule.validate(propertyValue, validationContext, this.propertyName as string);
 
-      if (result === false) {
-        this.messageFormatter.appendPropertyName(rule.propertyName || (this.propertyName as string));
-        this.messageFormatter.appendPropertyValue(value);
-        rule.appendArguments?.(this.messageFormatter);
-        failures.push({
-          propertyName: this.propertyName as string,
-          message: this.messageFormatter.formatWithPlaceholders(rule.message || rule.errorMessage),
-          attemptedValue: value as unknown
-        });
-
-        if (this.cascadeMode === 'Stop') {
-          break;
-        }
+      if (result === false && this.cascadeMode === 'Stop') {
+        break;
       }
     }
-
-    return failures;
   }
 }
 
 const processRuleWhen = <T, P>(rule: AbstractRule<T, P>, validationContext: ValidationContext<T>): boolean =>
-  rule.processWhen ? rule.processWhen(validationContext.candidate) : true;
+  rule.processWhen ? rule.processWhen(validationContext.instanceToValidate) : true;
 const processRuleUnless = <T, P>(rule: AbstractRule<T, P>, validationContext: ValidationContext<T>): boolean =>
-  rule.processUnless ? !rule.processUnless(validationContext.candidate) : true;
+  rule.processUnless ? !rule.processUnless(validationContext.instanceToValidate) : true;

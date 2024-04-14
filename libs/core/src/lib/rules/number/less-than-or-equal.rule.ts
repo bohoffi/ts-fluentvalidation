@@ -3,11 +3,10 @@ import { NumberProperty } from '../../models';
 import { AbstractRule } from '../rule';
 
 export class LessThanOrEqualRule<T, P extends NumberProperty> extends AbstractRule<T, P> {
-  public override errorMessage = '{{propertyName}} must be less than or equal to {{comparisonValue}}';
+  public override errorMessage = '{propertyName} must be less than or equal to {comparisonValue}.';
 
   constructor(private readonly referenceValue: number) {
     super(value => {
-      // TODO #1 handle undefined value
       return (value || 0) <= this.referenceValue;
     });
   }

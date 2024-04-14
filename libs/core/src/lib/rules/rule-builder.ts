@@ -1,12 +1,10 @@
-import { EqualsRule, IsNotNullRule, IsNullRule, MustRule, NotEqualsRule } from './common';
+import { EqualRule, NotNullRule, NullRule, MustRule, NotEqualRule } from './common';
 import { AbstractRule } from './rule';
 import {
   ExclusiveBetweenRule,
   GreaterThanOrEqualRule,
   GreaterThanRule,
   InclusiveBetweenRule,
-  IsNegativeRule,
-  IsPositiveRule,
   LessThanOrEqualRule,
   LessThanRule
 } from './number';
@@ -16,10 +14,11 @@ import {
   CascadeMode,
   LengthProperty,
   NumberProperty,
-  RuleBuilderContract,
+  ObjectProperty,
   RuleCondition,
   RulePredicate,
-  StringProperty
+  StringProperty,
+  ValidatorContract
 } from '../models';
 import {
   CascadingRuleBuilder,
@@ -28,11 +27,17 @@ import {
   ExtendedRuleBuilder,
   LengthRuleBuilder,
   NumberRuleBuilder,
+  ObjectRuleBuilder,
   StringRuleBuilder,
   TypedRuleBuilder
 } from './rule-builders';
 import { PropertyValidator } from '../property-validator';
-import { EmptyRule, MaxLengthRule, MinLengthRule, NotEmptyRule } from './length';
+import { EmptyRule, LengthRule, MaxLengthRule, MinLengthRule, NotEmptyRule } from './length';
+import { SetValidatorRule } from './object';
+
+type RuleBuilderContract<TRuleBuilder> = {
+  [K in keyof TRuleBuilder]: unknown;
+};
 
 export class AbstractRuleBuilder<T extends object, P> {
   constructor(private readonly validator: PropertyValidator<T, P>) {}
@@ -43,20 +48,20 @@ export class AbstractRuleBuilder<T extends object, P> {
 
   private commonRuleBuilder(): RuleBuilderContract<CommonRuleBuilder<T, P>> {
     return {
-      isNull: () => {
-        this.addValidationStep(new IsNullRule<T, P>());
+      null: () => {
+        this.addValidationStep(new NullRule<T, P>());
         return this.rulesWithExtensionsAndConditions();
       },
       notNull: () => {
-        this.addValidationStep(new IsNotNullRule<T, P>());
+        this.addValidationStep(new NotNullRule<T, P>());
         return this.rulesWithExtensionsAndConditions();
       },
-      equals: (referenceValue: P) => {
-        this.addValidationStep(new EqualsRule(referenceValue));
+      equal: (referenceValue: P) => {
+        this.addValidationStep(new EqualRule(referenceValue));
         return this.rulesWithExtensionsAndConditions();
       },
-      notEquals: (referenceValue: P) => {
-        this.addValidationStep(new NotEqualsRule(referenceValue));
+      notEqual: (referenceValue: P) => {
+        this.addValidationStep(new NotEqualRule(referenceValue));
         return this.rulesWithExtensionsAndConditions();
       },
       must: (predicate: RulePredicate<T, P>) => {
@@ -77,14 +82,6 @@ export class AbstractRuleBuilder<T extends object, P> {
 
   private numberRuleBuilder(): RuleBuilderContract<NumberRuleBuilder<T, NumberProperty>> {
     return {
-      isPositive: () => {
-        this.addValidationStep(new IsPositiveRule() as AbstractRule<T, P>);
-        return this.rulesWithExtensionsAndConditions();
-      },
-      isNegative: () => {
-        this.addValidationStep(new IsNegativeRule() as AbstractRule<T, P>);
-        return this.rulesWithExtensionsAndConditions();
-      },
       exclusiveBetween: (lowerBound: number, upperBound: number) => {
         this.addValidationStep(new ExclusiveBetweenRule(lowerBound, upperBound) as AbstractRule<T, P>);
         return this.rulesWithExtensionsAndConditions();
@@ -129,6 +126,19 @@ export class AbstractRuleBuilder<T extends object, P> {
       minLength: (minLength: number) => {
         this.addValidationStep(new MinLengthRule(minLength) as AbstractRule<T, P>);
         return this.rulesWithExtensionsAndConditions();
+      },
+      length: (minLength: number, maxLength: number) => {
+        this.addValidationStep(new LengthRule(minLength, maxLength) as AbstractRule<T, P>);
+        return this.rulesWithExtensionsAndConditions();
+      }
+    };
+  }
+
+  private objectRuleBuilder(): RuleBuilderContract<ObjectRuleBuilder<T, ObjectProperty>> {
+    return {
+      setValidator: (validator: ValidatorContract<ObjectProperty>) => {
+        this.addValidationStep(new SetValidatorRule(validator) as AbstractRule<T, P>);
+        return this.rulesWithExtensionsAndConditions();
       }
     };
   }
@@ -137,12 +147,14 @@ export class AbstractRuleBuilder<T extends object, P> {
     ReturnType<AbstractRuleBuilder<T, P>['stringRuleBuilder']> &
     ReturnType<AbstractRuleBuilder<T, P>['numberRuleBuilder']> &
     ReturnType<AbstractRuleBuilder<T, P>['lengthRuleBuilder']> &
+    ReturnType<AbstractRuleBuilder<T, P>['objectRuleBuilder']> &
     ReturnType<AbstractRuleBuilder<T, P>['cascadingRuleBuilder']> {
     return {
       ...this.commonRuleBuilder(),
       ...this.stringRuleBuilder(),
       ...this.numberRuleBuilder(),
       ...this.lengthRuleBuilder(),
+      ...this.objectRuleBuilder(),
       ...this.cascadingRuleBuilder()
     };
   }
