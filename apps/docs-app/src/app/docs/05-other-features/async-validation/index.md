@@ -1,3 +1,0 @@
-# {{ NgDocPage.title }}
-
-## TBD
