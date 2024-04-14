@@ -1,6 +1,6 @@
-import { ValidationContext } from './models';
+import { ValidationContext } from './validation-context';
 import { PropertyValidator } from './property-validator';
-import { IsNotNullRule } from './rules/common';
+import { NotNullRule } from './rules/common';
 import { Person } from './testing/test-models';
 import { createPersonWith } from './testing/test-data';
 import { MaxLengthRule, MinLengthRule } from './rules/length';
@@ -14,7 +14,7 @@ describe('PropertyValidator', () => {
 
   describe('addRule + validation', () => {
     it('should add a rule', () => {
-      const rule = new IsNotNullRule<Person, string>();
+      const rule = new NotNullRule<Person, string>();
 
       propertyValidator.addRule(rule);
 
@@ -23,22 +23,20 @@ describe('PropertyValidator', () => {
 
     it('should validate value', () => {
       const person = createPersonWith({ name: 'John' });
-      const validationContext: ValidationContext<Person> = {
-        candidate: person
-      };
+      const validationContext = new ValidationContext<Person>(person);
 
-      const rule1 = new IsNotNullRule<Person, string>();
+      const rule1 = new NotNullRule<Person, string>();
       const rule2 = new MinLengthRule<Person, string>(5);
 
       propertyValidator.addRule(rule1);
       propertyValidator.addRule(rule2);
 
-      const result = propertyValidator.validate(person.name, validationContext);
+      propertyValidator.validateProperty(person.name, validationContext);
 
-      expect(result).toHaveLength(1);
-      expect(result[0]).toEqual({
+      expect(validationContext.failues).toHaveLength(1);
+      expect(validationContext.failues[0]).toEqual({
         propertyName: 'name',
-        message: 'name must have a minimum length of 5',
+        message: 'name must have a minimum length of 5.',
         attemptedValue: person.name
       });
     });
@@ -47,9 +45,7 @@ describe('PropertyValidator', () => {
   describe('cascading', () => {
     it('should validate value with cascade stop', () => {
       const person = createPersonWith({ name: 'John' });
-      const validationContext: ValidationContext<Person> = {
-        candidate: person
-      };
+      const validationContext = new ValidationContext<Person>(person);
 
       const rule1 = new MinLengthRule<Person, string>(5);
       const rule2 = new MaxLengthRule<Person, string>(3);
@@ -59,21 +55,19 @@ describe('PropertyValidator', () => {
 
       propertyValidator.cascade('Stop');
 
-      const result = propertyValidator.validate(person.name, validationContext);
+      propertyValidator.validateProperty(person.name, validationContext);
 
-      expect(result).toHaveLength(1);
-      expect(result[0]).toEqual({
+      expect(validationContext.failues).toHaveLength(1);
+      expect(validationContext.failues[0]).toEqual({
         propertyName: 'name',
-        message: 'name must have a minimum length of 5',
+        message: 'name must have a minimum length of 5.',
         attemptedValue: person.name
       });
     });
 
     it('should validate value with cascade continue', () => {
       const person = createPersonWith({ name: 'John' });
-      const validationContext: ValidationContext<Person> = {
-        candidate: person
-      };
+      const validationContext = new ValidationContext<Person>(person);
 
       const rule1 = new MinLengthRule<Person, string>(5);
       const rule2 = new MaxLengthRule<Person, string>(3);
@@ -83,17 +77,17 @@ describe('PropertyValidator', () => {
 
       propertyValidator.cascade('Continue');
 
-      const result = propertyValidator.validate(person.name, validationContext);
+      propertyValidator.validateProperty(person.name, validationContext);
 
-      expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({
+      expect(validationContext.failues).toHaveLength(2);
+      expect(validationContext.failues[0]).toEqual({
         propertyName: 'name',
-        message: 'name must have a minimum length of 5',
+        message: 'name must have a minimum length of 5.',
         attemptedValue: person.name
       });
-      expect(result[1]).toEqual({
+      expect(validationContext.failues[1]).toEqual({
         propertyName: 'name',
-        message: 'name must have a maximum length of 3',
+        message: 'name must have a maximum length of 3.',
         attemptedValue: person.name
       });
     });
@@ -102,9 +96,7 @@ describe('PropertyValidator', () => {
   describe('conditions', () => {
     it('should validate value with processWhen', () => {
       const person = createPersonWith({ name: 'John' });
-      const validationContext: ValidationContext<Person> = {
-        candidate: person
-      };
+      const validationContext = new ValidationContext<Person>(person);
 
       const rule1 = new MinLengthRule<Person, string>(5);
       const rule2 = new MaxLengthRule<Person, string>(3);
@@ -114,21 +106,19 @@ describe('PropertyValidator', () => {
       propertyValidator.addRule(rule1);
       propertyValidator.addRule(rule2);
 
-      const result = propertyValidator.validate(person.name, validationContext);
+      propertyValidator.validateProperty(person.name, validationContext);
 
-      expect(result).toHaveLength(1);
-      expect(result[0]).toEqual({
+      expect(validationContext.failues).toHaveLength(1);
+      expect(validationContext.failues[0]).toEqual({
         propertyName: 'name',
-        message: 'name must have a minimum length of 5',
+        message: 'name must have a minimum length of 5.',
         attemptedValue: person.name
       });
     });
 
     it('should validate value with processUnless', () => {
       const person = createPersonWith({ name: 'John' });
-      const validationContext: ValidationContext<Person> = {
-        candidate: person
-      };
+      const validationContext = new ValidationContext<Person>(person);
 
       const rule1 = new MinLengthRule<Person, string>(5);
       const rule2 = new MaxLengthRule<Person, string>(3);
@@ -138,12 +128,12 @@ describe('PropertyValidator', () => {
       propertyValidator.addRule(rule1);
       propertyValidator.addRule(rule2);
 
-      const result = propertyValidator.validate(person.name, validationContext);
+      propertyValidator.validateProperty(person.name, validationContext);
 
-      expect(result).toHaveLength(1);
-      expect(result[0]).toEqual({
+      expect(validationContext.failues).toHaveLength(1);
+      expect(validationContext.failues[0]).toEqual({
         propertyName: 'name',
-        message: 'name must have a minimum length of 5',
+        message: 'name must have a minimum length of 5.',
         attemptedValue: person.name
       });
     });
@@ -152,9 +142,7 @@ describe('PropertyValidator', () => {
   describe('extended', () => {
     it('should validate value with extended message', () => {
       const person = createPersonWith({ name: 'John' });
-      const validationContext: ValidationContext<Person> = {
-        candidate: person
-      };
+      const validationContext = new ValidationContext<Person>(person);
 
       const rule = new MinLengthRule<Person, string>(5);
 
@@ -162,10 +150,10 @@ describe('PropertyValidator', () => {
 
       propertyValidator.addRule(rule);
 
-      const result = propertyValidator.validate(person.name, validationContext);
+      propertyValidator.validateProperty(person.name, validationContext);
 
-      expect(result).toHaveLength(1);
-      expect(result[0]).toEqual({
+      expect(validationContext.failues).toHaveLength(1);
+      expect(validationContext.failues[0]).toEqual({
         propertyName: 'name',
         message: 'Custom message',
         attemptedValue: person.name
@@ -174,9 +162,7 @@ describe('PropertyValidator', () => {
 
     it('should validate value with extended name', () => {
       const person = createPersonWith({ name: 'John' });
-      const validationContext: ValidationContext<Person> = {
-        candidate: person
-      };
+      const validationContext = new ValidationContext<Person>(person);
 
       const rule = new MinLengthRule<Person, string>(5);
 
@@ -184,12 +170,12 @@ describe('PropertyValidator', () => {
 
       propertyValidator.addRule(rule);
 
-      const result = propertyValidator.validate(person.name, validationContext);
+      propertyValidator.validateProperty(person.name, validationContext);
 
-      expect(result).toHaveLength(1);
-      expect(result[0]).toEqual({
-        propertyName: 'Custom name',
-        message: 'Custom name must have a minimum length of 5',
+      expect(validationContext.failues).toHaveLength(1);
+      expect(validationContext.failues[0]).toEqual({
+        propertyName: 'name',
+        message: 'Custom name must have a minimum length of 5.',
         attemptedValue: person.name
       });
     });

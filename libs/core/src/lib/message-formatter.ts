@@ -13,13 +13,13 @@ export type MessageFormatter = {
    * Appends a property name to the message formatter.
    * @param propertyName - The name of the property.
    */
-  appendPropertyName(propertyName: string): void;
+  appendOrUpdatePropertyName(propertyName: string): void;
 
   /**
    * Appends a property value to the message formatter.
    * @param value - The value of the property.
    */
-  appendPropertyValue(value: unknown): void;
+  appendOrUpdatePropertyValue(value: unknown): void;
 
   /**
    * Formats the message with placeholders.
@@ -44,16 +44,16 @@ export function createMessageFormatter(): MessageFormatter {
     appendArgument: (key: string, value: unknown) => {
       placeholder[key] = value;
     },
-    appendPropertyName: (propertyName: string) => {
+    appendOrUpdatePropertyName: (propertyName: string) => {
       placeholder[defaultPlaceholder.propertyName] = propertyName;
     },
-    appendPropertyValue: (value: unknown) => {
+    appendOrUpdatePropertyValue: (value: unknown) => {
       placeholder[defaultPlaceholder.propertyValue] = value;
     },
     formatWithPlaceholders: (message: string) => {
       let formattedMessage = message;
       for (const key in placeholder) {
-        formattedMessage = formattedMessage.replace(`{{${key}}}`, `${placeholder[key]}`);
+        formattedMessage = formattedMessage.replace(`{${key}}`, `${placeholder[key]}`);
       }
       return formattedMessage;
     }

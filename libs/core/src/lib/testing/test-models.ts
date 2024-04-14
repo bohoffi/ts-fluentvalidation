@@ -3,6 +3,7 @@ export interface Person {
   age: number;
   notice?: string;
   address: Address;
+  pets: unknown[];
 }
 
 export interface Address {

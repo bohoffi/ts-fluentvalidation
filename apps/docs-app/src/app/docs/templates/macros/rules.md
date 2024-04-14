@@ -28,7 +28,9 @@ Example:
 
 {{ format.typescript(rule.example) }}
 
+{% if rule.exampleErrorMessage %}
 Example error message: {{ rule.exampleErrorMessage }}
+{% endif %}
 
 {% if rule.parameters %}
 

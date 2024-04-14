@@ -12,24 +12,22 @@ import {
   provideSearchEngine
 } from '@ng-doc/app';
 import { NG_DOC_ROUTING, provideNgDocContext } from '@ng-doc/generated';
+import { DocsComponent } from './docs.component';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // Provide context of the generated documentation
     provideNgDocContext(),
-    // Provide default configuration for the documentation app
     provideNgDocApp({ defaultThemeId: 'auto' }),
     provideSearchEngine(NgDocDefaultSearchEngine),
     providePageSkeleton(NG_DOC_DEFAULT_PAGE_SKELETON),
     provideMainPageProcessor(NG_DOC_DEFAULT_PAGE_PROCESSORS),
-    // Provide animations
     provideAnimations(),
-    // Provide HttpClient with interceptors (NgDoc uses interceptors)
     provideHttpClient(withInterceptorsFromDi(), withFetch()),
-    // Add generated routes to the application
     provideRouter(
-      NG_DOC_ROUTING,
-      // Enable anchor scrolling
+      [
+        { path: '', redirectTo: 'getting-started/ts-fluentvalidation', pathMatch: 'full' },
+        { path: '', component: DocsComponent, children: NG_DOC_ROUTING }
+      ],
       withInMemoryScrolling({
         scrollPositionRestoration: 'enabled',
         anchorScrolling: 'enabled'
