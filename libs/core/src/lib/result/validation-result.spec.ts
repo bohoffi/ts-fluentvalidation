@@ -2,11 +2,7 @@ import { ValidationFailure } from './validation-failure';
 import { ValidationResult } from './validation-result';
 
 function createFailureForTest(propertyName: string, message: string): ValidationFailure {
-  return {
-    propertyName,
-    message,
-    attemptedValue: propertyName
-  };
+  return new ValidationFailure(propertyName, message, propertyName);
 }
 
 describe(ValidationResult.name, () => {

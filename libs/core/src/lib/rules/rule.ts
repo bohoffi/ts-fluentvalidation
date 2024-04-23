@@ -1,6 +1,7 @@
-import { RuleCondition, ValidationFn } from '../models';
+import { RuleCondition, SeverityProvider, ValidationFn } from '../models';
 import { MessageFormatter } from '../message-formatter';
 import { ValidationContext } from '../validation-context';
+import { ValidationFailure } from '../result';
 
 /**
  * Represents an abstract class for a conditional rule.
@@ -61,6 +62,7 @@ abstract class ConditionalRule<T> {
 abstract class ExtendedRule<T> extends ConditionalRule<T> {
   protected _propertyName?: string;
   protected _message?: string;
+  protected _severityProvider: SeverityProvider<T, unknown> = () => 'Error';
 
   /**
    * Sets the name of the property being validated.
@@ -97,6 +99,24 @@ abstract class ExtendedRule<T> extends ConditionalRule<T> {
   public get message(): string | undefined {
     return this._message;
   }
+
+  /**
+   * Sets the severity for the rule.
+   * @param severityProvider The severity provider for the rule.
+   * @returns The current instance of the rule.
+   */
+  public withSeverity(severityProvider: SeverityProvider<T, unknown>): this {
+    this._severityProvider = severityProvider;
+    return this;
+  }
+
+  /**
+   * Gets the severity provider for the rule.
+   * @returns The severity provider for the rule.
+   */
+  public get severityProvider(): SeverityProvider<T, unknown> {
+    return this._severityProvider;
+  }
 }
 
 /**
@@ -118,6 +138,13 @@ export abstract class AbstractRule<T, P> extends ExtendedRule<T> {
     super();
   }
 
+  /**
+   * Validates the specified value.
+   * @param value The value to validate.
+   * @param validationContext The validation context.
+   * @param propertyName The name of the property being validated.
+   * @returns `true` if the value is valid, otherwise `false`.
+   */
   public validate(value: P, validationContext: ValidationContext<T>, propertyName: string): boolean {
     const isValid = this.validationFn(value, validationContext);
     if (isValid === false) {
@@ -130,16 +157,26 @@ export abstract class AbstractRule<T, P> extends ExtendedRule<T> {
    * Appends additional arguments to the error message formatter.
    * @param messageFormatter The message formatter to append the arguments to.
    */
-  public appendArguments?(messageFormatter: MessageFormatter, value: P): void;
+  protected appendArguments?(messageFormatter: MessageFormatter, value: P): void;
 
-  public createValidationError(validationContext: ValidationContext<T>, propertyValue: P, propertyName: string): void {
+  /**
+   * Creates a validation error and adds it to the validation context.
+   * @param validationContext - The validation context.
+   * @param propertyValue - The value of the property being validated.
+   * @param propertyName - The name of the property being validated.
+   */
+  private createValidationError(validationContext: ValidationContext<T>, propertyValue: P, propertyName: string): void {
     validationContext.messageFormatter.appendOrUpdatePropertyName(this.propertyName || propertyName);
     validationContext.messageFormatter.appendOrUpdatePropertyValue(propertyValue);
     this.appendArguments?.(validationContext.messageFormatter, propertyValue);
-    validationContext.addFailure({
-      propertyName: propertyName,
-      message: validationContext.messageFormatter.formatWithPlaceholders(this.message || this.errorMessage),
-      attemptedValue: propertyValue as unknown
-    });
+
+    const failure = new ValidationFailure(
+      propertyName,
+      validationContext.messageFormatter.formatWithPlaceholders(this.message || this.errorMessage),
+      propertyValue as unknown
+    );
+    failure.severity = this.severityProvider(validationContext.instanceToValidate, propertyValue, validationContext);
+
+    validationContext.addFailure(failure);
   }
 }
