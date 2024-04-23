@@ -17,6 +17,8 @@ import {
   ObjectProperty,
   RuleCondition,
   RulePredicate,
+  Severity,
+  SeverityProvider,
   StringProperty,
   ValidatorContract
 } from '../models';
@@ -34,6 +36,7 @@ import {
 import { PropertyValidator } from '../property-validator';
 import { EmptyRule, LengthRule, MaxLengthRule, MinLengthRule, NotEmptyRule } from './length';
 import { SetValidatorRule } from './object';
+import { ValidationContext } from '../validation-context';
 
 type RuleBuilderContract<TRuleBuilder> = {
   [K in keyof TRuleBuilder]: unknown;
@@ -189,7 +192,7 @@ export class AbstractRuleBuilder<T extends object, P> {
     };
   }
 
-  private extendedRuleBuilder(): RuleBuilderContract<Pick<ExtendedRuleBuilder<T, P>, 'withMessage' | 'withName'>> {
+  private extendedRuleBuilder(): RuleBuilderContract<Pick<ExtendedRuleBuilder<T, P>, 'withMessage' | 'withName' | 'withSeverity'>> {
     return {
       withMessage: (message: string) => {
         this.validator.propertyRules[this.validator.propertyRules.length - 1].withMessage(message);
@@ -197,6 +200,14 @@ export class AbstractRuleBuilder<T extends object, P> {
       },
       withName: (propertyName: string) => {
         this.validator.propertyRules[this.validator.propertyRules.length - 1].withName(propertyName);
+        return this.conditionalRuleBuilder();
+      },
+      withSeverity: (severity: Severity | ((model: T, value: P, context: ValidationContext<T>) => Severity)) => {
+        if (typeof severity === 'function') {
+          this.validator.propertyRules[this.validator.propertyRules.length - 1].withSeverity(severity as SeverityProvider<T, unknown>);
+        } else {
+          this.validator.propertyRules[this.validator.propertyRules.length - 1].withSeverity(() => severity);
+        }
         return this.conditionalRuleBuilder();
       }
     };

@@ -6,10 +6,12 @@ import {
   ObjectProperty,
   RuleCondition,
   RulePredicate,
+  Severity,
   StringProperty,
   ValidatorContract
 } from '../models';
 import { EmptyObject, Prettify } from '../ts-helpers';
+import { ValidationContext } from '../validation-context';
 
 /**
  * Represents a builder for validation rules of all property types.
@@ -135,4 +137,5 @@ export type ConditionalRuleBuilder<T, P> = TypedRuleBuilder<T, P> & {
 export type ExtendedRuleBuilder<T, P> = ConditionalRuleBuilder<T, P> & {
   withMessage(message: string): ConditionalRuleBuilder<T, P>;
   withName(propertyName: string): ConditionalRuleBuilder<T, P>;
+  withSeverity(severity: Severity | ((model: T, value: P, context: ValidationContext<T>) => Severity)): ConditionalRuleBuilder<T, P>;
 };

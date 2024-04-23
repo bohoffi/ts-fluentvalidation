@@ -15,7 +15,6 @@ The goal is to create a TypeScript port of the .NET library FluentValidation inc
 - [ ] validation of iterable properties
 - [ ] custom rules (beyond `.must` including placeholder support)
 - [ ] async validation
-- [ ] severity level
 - further items can be looked up [here](https://github.com/bohoffi/ts-fluentvalidation/issues?q=is%3Aopen+is%3Aissue+label%3A%22area%3A+core%22)
 
 ## Example

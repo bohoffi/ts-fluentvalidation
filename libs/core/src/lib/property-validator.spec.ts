@@ -4,6 +4,7 @@ import { NotNullRule } from './rules/common';
 import { Person } from './testing/test-models';
 import { createPersonWith } from './testing/test-data';
 import { MaxLengthRule, MinLengthRule } from './rules/length';
+import { ValidationFailure } from './result';
 
 describe('PropertyValidator', () => {
   let propertyValidator: PropertyValidator<Person, string>;
@@ -34,10 +35,11 @@ describe('PropertyValidator', () => {
       propertyValidator.validateProperty(person.name, validationContext);
 
       expect(validationContext.failues).toHaveLength(1);
-      expect(validationContext.failues[0]).toEqual({
+      expect(validationContext.failues[0]).toEqual<ValidationFailure>({
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
-        attemptedValue: person.name
+        attemptedValue: person.name,
+        severity: 'Error'
       });
     });
   });
@@ -58,10 +60,11 @@ describe('PropertyValidator', () => {
       propertyValidator.validateProperty(person.name, validationContext);
 
       expect(validationContext.failues).toHaveLength(1);
-      expect(validationContext.failues[0]).toEqual({
+      expect(validationContext.failues[0]).toEqual<ValidationFailure>({
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
-        attemptedValue: person.name
+        attemptedValue: person.name,
+        severity: 'Error'
       });
     });
 
@@ -80,15 +83,17 @@ describe('PropertyValidator', () => {
       propertyValidator.validateProperty(person.name, validationContext);
 
       expect(validationContext.failues).toHaveLength(2);
-      expect(validationContext.failues[0]).toEqual({
+      expect(validationContext.failues[0]).toEqual<ValidationFailure>({
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
-        attemptedValue: person.name
+        attemptedValue: person.name,
+        severity: 'Error'
       });
-      expect(validationContext.failues[1]).toEqual({
+      expect(validationContext.failues[1]).toEqual<ValidationFailure>({
         propertyName: 'name',
         message: 'name must have a maximum length of 3.',
-        attemptedValue: person.name
+        attemptedValue: person.name,
+        severity: 'Error'
       });
     });
   });
@@ -109,10 +114,11 @@ describe('PropertyValidator', () => {
       propertyValidator.validateProperty(person.name, validationContext);
 
       expect(validationContext.failues).toHaveLength(1);
-      expect(validationContext.failues[0]).toEqual({
+      expect(validationContext.failues[0]).toEqual<ValidationFailure>({
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
-        attemptedValue: person.name
+        attemptedValue: person.name,
+        severity: 'Error'
       });
     });
 
@@ -131,10 +137,11 @@ describe('PropertyValidator', () => {
       propertyValidator.validateProperty(person.name, validationContext);
 
       expect(validationContext.failues).toHaveLength(1);
-      expect(validationContext.failues[0]).toEqual({
+      expect(validationContext.failues[0]).toEqual<ValidationFailure>({
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
-        attemptedValue: person.name
+        attemptedValue: person.name,
+        severity: 'Error'
       });
     });
   });
@@ -153,10 +160,11 @@ describe('PropertyValidator', () => {
       propertyValidator.validateProperty(person.name, validationContext);
 
       expect(validationContext.failues).toHaveLength(1);
-      expect(validationContext.failues[0]).toEqual({
+      expect(validationContext.failues[0]).toEqual<ValidationFailure>({
         propertyName: 'name',
         message: 'Custom message',
-        attemptedValue: person.name
+        attemptedValue: person.name,
+        severity: 'Error'
       });
     });
 
@@ -173,10 +181,32 @@ describe('PropertyValidator', () => {
       propertyValidator.validateProperty(person.name, validationContext);
 
       expect(validationContext.failues).toHaveLength(1);
-      expect(validationContext.failues[0]).toEqual({
+      expect(validationContext.failues[0]).toEqual<ValidationFailure>({
         propertyName: 'name',
         message: 'Custom name must have a minimum length of 5.',
-        attemptedValue: person.name
+        attemptedValue: person.name,
+        severity: 'Error'
+      });
+    });
+
+    it('should validate value with updated severity', () => {
+      const person = createPersonWith({ name: 'John' });
+      const validationContext = new ValidationContext<Person>(person);
+
+      const rule = new MinLengthRule<Person, string>(5);
+
+      rule.withName('Custom name').withSeverity(() => 'Warning');
+
+      propertyValidator.addRule(rule);
+
+      propertyValidator.validateProperty(person.name, validationContext);
+
+      expect(validationContext.failues).toHaveLength(1);
+      expect(validationContext.failues[0]).toEqual<ValidationFailure>({
+        propertyName: 'name',
+        message: 'Custom name must have a minimum length of 5.',
+        attemptedValue: person.name,
+        severity: 'Warning'
       });
     });
   });

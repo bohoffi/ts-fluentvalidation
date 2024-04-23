@@ -75,6 +75,23 @@ export type ApplyConditionTo = 'AllValidators' | 'CurrentValidator';
 export type CascadeMode = 'Continue' | 'Stop';
 
 /**
+ * Represents the severity level of a message.
+ * Possible values are 'Error', 'Warning', and 'Info'.
+ */
+export type Severity = 'Error' | 'Warning' | 'Info';
+/**
+ * Represents a function that provides the severity level for a validation error.
+ *
+ * @typeParam T - The type of the model being validated.
+ * @typeParam P - The type of the value being validated.
+ * @param model - The model being validated.
+ * @param value - The value being validated.
+ * @param context - The validation context.
+ * @returns The severity level for the validation error.
+ */
+export type SeverityProvider<T, P> = (model: T, value: P, context: ValidationContext<T>) => Severity;
+
+/**
  * Represents the configuration options for a validator.
  */
 export interface ValidatorConfig {
