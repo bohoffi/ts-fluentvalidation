@@ -2,7 +2,7 @@ import { MessageFormatter } from '../../message-formatter';
 import { AbstractRule } from '../rule';
 
 export class NotEqualRule<T, P> extends AbstractRule<T, P> {
-  public override errorMessage = '{propertyName} must not be equal to {comparisonValue}.';
+  public override name = NotEqualRule.name;
 
   constructor(private readonly comparisonValue: P) {
     super(value => value !== comparisonValue);

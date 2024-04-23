@@ -8,6 +8,7 @@ import { AbstractRule } from '../rule';
  * @typeParam P The type of the property being validated.
  */
 export class SetValidatorRule<T, P extends ObjectProperty> extends AbstractRule<T, P> {
+  public override name = SetValidatorRule.name;
   /**
    * Creates a new instance of the SetValidatorRule class.
    * @param validator - The validator to apply to the property.

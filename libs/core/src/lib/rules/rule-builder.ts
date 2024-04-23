@@ -26,7 +26,6 @@ import {
   CascadingRuleBuilder,
   CommonRuleBuilder,
   ConditionalRuleBuilder,
-  ExtendedRuleBuilder,
   LengthRuleBuilder,
   NumberRuleBuilder,
   ObjectRuleBuilder,
@@ -69,6 +68,26 @@ export class AbstractRuleBuilder<T extends object, P> {
       },
       must: (predicate: RulePredicate<T, P>) => {
         this.addValidationStep(new MustRule(predicate));
+        return this.rulesWithExtensionsAndConditions();
+      },
+      withMessage: (message: string) => {
+        this.validator.propertyRules[this.validator.propertyRules.length - 1].withMessage(message);
+        return this.rulesWithExtensionsAndConditions();
+      },
+      withName: (propertyName: string) => {
+        this.validator.propertyRules[this.validator.propertyRules.length - 1].withName(propertyName);
+        return this.rulesWithExtensionsAndConditions();
+      },
+      withSeverity: (severity: Severity | ((model: T, value: P, context: ValidationContext<T>) => Severity)) => {
+        if (typeof severity === 'function') {
+          this.validator.propertyRules[this.validator.propertyRules.length - 1].withSeverity(severity as SeverityProvider<T, unknown>);
+        } else {
+          this.validator.propertyRules[this.validator.propertyRules.length - 1].withSeverity(() => severity);
+        }
+        return this.rulesWithExtensionsAndConditions();
+      },
+      withErrorCode: (errorCode: string) => {
+        this.validator.propertyRules[this.validator.propertyRules.length - 1].withErrorCode(errorCode);
         return this.rulesWithExtensionsAndConditions();
       }
     };
@@ -192,35 +211,14 @@ export class AbstractRuleBuilder<T extends object, P> {
     };
   }
 
-  private extendedRuleBuilder(): RuleBuilderContract<Pick<ExtendedRuleBuilder<T, P>, 'withMessage' | 'withName' | 'withSeverity'>> {
-    return {
-      withMessage: (message: string) => {
-        this.validator.propertyRules[this.validator.propertyRules.length - 1].withMessage(message);
-        return this.conditionalRuleBuilder();
-      },
-      withName: (propertyName: string) => {
-        this.validator.propertyRules[this.validator.propertyRules.length - 1].withName(propertyName);
-        return this.conditionalRuleBuilder();
-      },
-      withSeverity: (severity: Severity | ((model: T, value: P, context: ValidationContext<T>) => Severity)) => {
-        if (typeof severity === 'function') {
-          this.validator.propertyRules[this.validator.propertyRules.length - 1].withSeverity(severity as SeverityProvider<T, unknown>);
-        } else {
-          this.validator.propertyRules[this.validator.propertyRules.length - 1].withSeverity(() => severity);
-        }
-        return this.conditionalRuleBuilder();
-      }
-    };
-  }
-
   private rulesWithExtensionsAndConditions(): RuleBuilderContract<
-    Pick<ExtendedRuleBuilder<T, P>, 'unless' | 'when' | 'withMessage' | 'withName'>
+    Pick<CommonRuleBuilder<T, P>, 'withMessage' | 'withName' | 'withErrorCode' | 'withSeverity'> &
+      Pick<ConditionalRuleBuilder<T, P>, 'when' | 'unless'>
   > &
     unknown {
     return {
       ...this.typedRuleBuilder(),
-      ...this.conditionalRuleBuilder(),
-      ...this.extendedRuleBuilder()
+      ...this.conditionalRuleBuilder()
     };
   }
 

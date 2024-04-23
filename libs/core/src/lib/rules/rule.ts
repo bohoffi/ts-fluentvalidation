@@ -2,6 +2,7 @@ import { RuleCondition, SeverityProvider, ValidationFn } from '../models';
 import { MessageFormatter } from '../message-formatter';
 import { ValidationContext } from '../validation-context';
 import { ValidationFailure } from '../result';
+import { getErrorMessage } from '../resources/error-messages';
 
 /**
  * Represents an abstract class for a conditional rule.
@@ -63,6 +64,7 @@ abstract class ExtendedRule<T> extends ConditionalRule<T> {
   protected _propertyName?: string;
   protected _message?: string;
   protected _severityProvider: SeverityProvider<T, unknown> = () => 'Error';
+  protected _errorCode?: string;
 
   /**
    * Sets the name of the property being validated.
@@ -117,6 +119,24 @@ abstract class ExtendedRule<T> extends ConditionalRule<T> {
   public get severityProvider(): SeverityProvider<T, unknown> {
     return this._severityProvider;
   }
+
+  /**
+   * Sets the error code for the rule.
+   * @param errorCode The error code.
+   * @returns The current instance of the rule.
+   */
+  public withErrorCode(errorCode: string): this {
+    this._errorCode = errorCode;
+    return this;
+  }
+
+  /**
+   * Gets the error code for the rule.
+   * @returns The error code for the rule.
+   */
+  public get errorCode(): string | undefined {
+    return this._errorCode;
+  }
 }
 
 /**
@@ -126,9 +146,9 @@ abstract class ExtendedRule<T> extends ConditionalRule<T> {
  */
 export abstract class AbstractRule<T, P> extends ExtendedRule<T> {
   /**
-   * The error message associated with the rule.
+   * The name of the rule.
    */
-  public readonly errorMessage: string = '{propertyName} is invalid';
+  protected abstract readonly name: string;
 
   /**
    * Creates a new instance of the AbstractRule class.
@@ -172,10 +192,11 @@ export abstract class AbstractRule<T, P> extends ExtendedRule<T> {
 
     const failure = new ValidationFailure(
       propertyName,
-      validationContext.messageFormatter.formatWithPlaceholders(this.message || this.errorMessage),
+      validationContext.messageFormatter.formatWithPlaceholders(this.message || getErrorMessage(this.errorCode, this.name)),
       propertyValue as unknown
     );
     failure.severity = this.severityProvider(validationContext.instanceToValidate, propertyValue, validationContext);
+    failure.errorCode = this.errorCode || this.name;
 
     validationContext.addFailure(failure);
   }

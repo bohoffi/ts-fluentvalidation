@@ -19,11 +19,16 @@ import { ValidationContext } from '../validation-context';
  * @typeParam P - The type of the string property being validated.
  */
 export type CommonRuleBuilder<T, P> = {
-  null(): ExtendedRuleBuilder<T, P>;
-  notNull(): ExtendedRuleBuilder<T, P>;
-  equal(referenceValue: P): ExtendedRuleBuilder<T, P>;
-  notEqual(referenceValue: P): ExtendedRuleBuilder<T, P>;
-  must(predicate: RulePredicate<T, P>): ExtendedRuleBuilder<T, P>;
+  null(): ConditionalRuleBuilder<T, P>;
+  notNull(): ConditionalRuleBuilder<T, P>;
+  equal(referenceValue: P): ConditionalRuleBuilder<T, P>;
+  notEqual(referenceValue: P): ConditionalRuleBuilder<T, P>;
+  must(predicate: RulePredicate<T, P>): ConditionalRuleBuilder<T, P>;
+
+  withMessage(message: string): ConditionalRuleBuilder<T, P>;
+  withName(propertyName: string): ConditionalRuleBuilder<T, P>;
+  withSeverity(severity: Severity | ((model: T, value: P, context: ValidationContext<T>) => Severity)): ConditionalRuleBuilder<T, P>;
+  withErrorCode(errorCode: string): ConditionalRuleBuilder<T, P>;
 };
 
 /**
@@ -32,7 +37,7 @@ export type CommonRuleBuilder<T, P> = {
  * @typeParam P - The type of the string property being validated.
  */
 export type StringRuleBuilder<T, P extends StringProperty> = {
-  matches(regExp: RegExp): ExtendedRuleBuilder<T, P>;
+  matches(regExp: RegExp): ConditionalRuleBuilder<T, P>;
 };
 
 /**
@@ -41,12 +46,12 @@ export type StringRuleBuilder<T, P extends StringProperty> = {
  * @typeParam P - The type of the number property being validated.
  */
 export type NumberRuleBuilder<T, P extends NumberProperty> = {
-  lessThan(referenceValue: number): ExtendedRuleBuilder<T, P>;
-  lessThanOrEqualTo(referenceValue: number): ExtendedRuleBuilder<T, P>;
-  greaterThan(referenceValue: number): ExtendedRuleBuilder<T, P>;
-  greaterThanOrEqualTo(referenceValue: number): ExtendedRuleBuilder<T, P>;
-  exclusiveBetween(lowerBound: number, upperBound: number): ExtendedRuleBuilder<T, P>;
-  inclusiveBetween(lowerBound: number, upperBound: number): ExtendedRuleBuilder<T, P>;
+  lessThan(referenceValue: number): ConditionalRuleBuilder<T, P>;
+  lessThanOrEqualTo(referenceValue: number): ConditionalRuleBuilder<T, P>;
+  greaterThan(referenceValue: number): ConditionalRuleBuilder<T, P>;
+  greaterThanOrEqualTo(referenceValue: number): ConditionalRuleBuilder<T, P>;
+  exclusiveBetween(lowerBound: number, upperBound: number): ConditionalRuleBuilder<T, P>;
+  inclusiveBetween(lowerBound: number, upperBound: number): ConditionalRuleBuilder<T, P>;
 };
 
 /**
@@ -55,11 +60,11 @@ export type NumberRuleBuilder<T, P extends NumberProperty> = {
  * @typeParam P - The type of the property being validated.
  */
 export type LengthRuleBuilder<T, P extends LengthProperty> = {
-  maxLength(maxLength: number): ExtendedRuleBuilder<T, P>;
-  minLength(minLength: number): ExtendedRuleBuilder<T, P>;
-  length(min: number, max: number): ExtendedRuleBuilder<T, P>;
-  empty(): ExtendedRuleBuilder<T, P>;
-  notEmpty(): ExtendedRuleBuilder<T, P>;
+  maxLength(maxLength: number): ConditionalRuleBuilder<T, P>;
+  minLength(minLength: number): ConditionalRuleBuilder<T, P>;
+  length(min: number, max: number): ConditionalRuleBuilder<T, P>;
+  empty(): ConditionalRuleBuilder<T, P>;
+  notEmpty(): ConditionalRuleBuilder<T, P>;
 };
 
 /**
@@ -68,7 +73,7 @@ export type LengthRuleBuilder<T, P extends LengthProperty> = {
  * @typeParam P - The type of the object property being validated.
  */
 export type ObjectRuleBuilder<T, P extends ObjectProperty> = {
-  setValidator(validator: ValidatorContract<P>): ExtendedRuleBuilder<T, P>;
+  setValidator(validator: ValidatorContract<P>): ConditionalRuleBuilder<T, P>;
 };
 
 /**
@@ -125,17 +130,4 @@ export type ConditionalRuleBuilder<T, P> = TypedRuleBuilder<T, P> & {
    * @returns The current instance of the rule builder.
    */
   unless(condition: RuleCondition<T>, applyConditionTo?: ApplyConditionTo): TypedRuleBuilder<T, P>;
-};
-
-/**
- * Represents an extended rule builder that combines the functionality of a conditional rule builder
- * with additional methods for setting the error message and property name.
- *
- * @typeParam T - The type of the object being validated.
- * @typeParam P - The type of the property being validated.
- */
-export type ExtendedRuleBuilder<T, P> = ConditionalRuleBuilder<T, P> & {
-  withMessage(message: string): ConditionalRuleBuilder<T, P>;
-  withName(propertyName: string): ConditionalRuleBuilder<T, P>;
-  withSeverity(severity: Severity | ((model: T, value: P, context: ValidationContext<T>) => Severity)): ConditionalRuleBuilder<T, P>;
 };

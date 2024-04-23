@@ -161,4 +161,59 @@ describe(AbstractValidator.name, () => {
       expect(result.errors[0].severity).toBe('Error');
     });
   });
+
+  describe('error code', () => {
+    it('should set the error code using `withErrorCode`', () => {
+      personValidator
+        .ruleFor(p => p.name)
+        .notEmpty()
+        .withErrorCode('ERR1234');
+      const result = personValidator.validate(
+        createPersonWith({
+          name: ''
+        })
+      );
+      expect(result.errors[0].errorCode).toBe('ERR1234');
+    });
+
+    it('should fall back to default error message with custom error code and no custom message provided', () => {
+      personValidator
+        .ruleFor(p => p.name)
+        .notEmpty()
+        .withErrorCode('ERR1234');
+      const result = personValidator.validate(
+        createPersonWith({
+          name: ''
+        })
+      );
+      expect(result.errors[0].message).toBe('name must not be empty.');
+    });
+
+    it('should use custom message with custom error code', () => {
+      personValidator
+        .ruleFor(p => p.name)
+        .notEmpty()
+        .withMessage('Custom message')
+        .withErrorCode('ERR1234');
+      const result = personValidator.validate(
+        createPersonWith({
+          name: ''
+        })
+      );
+      expect(result.errors[0].message).toBe('Custom message');
+    });
+  });
+
+  it('should output other rules message with custom error code matching the other rules name', () => {
+    personValidator
+      .ruleFor(p => p.name)
+      .notEmpty()
+      .withErrorCode('NotNullRule');
+    const result = personValidator.validate(
+      createPersonWith({
+        name: ''
+      })
+    );
+    expect(result.errors[0].message).toBe('name must not be null.');
+  });
 });
