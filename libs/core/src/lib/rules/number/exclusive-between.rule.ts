@@ -3,7 +3,7 @@ import { NumberProperty } from '../../models';
 import { AbstractRule } from '../rule';
 
 export class ExclusiveBetweenRule<T, P extends NumberProperty> extends AbstractRule<T, P> {
-  public override errorMessage = '{propertyName} must be between {lowerBound} and {upperBound} (exclusive).';
+  public override name = ExclusiveBetweenRule.name;
 
   constructor(private readonly lowerBound: number, private readonly upperBound: number) {
     super(value => {

@@ -8,7 +8,7 @@ import { AbstractRule } from '../rule';
  * @typeParam P - The type of the property being validated.
  */
 export class EqualRule<T, P> extends AbstractRule<T, P> {
-  public override errorMessage = '{propertyName} must be equal to {comparisonValue}.';
+  public override name = EqualRule.name;
 
   constructor(private readonly comparisonValue: P) {
     super(value => value === comparisonValue);

@@ -7,7 +7,7 @@ import { AbstractRule } from '../rule';
  * @typeParam P - The type of the property being validated.
  */
 export class NotNullRule<T, P> extends AbstractRule<T, P> {
-  public override errorMessage = '{propertyName} must not be null.';
+  public override name = NotNullRule.name;
 
   constructor() {
     super(value => value !== null);

@@ -22,6 +22,11 @@ export class ValidationFailure {
    */
   public severity: Severity = 'Error';
 
+  /**
+   * The error code associated with the validation failure.
+   */
+  public errorCode?: string;
+
   constructor(propertyName: string, message: string, attemptedValue: unknown) {
     this.propertyName = propertyName;
     this.message = message;

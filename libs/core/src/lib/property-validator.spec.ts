@@ -39,7 +39,8 @@ describe('PropertyValidator', () => {
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
         attemptedValue: person.name,
-        severity: 'Error'
+        severity: 'Error',
+        errorCode: MinLengthRule.name
       });
     });
   });
@@ -64,7 +65,8 @@ describe('PropertyValidator', () => {
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
         attemptedValue: person.name,
-        severity: 'Error'
+        severity: 'Error',
+        errorCode: MinLengthRule.name
       });
     });
 
@@ -87,13 +89,15 @@ describe('PropertyValidator', () => {
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
         attemptedValue: person.name,
-        severity: 'Error'
+        severity: 'Error',
+        errorCode: MinLengthRule.name
       });
       expect(validationContext.failues[1]).toEqual<ValidationFailure>({
         propertyName: 'name',
         message: 'name must have a maximum length of 3.',
         attemptedValue: person.name,
-        severity: 'Error'
+        severity: 'Error',
+        errorCode: MaxLengthRule.name
       });
     });
   });
@@ -118,7 +122,8 @@ describe('PropertyValidator', () => {
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
         attemptedValue: person.name,
-        severity: 'Error'
+        severity: 'Error',
+        errorCode: MinLengthRule.name
       });
     });
 
@@ -141,7 +146,8 @@ describe('PropertyValidator', () => {
         propertyName: 'name',
         message: 'name must have a minimum length of 5.',
         attemptedValue: person.name,
-        severity: 'Error'
+        severity: 'Error',
+        errorCode: MinLengthRule.name
       });
     });
   });
@@ -164,7 +170,8 @@ describe('PropertyValidator', () => {
         propertyName: 'name',
         message: 'Custom message',
         attemptedValue: person.name,
-        severity: 'Error'
+        severity: 'Error',
+        errorCode: MinLengthRule.name
       });
     });
 
@@ -185,7 +192,8 @@ describe('PropertyValidator', () => {
         propertyName: 'name',
         message: 'Custom name must have a minimum length of 5.',
         attemptedValue: person.name,
-        severity: 'Error'
+        severity: 'Error',
+        errorCode: MinLengthRule.name
       });
     });
 
@@ -206,7 +214,30 @@ describe('PropertyValidator', () => {
         propertyName: 'name',
         message: 'Custom name must have a minimum length of 5.',
         attemptedValue: person.name,
-        severity: 'Warning'
+        severity: 'Warning',
+        errorCode: MinLengthRule.name
+      });
+    });
+
+    it('should validate value with updated error code', () => {
+      const person = createPersonWith({ name: 'John' });
+      const validationContext = new ValidationContext<Person>(person);
+
+      const rule = new MinLengthRule<Person, string>(5);
+
+      rule.withName('Custom name').withErrorCode('ERR1234');
+
+      propertyValidator.addRule(rule);
+
+      propertyValidator.validateProperty(person.name, validationContext);
+
+      expect(validationContext.failues).toHaveLength(1);
+      expect(validationContext.failues[0]).toEqual<ValidationFailure>({
+        propertyName: 'name',
+        message: 'Custom name must have a minimum length of 5.',
+        attemptedValue: person.name,
+        severity: 'Error',
+        errorCode: 'ERR1234'
       });
     });
   });

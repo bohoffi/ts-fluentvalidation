@@ -3,7 +3,7 @@ import { NumberProperty } from '../../models';
 import { AbstractRule } from '../rule';
 
 export class GreaterThanRule<T, P extends NumberProperty> extends AbstractRule<T, P> {
-  public override errorMessage = '{propertyName} must be greater than {comparisonValue}.';
+  public override name = GreaterThanRule.name;
 
   constructor(private readonly referenceValue: number) {
     super(value => {

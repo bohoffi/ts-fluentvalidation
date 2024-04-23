@@ -3,7 +3,7 @@ import { LengthProperty } from '../../models';
 import { AbstractRule } from '../rule';
 
 export class MaxLengthRule<T, P extends LengthProperty> extends AbstractRule<T, P> {
-  public override errorMessage = '{propertyName} must have a maximum length of {maxLength}.';
+  public override name = MaxLengthRule.name;
 
   constructor(private readonly maxLength: number) {
     super(value => {
