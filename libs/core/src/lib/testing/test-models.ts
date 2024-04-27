@@ -3,7 +3,8 @@ export interface Person {
   age: number;
   notice?: string;
   address: Address;
-  pets: unknown[];
+  pets: string[];
+  orders: Order[];
 }
 
 export interface Address {
@@ -12,7 +13,17 @@ export interface Address {
   zip: string;
 }
 
+export interface Order {
+  total: number;
+}
+
+export interface Company {
+  name: string;
+  employees: Employee[];
+}
+
 export interface Employee extends Person {
   department: string;
   jobTitle: string;
+  areas: string[];
 }

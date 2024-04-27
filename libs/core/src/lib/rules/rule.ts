@@ -162,13 +162,12 @@ export abstract class AbstractRule<T, P> extends ExtendedRule<T> {
    * Validates the specified value.
    * @param value The value to validate.
    * @param validationContext The validation context.
-   * @param propertyName The name of the property being validated.
    * @returns `true` if the value is valid, otherwise `false`.
    */
-  public validate(value: P, validationContext: ValidationContext<T>, propertyName: string): boolean {
+  public validate(value: P, validationContext: ValidationContext<T>): boolean {
     const isValid = this.validationFn(value, validationContext);
     if (isValid === false) {
-      this.createValidationError(validationContext, value, propertyName);
+      this.createValidationError(validationContext, value);
     }
     return isValid;
   }
@@ -183,15 +182,18 @@ export abstract class AbstractRule<T, P> extends ExtendedRule<T> {
    * Creates a validation error and adds it to the validation context.
    * @param validationContext - The validation context.
    * @param propertyValue - The value of the property being validated.
-   * @param propertyName - The name of the property being validated.
    */
-  private createValidationError(validationContext: ValidationContext<T>, propertyValue: P, propertyName: string): void {
-    validationContext.messageFormatter.appendOrUpdatePropertyName(this.propertyName || propertyName);
+  private createValidationError(validationContext: ValidationContext<T>, propertyValue: P): void {
+    validationContext.messageFormatter.appendOrUpdatePropertyName(this.propertyName || validationContext.propertyPath);
     validationContext.messageFormatter.appendOrUpdatePropertyValue(propertyValue);
+    validationContext.messageFormatter.appendOrUpdateArgument(
+      validationContext.messageFormatter.basePlaceholders.propertyPath,
+      validationContext.propertyPath
+    );
     this.appendArguments?.(validationContext.messageFormatter, propertyValue);
 
     const failure = new ValidationFailure(
-      propertyName,
+      validationContext.propertyPath,
       validationContext.messageFormatter.formatWithPlaceholders(this.message || getErrorMessage(this.errorCode, this.name)),
       propertyValue as unknown
     );

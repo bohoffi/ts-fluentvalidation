@@ -21,10 +21,9 @@ export class SetValidatorRule<T, P extends ObjectProperty> extends AbstractRule<
    * Validates the specified property value.
    * @param value - The value of the property being validated.
    * @param validationContext - The validation context.
-   * @param propertyName - The name of the property being validated.
    * @returns A boolean indicating whether the property value is valid.
    */
-  public override validate(value: P, validationContext: ValidationContext<T>, propertyName: string): boolean {
+  public override validate(value: P, validationContext: ValidationContext<T>): boolean {
     if (!value) {
       return true;
     }
@@ -33,7 +32,7 @@ export class SetValidatorRule<T, P extends ObjectProperty> extends AbstractRule<
 
     if (!validationResult.isValid) {
       validationResult.errors.forEach(failure => {
-        failure.propertyName = `${propertyName}.${failure.propertyName}`;
+        failure.propertyName = `${validationContext.propertyPath}.${failure.propertyName}`;
         validationContext.addFailure(failure);
       });
     }

@@ -1,7 +1,8 @@
 import { AbstractValidator } from './abstract-validator';
+import { createValidator } from './create-validator';
 import { MemberExpression } from './models';
-import { createPersonWith } from './testing/test-data';
-import { Person } from './testing/test-models';
+import { createCompanyWith, createEmployeeWith, createPersonWith } from './testing/test-data';
+import { Company, Employee, Person } from './testing/test-models';
 import { KeyOf } from './ts-helpers';
 import { ValidationContext } from './validation-context';
 
@@ -202,18 +203,58 @@ describe(AbstractValidator.name, () => {
       );
       expect(result.errors[0].message).toBe('Custom message');
     });
+
+    it('should output other rules message with custom error code matching the other rules name', () => {
+      personValidator
+        .ruleFor(p => p.name)
+        .notEmpty()
+        .withErrorCode('NotNullRule');
+      const result = personValidator.validate(
+        createPersonWith({
+          name: ''
+        })
+      );
+      expect(result.errors[0].message).toBe('name must not be null.');
+    });
   });
 
-  it('should output other rules message with custom error code matching the other rules name', () => {
-    personValidator
-      .ruleFor(p => p.name)
-      .notEmpty()
-      .withErrorCode('NotNullRule');
-    const result = personValidator.validate(
-      createPersonWith({
-        name: ''
-      })
-    );
-    expect(result.errors[0].message).toBe('name must not be null.');
+  describe('collection properties', () => {
+    it('should validate collection properties', () => {
+      const person = createPersonWith({
+        pets: ['dog', 'cat', 'fish']
+      });
+
+      personValidator.ruleForEach('pets').maxLength(3);
+      const result = personValidator.validate(person);
+      expect(result.isValid).toBeFalsy();
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors[0].propertyName).toBe('pets[2]');
+    });
+
+    it('should validate complex collection properties', () => {
+      const company = createCompanyWith({
+        employees: [
+          createEmployeeWith(),
+          createEmployeeWith({
+            name: '',
+            areas: []
+          })
+        ]
+      });
+      const employeeValidator = createValidator<Employee>(validator => {
+        validator.ruleFor(e => e.name).notEmpty();
+        validator.ruleFor('areas').notEmpty();
+      });
+      const companyValidator = createValidator<Company>(validator => {
+        validator.ruleFor(c => c.name).notEmpty();
+        validator.ruleForEach('employees').setValidator(employeeValidator);
+      });
+
+      const result = companyValidator.validate(company);
+      expect(result.isValid).toBeFalsy();
+      expect(result.errors).toHaveLength(2);
+      expect(result.errors[0].propertyName).toBe('employees[1].name');
+      expect(result.errors[1].propertyName).toBe('employees[1].areas');
+    });
   });
 });

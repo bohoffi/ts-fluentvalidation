@@ -1,61 +1,65 @@
 /**
- * Represents a message formatter that is used to format validation error messages.
+ * Represents a message formatter that replaces placeholders in a message with provided values.
  */
-export type MessageFormatter = {
+export class MessageFormatter {
+  private _placeholders: Record<string, unknown> = {};
+  private readonly propertyName = 'propertyName';
+  private readonly propertyValue = 'propertyValue';
+
+  public readonly basePlaceholders = {
+    propertyPath: 'propertyPath',
+    collectionIndex: 'collectionIndex'
+  };
+
   /**
-   * Appends an argument to the message formatter.
+   * Gets the current placeholders.
+   */
+  public get placeholders(): Readonly<Record<string, unknown>> {
+    return this._placeholders;
+  }
+
+  /**
+   * Appends or updates an argument to the placeholders.
    * @param key - The key of the argument.
    * @param value - The value of the argument.
    */
-  appendArgument(key: string, value: unknown): void;
+  public appendOrUpdateArgument(key: string, value: unknown): void {
+    this._placeholders[key] = value;
+  }
 
   /**
-   * Appends a property name to the message formatter.
-   * @param propertyName - The name of the property.
+   * Appends or updates the property name placeholder.
+   * @param propertyName - The property name.
    */
-  appendOrUpdatePropertyName(propertyName: string): void;
+  public appendOrUpdatePropertyName(propertyName: string): void {
+    this._placeholders[this.propertyName] = propertyName;
+  }
 
   /**
-   * Appends a property value to the message formatter.
-   * @param value - The value of the property.
+   * Appends or updates the property value placeholder.
+   * @param value - The property value.
    */
-  appendOrUpdatePropertyValue(value: unknown): void;
+  public appendOrUpdatePropertyValue(value: unknown): void {
+    this._placeholders[this.propertyValue] = value;
+  }
 
   /**
-   * Formats the message with placeholders.
-   * @param message - The message with placeholders.
+   * Formats the message with the current placeholders.
+   * @param message - The message to format.
    * @returns The formatted message.
    */
-  formatWithPlaceholders(message: string): string;
-};
-
-/**
- * Creates a message formatter object.
- * @returns The created message formatter.
- */
-export function createMessageFormatter(): MessageFormatter {
-  const placeholder: Record<string, unknown> = {};
-  const defaultPlaceholder = {
-    propertyName: 'propertyName',
-    propertyValue: 'propertyValue'
-  };
-
-  return {
-    appendArgument: (key: string, value: unknown) => {
-      placeholder[key] = value;
-    },
-    appendOrUpdatePropertyName: (propertyName: string) => {
-      placeholder[defaultPlaceholder.propertyName] = propertyName;
-    },
-    appendOrUpdatePropertyValue: (value: unknown) => {
-      placeholder[defaultPlaceholder.propertyValue] = value;
-    },
-    formatWithPlaceholders: (message: string) => {
-      let formattedMessage = message;
-      for (const key in placeholder) {
-        formattedMessage = formattedMessage.replace(`{${key}}`, `${placeholder[key]}`);
-      }
-      return formattedMessage;
+  public formatWithPlaceholders(message: string): string {
+    let formattedMessage = message;
+    for (const key in this._placeholders) {
+      formattedMessage = formattedMessage.replace(`{${key}}`, `${this._placeholders[key]}`);
     }
-  };
+    return formattedMessage;
+  }
+
+  /**
+   * Resets the placeholders to an empty state.
+   */
+  public reset(): void {
+    this._placeholders = {};
+  }
 }

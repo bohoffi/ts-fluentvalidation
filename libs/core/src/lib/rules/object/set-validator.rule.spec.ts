@@ -41,15 +41,4 @@ describe(SetValidatorRule.name, () => {
     expect(result.errors[0].propertyName).toBe('address.city');
     expect(result.errors[0].message).toBe('city must not be empty.');
   });
-
-  it('should return an error if the value is not valid', () => {
-    const person = createPersonWith({
-      address: createAddressWith({ city: '', state: 'state', zip: 'zip' })
-    });
-    const result = personValidator.validate(person);
-    expect(result.isValid).toBeFalsy();
-    expect(result.errors).toHaveLength(1);
-    expect(result.errors[0].propertyName).toBe('address.city');
-    expect(result.errors[0].message).toBe('city must not be empty.');
-  });
 });

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Address, Employee, Person } from './test-models';
+import { Address, Company, Employee, Order, Person } from './test-models';
 
 export function createPersonWith(overrides: Partial<Person> = {}): Person {
   return {
@@ -10,6 +10,7 @@ export function createPersonWith(overrides: Partial<Person> = {}): Person {
     }),
     address: createAddressWith(overrides.address),
     pets: [],
+    orders: [],
     ...overrides
   };
 }
@@ -23,11 +24,30 @@ export function createAddressWith(overrides: Partial<Address> = {}): Address {
   };
 }
 
-export function createEmployeeWith(overrides: Partial<Employee>): Employee {
+export function createOrderWith(overrides: Partial<Order> = {}): Order {
+  return {
+    total: faker.number.int({
+      min: 0,
+      max: 1000
+    }),
+    ...overrides
+  };
+}
+
+export function createCompanyWith(overrides: Partial<Company> = {}): Company {
+  return {
+    name: faker.company.name(),
+    employees: faker.helpers.arrayElements([createEmployeeWith(), createEmployeeWith(), createEmployeeWith()]),
+    ...overrides
+  };
+}
+
+export function createEmployeeWith(overrides: Partial<Employee> = {}): Employee {
   return {
     ...createPersonWith(overrides),
     department: faker.company.name(),
     jobTitle: faker.person.jobTitle(),
+    areas: faker.helpers.arrayElements([faker.person.jobArea(), faker.person.jobArea(), faker.person.jobArea(), faker.person.jobArea()]),
     ...overrides
   };
 }

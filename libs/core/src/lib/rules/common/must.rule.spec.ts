@@ -23,7 +23,7 @@ describe(MustRule.name, () => {
   it('should return an error if the value does not pass the custom rule', () => {
     function arrayMustContainFewerThan<T, P extends unknown[]>(num: number): RulePredicate<T, P> {
       return (value, _, validationContext) => {
-        validationContext.messageFormatter.appendArgument('maxElements', num);
+        validationContext.messageFormatter.appendOrUpdateArgument('maxElements', num);
         return value.length < num;
       };
     }
@@ -34,7 +34,7 @@ describe(MustRule.name, () => {
         .must(arrayMustContainFewerThan(3))
         .withMessage('{propertyName} must contain fewer than {maxElements} items.')
     );
-    const result = customRuleValidator.validate(createPersonWith({ pets: [1, 2, 3] }));
+    const result = customRuleValidator.validate(createPersonWith({ pets: ['dog', 'cat', 'fish'] }));
     expect(result.isValid).toBeFalsy();
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0].message).toBe('pets must contain fewer than 3 items.');
