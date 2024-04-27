@@ -12,7 +12,6 @@ The goal is to create a TypeScript port of the .NET library FluentValidation inc
 
 ## Roadmap
 
-- [ ] validation of iterable properties
 - [ ] custom rules (beyond `.must` including placeholder support)
 - [ ] async validation
 - further items can be looked up [here](https://github.com/bohoffi/ts-fluentvalidation/issues?q=is%3Aopen+is%3Aissue+label%3A%22area%3A+core%22)
@@ -24,12 +23,14 @@ interface Person {
     firstName: string;
     lastName: string;
     age: number;
+    addressLines: string[];
 }
 
 const personValidator = createValidator<Person>();
 personValidator.ruleFor(p => p.firstName).notEmpty();
 personValidator.ruleFor(p => p.lastName).notEmpty();
 personValidator.ruleFor(p => p.age).greaterThanOrEqualTo(18);
+personValidator.ruleForEach(p => p.addressLines).notEmpty();
 
 const person: Person = {
     firstName: 'Foo',

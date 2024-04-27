@@ -32,17 +32,17 @@ import {
   StringRuleBuilder,
   TypedRuleBuilder
 } from './rule-builders';
-import { PropertyValidator } from '../property-validator';
 import { EmptyRule, LengthRule, MaxLengthRule, MinLengthRule, NotEmptyRule } from './length';
 import { SetValidatorRule } from './object';
 import { ValidationContext } from '../validation-context';
+import { AbstractPropertyValidator } from '../abstract-property-validator';
 
 type RuleBuilderContract<TRuleBuilder> = {
   [K in keyof TRuleBuilder]: unknown;
 };
 
 export class AbstractRuleBuilder<T extends object, P> {
-  constructor(private readonly validator: PropertyValidator<T, P>) {}
+  constructor(private readonly validator: AbstractPropertyValidator<T, P>) {}
 
   public build() {
     return this.typedRuleBuilder() as unknown as TypedRuleBuilder<T, P>;

@@ -12,7 +12,7 @@ export class ExclusiveBetweenRule<T, P extends NumberProperty> extends AbstractR
   }
 
   public override appendArguments(messageFormatter: MessageFormatter): void {
-    messageFormatter.appendArgument('lowerBound', this.lowerBound);
-    messageFormatter.appendArgument('upperBound', this.upperBound);
+    messageFormatter.appendOrUpdateArgument('lowerBound', this.lowerBound);
+    messageFormatter.appendOrUpdateArgument('upperBound', this.upperBound);
   }
 }

@@ -12,6 +12,6 @@ export class LessThanOrEqualRule<T, P extends NumberProperty> extends AbstractRu
   }
 
   public override appendArguments(messageFormatter: MessageFormatter): void {
-    messageFormatter.appendArgument('comparisonValue', this.referenceValue);
+    messageFormatter.appendOrUpdateArgument('comparisonValue', this.referenceValue);
   }
 }

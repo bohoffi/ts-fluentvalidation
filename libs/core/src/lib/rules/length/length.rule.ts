@@ -13,7 +13,7 @@ export class LengthRule<T, P extends LengthProperty> extends AbstractRule<T, P> 
   }
 
   public override appendArguments(messageFormatter: MessageFormatter): void {
-    messageFormatter.appendArgument('minLength', this.minLength);
-    messageFormatter.appendArgument('maxLength', this.maxLength);
+    messageFormatter.appendOrUpdateArgument('minLength', this.minLength);
+    messageFormatter.appendOrUpdateArgument('maxLength', this.maxLength);
   }
 }

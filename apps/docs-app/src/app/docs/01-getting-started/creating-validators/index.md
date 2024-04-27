@@ -145,7 +145,68 @@ this.ruleFor(p => p.address.city)
 > **Note**
 > Inline child rules will become available with the implementation of [#18 - Add support for inline child rules](https://github.com/bohoffi/ts-fluentvalidation/issues/18)
 
-## Iterable properties
+## Array properties
 
-> **Note**
-> Iterable property validation will become available with the implementation of [#4 - Validation of iterable properties](https://github.com/bohoffi/ts-fluentvalidation/issues/4)
+### Arrays of Simple Types
+
+You can use the `ruleForEach` function to apply the same rule to multiple items in a collection:
+
+```typescript
+interface Person {
+  addressLines: string[];
+}
+```
+
+```typescript
+class PersonValidator extends AbstractValidator<Person> {
+  constructor() {
+    super();
+    this.ruleForEach(p => p.addressLines).notEmpty();
+  }
+}
+```
+
+The above validation will run a `notEmpty` check against each item in the `addressLines` array.
+
+If you want to access the index of the collection element that caused the validation failure, you can use the special `{collectionIndex}` placeholder:
+
+```typescript
+class PersonValidator extends AbstractValidator<Person> {
+  constructor() {
+    super();
+    this.ruleForEach(p => p.addressLines)
+      .notEmpty()
+      .withMessage('Address {collectionIndex} is required.');
+  }
+}
+```
+
+### Arrays of Complex Types
+
+You can also combine `ruleForEach` with `setValidator` when the collection is of another complex objects. For example:
+
+```typescript
+interface Customer {
+  orders: Orders[];
+}
+
+interface Order {
+  total: number;
+}
+```
+
+```typescript
+class OrderValidator extends AbstractValidator<Order> {
+  constructor() {
+    super();
+    this.ruleFor(x => x.total).greaterThan(0);
+  }
+}
+
+class CustomerValidator extends AbstractValidator<Customer> {
+  constructor() {
+    super();
+    this.ruleForEach(x => x.orders).setValidator(new OrderValidator());
+  }
+}
+```

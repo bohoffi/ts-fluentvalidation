@@ -1,13 +1,15 @@
+import { AbstractPropertyValidator } from './abstract-property-validator';
+import { CollectionPropertyValidator } from './collection-property-validator';
 import { CascadeMode, MemberExpression } from './models';
 import { PropertyValidator } from './property-validator';
 import { ValidationResult } from './result';
 import { AbstractRuleBuilder } from './rules/rule-builder';
 import { TypedRuleBuilder } from './rules/rule-builders';
-import { EmptyObject, KeyOf } from './ts-helpers';
+import { ArrayKeyOf, EmptyObject, KeyOf } from './ts-helpers';
 import { ValidationContext } from './validation-context';
 
 type PropertyValidators<T> = {
-  [K in keyof T]: PropertyValidator<T, T[K]>;
+  [K in keyof T]: AbstractPropertyValidator<T, T[K]>;
 };
 
 /**
@@ -84,6 +86,21 @@ export abstract class AbstractValidator<T extends object = EmptyObject> {
   }
 
   /**
+   * Creates a rule builder for validating each item in an array property.
+   *
+   * @param propertyName - The name of the property to validate.
+   * @returns A `TypedRuleBuilder` instance for building validation rules for the array property.
+   */
+  public ruleForEach<PropertyName extends ArrayKeyOf<T>, V extends T[PropertyName] extends Array<infer Item> ? Item : never>(
+    propertyName: PropertyName
+  ): TypedRuleBuilder<T, V> {
+    const propertyValidator = this.createCollectionPropertyValidator<V>(propertyName as unknown as ArrayKeyOf<T>);
+
+    this.propertyValidators[propertyName] = propertyValidator as CollectionPropertyValidator<T, unknown>;
+    return new AbstractRuleBuilder<T, V>(propertyValidator).build();
+  }
+
+  /**
    * Creates a property validator for the specified property name.
    *
    * @typeParam V - The type of the property value.
@@ -92,6 +109,21 @@ export abstract class AbstractValidator<T extends object = EmptyObject> {
    */
   private createPropertyValidator<V>(propertyName: KeyOf<T>): PropertyValidator<T, V> {
     const validator = new PropertyValidator<T, V>(propertyName);
+    if (this.ruleLevelCascadeMode) {
+      validator.cascade(this.ruleLevelCascadeMode);
+    }
+    return validator;
+  }
+
+  /**
+   * Creates a collection property validator for the specified property name.
+   *
+   * @typeParam V - The type of the property value.
+   * @param propertyName - The name of the property to validate.
+   * @returns A `CollectionPropertyValidator` instance for the specified property.
+   */
+  private createCollectionPropertyValidator<V>(propertyName: ArrayKeyOf<T>): CollectionPropertyValidator<T, V> {
+    const validator = new CollectionPropertyValidator<T, V>(propertyName);
     if (this.ruleLevelCascadeMode) {
       validator.cascade(this.ruleLevelCascadeMode);
     }
@@ -122,10 +154,15 @@ export abstract class AbstractValidator<T extends object = EmptyObject> {
         : new ValidationContext(instanceOrValidationContext);
 
     for (const [key, rule] of Object.entries(this.propertyValidators)) {
-      const propertyValidator = rule as PropertyValidator<T, unknown>;
-      const propertyValue = validationContext.instanceToValidate[key as KeyOf<T>];
+      const typeKey = key as KeyOf<T>;
+      const propertyValidator = rule as AbstractPropertyValidator<T, typeof typeKey>;
+      const propertyValue = validationContext.instanceToValidate[typeKey];
 
-      propertyValidator.validateProperty(propertyValue, validationContext);
+      if (propertyValidator instanceof PropertyValidator) {
+        propertyValidator.validateProperty(propertyValue as typeof propertyValidator.propertyName, validationContext);
+      } else if (propertyValidator instanceof CollectionPropertyValidator) {
+        propertyValidator.validateProperty(propertyValue as typeof propertyValidator.propertyName, validationContext);
+      }
 
       if (validationContext.failues.length > 0 && this.classLevelCascadeMode === 'Stop') {
         break;

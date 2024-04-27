@@ -1,29 +1,20 @@
-import { CascadeMode } from './models';
+import { AbstractPropertyValidator } from './abstract-property-validator';
 import { AbstractRule } from './rules/rule';
-import { KeyOf } from './ts-helpers';
 import { ValidationContext } from './validation-context';
 
-export class PropertyValidator<T, P> {
-  public readonly propertyRules: AbstractRule<T, P>[] = [];
-  private cascadeMode: CascadeMode = 'Continue';
-
-  constructor(public readonly propertyName: KeyOf<T>) {}
-
-  public addRule(rule: AbstractRule<T, P>): void {
-    this.propertyRules.push(rule);
-  }
-
-  public cascade(cascadeMode: CascadeMode): void {
-    this.cascadeMode = cascadeMode;
-  }
-
+export class PropertyValidator<T, P> extends AbstractPropertyValidator<T, P> {
   public validateProperty(propertyValue: P, validationContext: ValidationContext<T>): void {
     for (const rule of this.propertyRules) {
       if (!processRuleWhen(rule, validationContext) || !processRuleUnless(rule, validationContext)) {
         continue;
       }
 
-      const result = rule.validate(propertyValue, validationContext, this.propertyName as string);
+      const propertyPath = validationContext.propertyChain.buildPropertyPath(this.propertyName as string);
+      validationContext.initializeForPropertyValidator(propertyPath, this.propertyName as string);
+      validationContext.messageFormatter.reset();
+
+      // const result = rule.validate(propertyValue, validationContext, this.propertyName as string);
+      const result = rule.validate(propertyValue, validationContext);
 
       if (result === false && this.cascadeMode === 'Stop') {
         break;

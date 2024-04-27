@@ -12,6 +12,6 @@ export class GreaterThanOrEqualRule<T, P extends NumberProperty> extends Abstrac
   }
 
   public override appendArguments(messageFormatter: MessageFormatter): void {
-    messageFormatter.appendArgument('comparisonValue', this.referenceValue);
+    messageFormatter.appendOrUpdateArgument('comparisonValue', this.referenceValue);
   }
 }

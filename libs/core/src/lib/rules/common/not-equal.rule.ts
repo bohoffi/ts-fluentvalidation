@@ -9,6 +9,6 @@ export class NotEqualRule<T, P> extends AbstractRule<T, P> {
   }
 
   public override appendArguments(messageFormatter: MessageFormatter): void {
-    messageFormatter.appendArgument('comparisonValue', this.comparisonValue);
+    messageFormatter.appendOrUpdateArgument('comparisonValue', this.comparisonValue);
   }
 }

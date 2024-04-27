@@ -12,6 +12,6 @@ export class MaxLengthRule<T, P extends LengthProperty> extends AbstractRule<T, 
   }
 
   public override appendArguments(messageFormatter: MessageFormatter): void {
-    messageFormatter.appendArgument('maxLength', this.maxLength);
+    messageFormatter.appendOrUpdateArgument('maxLength', this.maxLength);
   }
 }

@@ -9,6 +9,18 @@
 export type KeyOf<T> = Extract<keyof T, string> & string;
 
 /**
+ * Represents a type that extracts the array property values of an object type `T`.
+ *
+ * @typeParam T - The object type from which to extract the array property values.
+ * @returns A union type of array property values of `T`.
+ */
+export type ArrayKeyOf<T extends object> = {
+  //   [K in keyof T]: T[K] extends Array<unknown> ? K : never;
+  [K in KeyOf<T>]: T[K] extends Array<unknown> ? K : never;
+  // }[keyof T];
+}[KeyOf<T>];
+
+/**
  * Represents a type that can be either `T`, `null`, or `undefined`.
  * @typeParam T - The underlying type.
  */
