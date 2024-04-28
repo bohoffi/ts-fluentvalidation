@@ -17,7 +17,8 @@
     "paths": {
       "@ng-doc/generated": ["ng-doc/docs-app/index.ts"],
       "@ng-doc/generated/*": ["ng-doc/docs-app/*"],
-      "@ts-fluentvalidation/core": ["libs/core/src/index.ts"]
+      "@ts-fluentvalidation/core": ["libs/core/src/index.ts"],
+      "@ts-fluentvalidation/core/testing": ["libs/core/src/testing/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
