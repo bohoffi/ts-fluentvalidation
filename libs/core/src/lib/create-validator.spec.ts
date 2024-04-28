@@ -1,6 +1,7 @@
 import { createEmployeeWith, createPersonWith } from './testing/test-data';
 import { Employee, Person } from './testing/test-models';
 import { createValidator } from './create-validator';
+import { testValidate } from '../testing';
 
 describe('validator', () => {
   describe(createValidator.name, () => {
@@ -137,12 +138,12 @@ describe('validator', () => {
       const employeeValidator = createBaseValidator<Employee>();
       employeeValidator.ruleFor(p => p.department).notEmpty();
 
-      const result = employeeValidator.validate(employee);
+      const result = testValidate(employeeValidator, employee);
 
       expect(result.isValid).toBeFalsy();
       expect(result.errors.length).toBe(2);
-      expect(result.errors[0].propertyName).toBe('name');
-      expect(result.errors[1].propertyName).toBe('department');
+      result.shouldHaveValidationErrorFor(p => p.name).withMessage('name must not be empty.');
+      result.shouldHaveValidationErrorFor(p => p.department).withMessage('department must not be empty.');
     });
   });
 });

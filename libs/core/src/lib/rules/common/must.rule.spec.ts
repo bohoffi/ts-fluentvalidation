@@ -3,21 +3,22 @@ import { Person } from '../../testing/test-models';
 import { createValidator } from '../../create-validator';
 import { MustRule } from './must.rule';
 import { RulePredicate } from '../../models';
+import { testValidate } from '../../../testing';
 
 describe(MustRule.name, () => {
   const validator = createValidator<Person>(val => val.ruleFor('name').must(val => val === 'abc'));
 
   it('should not return an error if the value passes the predicate', () => {
-    const result = validator.validate(createPersonWith({ name: 'abc' }));
+    const result = testValidate(validator, createPersonWith({ name: 'abc' }));
     expect(result.isValid).toBeTruthy();
     expect(result.errors).toHaveLength(0);
   });
 
   it('should return an error if the value does not pass the predicate', () => {
-    const result = validator.validate(createPersonWith({ name: 'def' }));
+    const result = testValidate(validator, createPersonWith({ name: 'def' }));
     expect(result.isValid).toBeFalsy();
     expect(result.errors).toHaveLength(1);
-    expect(result.errors[0].message).toBe('The specified condition was not met for name.');
+    result.shouldHaveValidationErrorFor(p => p.name).withMessage('The specified condition was not met for name.');
   });
 
   it('should return an error if the value does not pass the custom rule', () => {
@@ -34,9 +35,9 @@ describe(MustRule.name, () => {
         .must(arrayMustContainFewerThan(3))
         .withMessage('{propertyName} must contain fewer than {maxElements} items.')
     );
-    const result = customRuleValidator.validate(createPersonWith({ pets: ['dog', 'cat', 'fish'] }));
+    const result = testValidate(customRuleValidator, createPersonWith({ pets: ['dog', 'cat', 'fish'] }));
     expect(result.isValid).toBeFalsy();
     expect(result.errors).toHaveLength(1);
-    expect(result.errors[0].message).toBe('pets must contain fewer than 3 items.');
+    result.shouldHaveValidationErrorFor(p => p.pets).withMessage('pets must contain fewer than 3 items.');
   });
 });

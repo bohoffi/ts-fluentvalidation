@@ -20,7 +20,9 @@
         "outputPath": "dist/libs/core",
         "main": "libs/core/src/index.ts",
         "tsConfig": "libs/core/tsconfig.lib.json",
-        "assets": ["libs/core/*.md"]
+        "assets": ["libs/core/*.md"],
+        "additionalEntryPoints": ["libs/core/src/testing/index.ts"],
+        "generateExportsField": true
       }
     },
     "nx-release-publish": {

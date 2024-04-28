@@ -5,6 +5,7 @@ import { createCompanyWith, createEmployeeWith, createPersonWith } from './testi
 import { Company, Employee, Person } from './testing/test-models';
 import { KeyOf } from './ts-helpers';
 import { ValidationContext } from './validation-context';
+import { testValidate } from '../testing';
 
 class PersonValidator extends AbstractValidator<Person> {
   constructor() {
@@ -24,7 +25,8 @@ describe(AbstractValidator.name, () => {
 
     it('should return `isValid === false` if the value is invalid', () => {
       personValidator.ruleFor(p => p.name).notEmpty();
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
@@ -34,7 +36,8 @@ describe(AbstractValidator.name, () => {
 
     it('should expose the failures via the `errors` property', () => {
       personValidator.ruleFor(p => p.name).notEmpty();
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
@@ -66,12 +69,13 @@ describe(AbstractValidator.name, () => {
         .ruleFor(p => p.name)
         .notEmpty()
         .withMessage('Name is required');
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].message).toBe('Name is required');
+      result.shouldHaveValidationErrorFor(p => p.name).withMessage('Name is required');
     });
 
     it('should override the property name using `withName`', () => {
@@ -79,12 +83,13 @@ describe(AbstractValidator.name, () => {
         .ruleFor(p => p.name)
         .notEmpty()
         .withName('Person Name');
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].message).toBe('Person Name must not be empty.');
+      result.shouldHaveValidationErrorFor(p => p.name).withMessage('Person Name must not be empty.');
     });
   });
 
@@ -113,12 +118,13 @@ describe(AbstractValidator.name, () => {
         .ruleFor(p => p.name)
         .notEmpty()
         .withSeverity('Warning');
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].severity).toBe('Warning');
+      result.shouldHaveValidationErrorFor(p => p.name).withSeverity('Warning');
     });
 
     it('should set the severity using a provider function', () => {
@@ -126,12 +132,13 @@ describe(AbstractValidator.name, () => {
         .ruleFor(p => p.name)
         .notEmpty()
         .withSeverity(p => (p.name.length === 0 ? 'Warning' : 'Error'));
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].severity).toBe('Warning');
+      result.shouldHaveValidationErrorFor(p => p.name).withSeverity('Warning');
     });
 
     it('should set the severity using a provider function with additional parameters', () => {
@@ -139,12 +146,13 @@ describe(AbstractValidator.name, () => {
         .ruleFor(p => p.name)
         .notEmpty()
         .withSeverity((person, value: string) => (person.age && value ? 'Warning' : 'Error'));
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].severity).toBe('Error');
+      result.shouldHaveValidationErrorFor(p => p.name).withSeverity('Error');
     });
 
     it('should set the severity using a provider function with additional parameters and context', () => {
@@ -154,12 +162,13 @@ describe(AbstractValidator.name, () => {
         .withSeverity((person: Person, value: string, context: ValidationContext<Person>) =>
           person.age && value && !context.failues.length ? 'Warning' : 'Error'
         );
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].severity).toBe('Error');
+      result.shouldHaveValidationErrorFor(p => p.name).withSeverity('Error');
     });
   });
 
@@ -169,12 +178,13 @@ describe(AbstractValidator.name, () => {
         .ruleFor(p => p.name)
         .notEmpty()
         .withErrorCode('ERR1234');
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].errorCode).toBe('ERR1234');
+      result.shouldHaveValidationErrorFor(p => p.name).withErrorCode('ERR1234');
     });
 
     it('should fall back to default error message with custom error code and no custom message provided', () => {
@@ -182,12 +192,13 @@ describe(AbstractValidator.name, () => {
         .ruleFor(p => p.name)
         .notEmpty()
         .withErrorCode('ERR1234');
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].message).toBe('name must not be empty.');
+      result.shouldHaveValidationErrorFor(p => p.name).withMessage('name must not be empty.');
     });
 
     it('should use custom message with custom error code', () => {
@@ -196,12 +207,13 @@ describe(AbstractValidator.name, () => {
         .notEmpty()
         .withMessage('Custom message')
         .withErrorCode('ERR1234');
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].message).toBe('Custom message');
+      result.shouldHaveValidationErrorFor(p => p.name).withMessage('Custom message');
     });
 
     it('should output other rules message with custom error code matching the other rules name', () => {
@@ -209,12 +221,13 @@ describe(AbstractValidator.name, () => {
         .ruleFor(p => p.name)
         .notEmpty()
         .withErrorCode('NotNullRule');
-      const result = personValidator.validate(
+      const result = testValidate(
+        personValidator,
         createPersonWith({
           name: ''
         })
       );
-      expect(result.errors[0].message).toBe('name must not be null.');
+      result.shouldHaveValidationErrorFor(p => p.name).withMessage('name must not be null.');
     });
   });
 
@@ -225,10 +238,11 @@ describe(AbstractValidator.name, () => {
       });
 
       personValidator.ruleForEach('pets').maxLength(3);
-      const result = personValidator.validate(person);
+      const result = testValidate(personValidator, person);
       expect(result.isValid).toBeFalsy();
       expect(result.errors).toHaveLength(1);
       expect(result.errors[0].propertyName).toBe('pets[2]');
+      result.shouldHaveValidationErrorFor('pets[2]').withMessage('pets[2] must have a maximum length of 3.');
     });
 
     it('should validate complex collection properties', () => {
@@ -250,11 +264,11 @@ describe(AbstractValidator.name, () => {
         validator.ruleForEach('employees').setValidator(employeeValidator);
       });
 
-      const result = companyValidator.validate(company);
+      const result = testValidate(companyValidator, company);
       expect(result.isValid).toBeFalsy();
       expect(result.errors).toHaveLength(2);
-      expect(result.errors[0].propertyName).toBe('employees[1].name');
-      expect(result.errors[1].propertyName).toBe('employees[1].areas');
+      result.shouldHaveValidationErrorFor('employees[1].name');
+      result.shouldHaveValidationErrorFor('employees[1].areas');
     });
   });
 });

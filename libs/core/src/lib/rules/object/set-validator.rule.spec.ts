@@ -2,6 +2,7 @@ import { SetValidatorRule } from './set-validator.rule';
 import { createValidator } from '../../create-validator';
 import { Address, Person } from '../../testing/test-models';
 import { createAddressWith, createPersonWith } from '../../testing/test-data';
+import { testValidate } from '../../../testing';
 
 describe(SetValidatorRule.name, () => {
   const addressValidator = createValidator<Address>(val => {
@@ -17,7 +18,7 @@ describe(SetValidatorRule.name, () => {
     const person = createPersonWith({
       address: createAddressWith({ city: 'city', state: 'state', zip: 'zip' })
     });
-    const result = personValidator.validate(person);
+    const result = testValidate(personValidator, person);
     expect(result.isValid).toBeTruthy();
     expect(result.errors).toHaveLength(0);
   });
@@ -26,7 +27,7 @@ describe(SetValidatorRule.name, () => {
     const person = createPersonWith({
       address: null as unknown as Address
     });
-    const result = personValidator.validate(person);
+    const result = testValidate(personValidator, person);
     expect(result.isValid).toBeTruthy();
     expect(result.errors).toHaveLength(0);
   });
@@ -35,10 +36,9 @@ describe(SetValidatorRule.name, () => {
     const person = createPersonWith({
       address: createAddressWith({ city: '', state: 'state', zip: 'zip' })
     });
-    const result = personValidator.validate(person);
+    const result = testValidate(personValidator, person);
     expect(result.isValid).toBeFalsy();
     expect(result.errors).toHaveLength(1);
-    expect(result.errors[0].propertyName).toBe('address.city');
-    expect(result.errors[0].message).toBe('city must not be empty.');
+    result.shouldHaveValidationErrorFor(p => p.address.city).withMessage('city must not be empty.');
   });
 });
