@@ -2,6 +2,7 @@ type ErrorMessages = {
   // common rules
   EqualRule: string;
   MustRule: string;
+  AsyncMustRule: string;
   NotEqualRule: string;
   NotNullRule: string;
   NullRule: string;
@@ -26,6 +27,7 @@ const errorMessages: ErrorMessages = {
   // common rules
   EqualRule: '{propertyName} must be equal to {comparisonValue}.',
   MustRule: 'The specified condition was not met for {propertyName}.',
+  AsyncMustRule: 'The specified condition was not met for {propertyName}.',
   NotEqualRule: '{propertyName} must not be equal to {comparisonValue}.',
   NotNullRule: '{propertyName} must not be null.',
   NullRule: '{propertyName} must be null.',

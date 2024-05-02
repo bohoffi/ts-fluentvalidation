@@ -8,6 +8,9 @@ We recommend treating validators as ‘black boxes’ - provide input to them an
 
 You can use the `testValidate` function to invoke a validator for testing purposes, and then perform assertions against the result. This makes it easier to write tests for validators.
 
+> **Note**
+> The following section describes the synchronous usage. The asynchonous version uses `testValidateAsync` and returns a `Promise<TestValidationResult>`.
+
 For example, imagine the following validator is defined:
 
 ```typescript

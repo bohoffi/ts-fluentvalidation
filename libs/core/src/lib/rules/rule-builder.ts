@@ -1,4 +1,4 @@
-import { EqualRule, NotNullRule, NullRule, MustRule, NotEqualRule } from './common';
+import { EqualRule, NotNullRule, NullRule, MustRule, NotEqualRule, AsyncMustRule } from './common';
 import { AbstractRule } from './rule';
 import {
   ExclusiveBetweenRule,
@@ -11,6 +11,7 @@ import {
 import { MatchesRule } from './string';
 import {
   ApplyConditionTo,
+  AsyncRulePredicate,
   CascadeMode,
   LengthProperty,
   NumberProperty,
@@ -68,6 +69,10 @@ export class AbstractRuleBuilder<T extends object, P> {
       },
       must: (predicate: RulePredicate<T, P>) => {
         this.addValidationStep(new MustRule(predicate));
+        return this.rulesWithExtensionsAndConditions();
+      },
+      mustAsync: (asyncPredicate: AsyncRulePredicate<T, P>) => {
+        this.addValidationStep(new AsyncMustRule(asyncPredicate));
         return this.rulesWithExtensionsAndConditions();
       },
       withMessage: (message: string) => {
