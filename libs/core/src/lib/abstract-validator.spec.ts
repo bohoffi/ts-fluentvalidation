@@ -5,7 +5,7 @@ import { createCompanyWith, createEmployeeWith, createPersonWith } from './testi
 import { Company, Employee, Person } from './testing/test-models';
 import { KeyOf } from './ts-helpers';
 import { ValidationContext } from './validation-context';
-import { testValidate } from '../testing';
+import { testValidate, testValidateAsync } from '../testing';
 
 class PersonValidator extends AbstractValidator<Person> {
   constructor() {
@@ -59,6 +59,65 @@ describe(AbstractValidator.name, () => {
       personValidator.ruleFor(p => p.name).notEmpty();
       const testContext: ValidationContext<Person> = new ValidationContext(createPersonWith({ name: '' }));
       const result = personValidator.validate(testContext);
+      expect(result.isValid).toBeFalsy();
+    });
+
+    it('should throw an error when called with asynchronous rules defined', () => {
+      const validatorWithAsyncRule = createValidator<Person>(validator =>
+        validator.ruleFor(p => p.name).mustAsync(() => Promise.resolve(true))
+      );
+
+      expect(() => {
+        validatorWithAsyncRule.validate(createPersonWith());
+      }).toThrow(
+        `Validator for property 'name' contains asynchronous rules but was invoked synchronously. Please call 'validateAsync' rather than 'validate'.`
+      );
+    });
+  });
+
+  describe('validateAsync', () => {
+    it('should return `isValid === true` if the value is valid', async () => {
+      personValidator.ruleFor(p => p.name).notEmpty();
+      const result = await personValidator.validateAsync(createPersonWith());
+      expect(result.isValid).toBeTruthy();
+    });
+
+    it('should return `isValid === false` if the value is invalid', async () => {
+      personValidator.ruleFor(p => p.name).notEmpty();
+      const result = await testValidateAsync(
+        personValidator,
+        createPersonWith({
+          name: ''
+        })
+      );
+      expect(result.isValid).toBeFalsy();
+    });
+
+    it('should expose the failures via the `errors` property', async () => {
+      personValidator.ruleFor(p => p.name).notEmpty();
+      const result = await testValidateAsync(
+        personValidator,
+        createPersonWith({
+          name: ''
+        })
+      );
+      expect(result.errors).toHaveLength(1);
+    });
+
+    it("should be stateless (multiple `validateAsync` calls won't produce duplicated failures)", async () => {
+      personValidator.ruleFor(p => p.name).notEmpty();
+      const invalidPerson = createPersonWith({
+        name: ''
+      });
+      await personValidator.validateAsync(invalidPerson);
+      const result = await personValidator.validateAsync(invalidPerson);
+      expect(result.errors).toHaveLength(1);
+    });
+
+    it('should validate using validation context', async () => {
+      personValidator.ruleFor(p => p.name).notEmpty();
+      const testContext: ValidationContext<Person> = new ValidationContext(createPersonWith({ name: '' }));
+      const result = await personValidator.validateAsync(testContext);
       expect(result.isValid).toBeFalsy();
     });
   });

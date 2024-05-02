@@ -1,5 +1,6 @@
 import {
   ApplyConditionTo,
+  AsyncRulePredicate,
   CascadeMode,
   LengthProperty,
   NumberProperty,
@@ -24,6 +25,7 @@ export type CommonRuleBuilder<T, P> = {
   equal(referenceValue: P): ConditionalRuleBuilder<T, P>;
   notEqual(referenceValue: P): ConditionalRuleBuilder<T, P>;
   must(predicate: RulePredicate<T, P>): ConditionalRuleBuilder<T, P>;
+  mustAsync(asyncPredicate: AsyncRulePredicate<T, P>): ConditionalRuleBuilder<T, P>;
 
   withMessage(message: string): ConditionalRuleBuilder<T, P>;
   withName(propertyName: string): ConditionalRuleBuilder<T, P>;

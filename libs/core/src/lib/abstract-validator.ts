@@ -172,6 +172,47 @@ export abstract class AbstractValidator<T extends object = EmptyObject> {
   }
 
   /**
+   * Asynchonously validates the given instance.
+   * @param instance - The instance to validate.
+   * @returns The validation result.
+   */
+  public async validateAsync(instance: T): Promise<ValidationResult>;
+  /**
+   * Asynchonously validates the given validation context.
+   * @param validationContext - The validation context to validate.
+   * @returns The validation result.
+   */
+  public async validateAsync(validationContext: ValidationContext<T>): Promise<ValidationResult>;
+  /**
+   * Asynchonously validates the given instance or validation context.
+   * @param instanceOrValidationContext - The instance or validation context to validate.
+   * @returns The validation result.
+   */
+  public async validateAsync(instanceOrValidationContext: T | ValidationContext<T>): Promise<ValidationResult> {
+    const validationContext =
+      instanceOrValidationContext instanceof ValidationContext
+        ? instanceOrValidationContext
+        : new ValidationContext(instanceOrValidationContext);
+
+    for (const [key, rule] of Object.entries(this.propertyValidators)) {
+      const typeKey = key as KeyOf<T>;
+      const propertyValidator = rule as AbstractPropertyValidator<T, typeof typeKey>;
+      const propertyValue = validationContext.instanceToValidate[typeKey];
+
+      if (propertyValidator instanceof PropertyValidator) {
+        await propertyValidator.validatePropertyAsync(propertyValue as typeof propertyValidator.propertyName, validationContext);
+      } else if (propertyValidator instanceof CollectionPropertyValidator) {
+        await propertyValidator.validatePropertyAsync(propertyValue as typeof propertyValidator.propertyName, validationContext);
+      }
+
+      if (validationContext.failues.length > 0 && this.classLevelCascadeMode === 'Stop') {
+        break;
+      }
+    }
+    return new ValidationResult(validationContext.failues);
+  }
+
+  /**
    * Extracts the property name from a member expression - e.g. (obj: T) => obj.property
    * TODO [#18](https://github.com/bohoffi/ts-fluentvalidation/issues/18)
    * @param memberExpression - The member expression to extract the property name from.

@@ -2,7 +2,7 @@ import { NgDocPage } from '@ng-doc/core';
 import OtherFeatures from '../ng-doc.category';
 
 const AsyncValidation: NgDocPage = {
-  title: `Async Validation`,
+  title: `Asynchronous Validation`,
   mdFile: './index.md',
   route: `async-validation`,
   category: OtherFeatures,

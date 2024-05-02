@@ -129,6 +129,16 @@ export type RuleCondition<T> = (model: T) => boolean;
  */
 export type ValidationFn<T, P> = (value: P, validationContext: ValidationContext<T>) => boolean;
 /**
+ * Represents an asynchronous validation function.
+ * @typeParam T - The type of the object being validated.
+ * @typeParam P - The type of the value being validated.
+ * @param value - The value to be validated.
+ * @param validationContext - The validation context containing additional information.
+ * @returns A promise that resolves to a boolean indicating whether the value is valid.
+ */
+export type AsyncValidationFn<T, P> = (value: P, validationContext: ValidationContext<T>) => Promise<boolean>;
+
+/**
  * Represents a function that defines a rule predicate.
  * A rule predicate takes a value of type `P` and a model of type `T`,
  * and returns a boolean indicating whether the rule is satisfied.
@@ -141,3 +151,18 @@ export type ValidationFn<T, P> = (value: P, validationContext: ValidationContext
  * @returns A boolean indicating whether the rule is satisfied.
  */
 export type RulePredicate<T, P> = (propertyValue: P, instanceToValidate: T, validationContext: ValidationContext<T>) => boolean;
+/**
+ * Represents a predicate function that performs an asynchronous validation rule on a property value.
+ *
+ * @typeParam T - The type of the instance to validate.
+ * @typeParam P - The type of the property value to validate.
+ * @param propertyValue - The value of the property to validate.
+ * @param instanceToValidate - The instance to validate.
+ * @param validationContext - The validation context.
+ * @returns A promise that resolves to a boolean indicating whether the validation rule passes.
+ */
+export type AsyncRulePredicate<T, P> = (
+  propertyValue: P,
+  instanceToValidate: T,
+  validationContext: ValidationContext<T>
+) => Promise<boolean>;
