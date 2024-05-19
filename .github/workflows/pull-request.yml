@@ -17,12 +17,12 @@ jobs:
 
       - name: Lint
         shell: bash
-        run: npx nx affedcted:lint
+        run: npx nx affected:lint
 
       - name: Test
         shell: bash
-        run: npx nx affedcted:test
+        run: npx nx affected:test
 
       - name: Build
         shell: bash
-        run: npx nx affedcted:build
+        run: npx nx affected:build
