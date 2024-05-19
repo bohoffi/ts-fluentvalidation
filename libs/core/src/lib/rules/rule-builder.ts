@@ -11,10 +11,10 @@ import {
 import { MatchesRule } from './string';
 import {
   ApplyConditionTo,
-  AsyncCustomRule,
+  AsyncCustomRulePredicate,
   AsyncRulePredicate,
   CascadeMode,
-  CustomRule,
+  CustomRulePredicate,
   LengthProperty,
   NumberProperty,
   ObjectProperty,
@@ -77,7 +77,7 @@ export class AbstractRuleBuilder<T extends object, P> {
         this.addValidationStep(new AsyncMustRule(asyncPredicate));
         return this.rulesWithExtensionsAndConditions();
       },
-      custom: (customRule: CustomRule<T, P>) => {
+      custom: (customRule: CustomRulePredicate<T, P>) => {
         this.addValidationStep(
           new MustRule((value, _, context) => {
             customRule(value, context);
@@ -86,7 +86,7 @@ export class AbstractRuleBuilder<T extends object, P> {
         );
         return this.rulesWithExtensionsAndConditions();
       },
-      customAsync: (asyncCustomRule: AsyncCustomRule<T, P>) => {
+      customAsync: (asyncCustomRule: AsyncCustomRulePredicate<T, P>) => {
         this.addValidationStep(
           new AsyncMustRule(async (value, _, context) => {
             await asyncCustomRule(value, context);

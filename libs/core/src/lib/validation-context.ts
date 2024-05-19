@@ -2,6 +2,11 @@ import { MessageFormatter } from './message-formatter';
 import { PropertyChain } from './property-chain';
 import { ValidationFailure } from './result';
 
+/**
+ * Represents a validation context for validating an instance of type T.
+ *
+ * @typeParam T - The type of the instance to validate.
+ */
 export class ValidationContext<T> {
   private readonly _failures: ValidationFailure[] = [];
   private _propertyChain: PropertyChain;
@@ -26,8 +31,21 @@ export class ValidationContext<T> {
     this._propertyChain = new PropertyChain(propertyChain);
   }
 
+  /**
+   * Adds a validation failure to the context.
+   * @param failure Failure to add.
+   */
   public addFailure(failure: ValidationFailure): void;
+  /**
+   * Adds a validation failure to the context with the property name infered from the current property chain.
+   * @param errorMessage Error message to add.
+   */
   public addFailure(errorMessage: string): void;
+  /**
+   * Adds a validation failure to the context with the given property name.
+   * @param propertyName Name of the property that failed validation.
+   * @param errorMessage Error message to add.
+   */
   public addFailure(propertyName: string, errorMessage: string): void;
   public addFailure(failureMessageOrPropertyName: ValidationFailure | string, errorMessage?: string): void {
     if (failureMessageOrPropertyName instanceof ValidationFailure) {

@@ -2,8 +2,10 @@ export { AbstractValidator } from './lib/abstract-validator';
 export { createValidator, ValidatorArgs, ValidatorInitFn, ValidatorInitializer } from './lib/create-validator';
 export {
   ApplyConditionTo,
+  AsyncCustomRulePredicate,
   AsyncRulePredicate,
   CascadeMode,
+  CustomRulePredicate,
   MemberExpression,
   RuleCondition,
   RulePredicate,

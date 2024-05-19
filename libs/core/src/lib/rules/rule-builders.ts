@@ -1,9 +1,9 @@
 import {
   ApplyConditionTo,
-  AsyncCustomRule,
+  AsyncCustomRulePredicate,
   AsyncRulePredicate,
   CascadeMode,
-  CustomRule,
+  CustomRulePredicate,
   LengthProperty,
   NumberProperty,
   ObjectProperty,
@@ -28,8 +28,8 @@ export type CommonRuleBuilder<T, P> = {
   notEqual(referenceValue: P): ConditionalRuleBuilder<T, P>;
   must(predicate: RulePredicate<T, P>): ConditionalRuleBuilder<T, P>;
   mustAsync(asyncPredicate: AsyncRulePredicate<T, P>): ConditionalRuleBuilder<T, P>;
-  custom(customRule: CustomRule<T, P>): ConditionalRuleBuilder<T, P>;
-  customAsync(asyncCustomRule: AsyncCustomRule<T, P>): ConditionalRuleBuilder<T, P>;
+  custom(customRule: CustomRulePredicate<T, P>): ConditionalRuleBuilder<T, P>;
+  customAsync(asyncCustomRule: AsyncCustomRulePredicate<T, P>): ConditionalRuleBuilder<T, P>;
 
   withMessage(message: string): ConditionalRuleBuilder<T, P>;
   withName(propertyName: string): ConditionalRuleBuilder<T, P>;
