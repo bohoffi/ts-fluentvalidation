@@ -88,5 +88,37 @@ this.ruleFor(p => p.pets)
 
 ## Writing a Custom Rule
 
-> **Note**
-> Custom rules will become available with the implementation of [#5 - Custom rules](https://github.com/bohoffi/ts-fluentvalidation/issues/5)
+If you need more control of the validation process than is available with the `must`, you can write a custom rule using the `custom` function. This function allows you to manually create the `ValidationFailure` instance associated with the validation error. Usually, the library does this for you, so it is more verbose than using `must`.
+
+```typescript
+export class PersonValidator extends AbstractValidator<Person> {
+  constructor() {
+    super();
+    this.ruleFor(p => p.pets).custom((array, context) => {
+      if (array.length > 10) {
+        context.addFailure('The array must contain 10 items or fewer');
+      }
+    });
+  }
+}
+```
+
+The advantage of this approach is that it allows you to return multiple errors for the same rule (by calling the `ValidationContext.addfailure` function multiple times). In the above example, the property name in the generated error will be infered as "pets", although this could be overridden by calling a different overload of `addFailure`:
+
+```typescript
+context.addFailure('someOtherProperty', 'The array must contain 10 items or fewer');
+// or you can instantiate the ValidationFailure directly
+context.addFailure(new ValidationFailure('someOtherProperty', 'The array must contain 10 items or fewer'));
+```
+
+As before, this could be wrapped in a function to simplify the consuming code:
+
+```typescript
+export function arrayMustContainFewerThan<T, P extends Array<any>>(num: number): CustomRulePredicate<T, P> {
+  return (array, context) => {
+    if (array.length > 10) {
+      context.addFailure('The array must contain 10 items or fewer');
+    }
+  };
+}
+```

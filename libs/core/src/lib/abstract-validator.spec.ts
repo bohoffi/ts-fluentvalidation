@@ -2,7 +2,7 @@ import { AbstractValidator } from './abstract-validator';
 import { createValidator } from './create-validator';
 import { MemberExpression } from './models';
 import { createCompanyWith, createEmployeeWith, createPersonWith } from './testing/test-data';
-import { Company, Employee, Person } from './testing/test-models';
+import { Address, Company, Employee, Order, Person } from './testing/test-models';
 import { KeyOf } from './ts-helpers';
 import { ValidationContext } from './validation-context';
 import { testValidate, testValidateAsync } from '../testing';
@@ -13,9 +13,14 @@ class PersonValidator extends AbstractValidator<Person> {
   }
 }
 
-const personValidator = new PersonValidator();
+// const personValidator = new PersonValidator();
+let personValidator: PersonValidator;
 
 describe(AbstractValidator.name, () => {
+  beforeEach(() => {
+    personValidator = new PersonValidator();
+  });
+
   describe('validate', () => {
     it('should return `isValid === true` if the value is valid', () => {
       personValidator.ruleFor(p => p.name).notEmpty();
@@ -328,6 +333,122 @@ describe(AbstractValidator.name, () => {
       expect(result.errors).toHaveLength(2);
       result.shouldHaveValidationErrorFor('employees[1].name');
       result.shouldHaveValidationErrorFor('employees[1].areas');
+    });
+  });
+
+  describe('custom rules', () => {
+    it('should return single failre with custom rule', () => {
+      const person = createPersonWith({
+        name: 'John Doe'
+      });
+
+      personValidator
+        .ruleFor(p => p.name)
+        .custom((name, context) => {
+          context.addFailure('name', 'Fail');
+        });
+
+      const result = testValidate(personValidator, person);
+      expect(result.isValid).toBeFalsy();
+      result.shouldHaveValidationErrorFor('name').withMessage('Fail');
+    });
+
+    it('should return single failre with custom async rule', async () => {
+      const person = createPersonWith({
+        name: 'John Doe'
+      });
+
+      personValidator
+        .ruleFor(p => p.name)
+        .customAsync((name, context) => {
+          context.addFailure('name', 'Fail');
+          return Promise.resolve();
+        });
+
+      const result = await testValidateAsync(personValidator, person);
+      expect(result.isValid).toBeFalsy();
+      result.shouldHaveValidationErrorFor('name').withMessage('Fail');
+    });
+
+    it('preserves property chain using custom nested', () => {
+      const orderValidator = createValidator<Order>(val => {
+        val.ruleFor('total').custom((total, context) => {
+          context.addFailure('total', 'Fail');
+        });
+      });
+      personValidator.ruleForEach('orders').setValidator(orderValidator);
+
+      const person = createPersonWith({
+        orders: [
+          {
+            total: 10
+          }
+        ]
+      });
+
+      const result = testValidate(personValidator, person);
+      expect(result.isValid).toBeFalsy();
+      result.shouldHaveValidationErrorFor('orders[0].total').withMessage('Fail');
+    });
+
+    it('should infer property name when omitted on custom', () => {
+      const person = createPersonWith({
+        name: 'John Doe'
+      });
+
+      personValidator
+        .ruleFor(p => p.name)
+        .custom((name, context) => {
+          context.addFailure('Fail');
+        });
+
+      const result = testValidate(personValidator, person);
+      expect(result.isValid).toBeFalsy();
+      result.shouldHaveValidationErrorFor('name').withMessage('Fail');
+    });
+
+    it('should infer nested property name when omitted on custom', () => {
+      const person = createPersonWith({
+        name: 'John Doe'
+      });
+
+      const addressValidator = createValidator<Address>(val => {
+        val.ruleFor('city').custom((city, context) => {
+          context.addFailure('Fail');
+        });
+      });
+
+      personValidator.ruleFor(p => p.address).setValidator(addressValidator);
+
+      const result = testValidate(personValidator, person);
+      expect(result.isValid).toBeFalsy();
+      result.shouldHaveValidationErrorFor('address.city').withMessage('Fail');
+    });
+
+    // TODO #33
+    // it('should use empty property name on custom for model level', () => {
+    //   const person = createPersonWith();
+    //   personValidator
+    //     .ruleFor(p => p)
+    //     .custom((person, context) => {
+    //       context.addFailure('Fail');
+    //     });
+
+    //   const result = testValidate(personValidator, person);
+    //   expect(result.isValid).toBeFalsy();
+    //   expect(result.errors[0].propertyName).toEqual('');
+    // });
+
+    it('should support placeholders', () => {
+      const person = createPersonWith();
+      personValidator.ruleFor('name').custom((name, context) => {
+        context.messageFormatter.appendOrUpdateArgument('Foo', '1');
+        context.addFailure('{Foo}');
+      });
+
+      const result = testValidate(personValidator, person);
+      expect(result.isValid).toBeFalsy();
+      result.shouldHaveValidationErrorFor('name').withMessage('1');
     });
   });
 });

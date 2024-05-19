@@ -166,3 +166,22 @@ export type AsyncRulePredicate<T, P> = (
   instanceToValidate: T,
   validationContext: ValidationContext<T>
 ) => Promise<boolean>;
+
+/**
+ * Represents a custom rule predicate function.
+ *
+ * @typeParam T - The type of the object being validated.
+ * @typeParam P - The type of the property being validated.
+ * @param propertyValue - The value of the property being validated.
+ * @param validationContext - The validation context containing information about the validation process.
+ */
+export type CustomRulePredicate<T, P> = (propertyValue: P, validationContext: ValidationContext<T>) => void;
+/**
+ * Represents an asynchronous custom rule predicate.
+ *
+ * @typeParam T - The type of the object being validated.
+ * @typeParam P - The type of the property being validated. *
+ * @param propertyValue - The value of the property being validated.
+ * @param validationContext - The validation context containing information about the object being validated.
+ */
+export type AsyncCustomRulePredicate<T, P> = (propertyValue: P, validationContext: ValidationContext<T>) => Promise<void>;
