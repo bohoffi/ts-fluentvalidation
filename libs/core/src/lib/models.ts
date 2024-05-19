@@ -166,3 +166,6 @@ export type AsyncRulePredicate<T, P> = (
   instanceToValidate: T,
   validationContext: ValidationContext<T>
 ) => Promise<boolean>;
+
+export type CustomRule<T, P> = (propertyValue: P, validationContext: ValidationContext<T>) => void;
+export type AsyncCustomRule<T, P> = (propertyValue: P, validationContext: ValidationContext<T>) => Promise<void>;

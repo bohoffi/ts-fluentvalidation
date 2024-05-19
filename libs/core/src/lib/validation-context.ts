@@ -26,8 +26,24 @@ export class ValidationContext<T> {
     this._propertyChain = new PropertyChain(propertyChain);
   }
 
-  public addFailure(failure: ValidationFailure): void {
-    this._failures.push(failure);
+  public addFailure(failure: ValidationFailure): void;
+  public addFailure(errorMessage: string): void;
+  public addFailure(propertyName: string, errorMessage: string): void;
+  public addFailure(failureMessageOrPropertyName: ValidationFailure | string, errorMessage?: string): void {
+    if (failureMessageOrPropertyName instanceof ValidationFailure) {
+      this._failures.push(failureMessageOrPropertyName);
+    } else if (errorMessage) {
+      this._failures.push(
+        new ValidationFailure(
+          this._propertyChain.buildPropertyPath(failureMessageOrPropertyName),
+          this.messageFormatter.formatWithPlaceholders(errorMessage)
+        )
+      );
+    } else {
+      this._failures.push(
+        new ValidationFailure(this._propertyPath || '', this.messageFormatter.formatWithPlaceholders(failureMessageOrPropertyName))
+      );
+    }
   }
 
   public initializeForPropertyValidator(propertyPath: string, rawPropertyName: string): void {

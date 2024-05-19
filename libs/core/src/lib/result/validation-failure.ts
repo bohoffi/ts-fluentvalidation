@@ -27,7 +27,7 @@ export class ValidationFailure {
    */
   public errorCode?: string;
 
-  constructor(propertyName: string, message: string, attemptedValue: unknown) {
+  constructor(propertyName: string, message: string, attemptedValue?: unknown) {
     this.propertyName = propertyName;
     this.message = message;
     this.attemptedValue = attemptedValue;
