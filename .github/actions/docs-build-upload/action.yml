@@ -1,0 +1,30 @@
+name: Action for building and uploading docs as pages artifact
+description: Build and upload docs as pages artifact
+
+inputs:
+  build-command:
+    description: The command to run to build the docs
+    required: false
+    default: npx nx run docs-app:build
+  docs-path:
+    description: The path to the docs to upload
+    required: false
+    default: dist/apps/docs-app/browser
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup node
+      uses: ./.github/actions/setup-node
+
+    - name: Build the docs
+      shell: bash
+      run: ${{ inputs.build-command }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: ${{ inputs.docs-path }}
