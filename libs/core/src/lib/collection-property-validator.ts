@@ -17,6 +17,11 @@ export class CollectionPropertyValidator<T extends object, P> extends AbstractPr
   public validateProperty(propertyValue: Iterable<P>, validationContext: ValidationContext<T>): void {
     this.ensureAllRulesSync();
 
+    const propertyName = validationContext.propertyChain.buildPropertyPath(this.propertyName as string);
+    if (validationContext.selector.canExecute(this, propertyName, validationContext) === false) {
+      return;
+    }
+
     for (const rule of this.propertyRules) {
       if (!this.processRuleWhen(rule, validationContext) || !this.processRuleUnless(rule, validationContext)) {
         continue;
@@ -57,6 +62,11 @@ export class CollectionPropertyValidator<T extends object, P> extends AbstractPr
    * @returns A Promise that resolves to void when the validation is complete.
    */
   public async validatePropertyAsync(propertyValue: Iterable<P>, validationContext: ValidationContext<T>): Promise<void> {
+    const propertyName = validationContext.propertyChain.buildPropertyPath(this.propertyName as string);
+    if (validationContext.selector.canExecute(this, propertyName, validationContext) === false) {
+      return;
+    }
+
     for (const rule of this.propertyRules) {
       if (!this.processRuleWhen(rule, validationContext) || !this.processRuleUnless(rule, validationContext)) {
         continue;

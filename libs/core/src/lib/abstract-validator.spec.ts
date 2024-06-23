@@ -1,7 +1,7 @@
 import { AbstractValidator } from './abstract-validator';
 import { createValidator } from './create-validator';
 import { MemberExpression } from './models';
-import { createCompanyWith, createEmployeeWith, createPersonWith } from './testing/test-data';
+import { createCompanyWith, createEmployeeWith, createOrderWith, createPersonWith } from './testing/test-data';
 import { Address, Company, Employee, Order, Person } from './testing/test-models';
 import { KeyOf } from './ts-helpers';
 import { ValidationContext } from './validation-context';
@@ -13,7 +13,6 @@ class PersonValidator extends AbstractValidator<Person> {
   }
 }
 
-// const personValidator = new PersonValidator();
 let personValidator: PersonValidator;
 
 describe(AbstractValidator.name, () => {
@@ -380,9 +379,9 @@ describe(AbstractValidator.name, () => {
 
       const person = createPersonWith({
         orders: [
-          {
+          createOrderWith({
             total: 10
-          }
+          })
         ]
       });
 
