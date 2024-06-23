@@ -27,8 +27,12 @@ export function createAddressWith(overrides: Partial<Address> = {}): Address {
 export function createOrderWith(overrides: Partial<Order> = {}): Order {
   return {
     total: faker.number.int({
-      min: 0,
+      min: 1,
       max: 1000
+    }),
+    amount: faker.number.int({
+      min: 1,
+      max: 10
     }),
     ...overrides
   };

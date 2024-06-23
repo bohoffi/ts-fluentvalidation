@@ -15,6 +15,7 @@ export interface Address {
 
 export interface Order {
   total: number;
+  amount: number;
 }
 
 export interface Company {

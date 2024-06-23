@@ -17,12 +17,16 @@ export class PropertyValidator<T, P> extends AbstractPropertyValidator<T, P> {
   public validateProperty(propertyValue: P, validationContext: ValidationContext<T>): void {
     this.ensureAllRulesSync();
 
+    const propertyPath = validationContext.propertyChain.buildPropertyPath(this.propertyName as string);
+    if (validationContext.selector.canExecute(this, propertyPath, validationContext) === false) {
+      return;
+    }
+
     for (const rule of this.propertyRules) {
       if (!this.processRuleWhen(rule, validationContext) || !this.processRuleUnless(rule, validationContext)) {
         continue;
       }
 
-      const propertyPath = validationContext.propertyChain.buildPropertyPath(this.propertyName as string);
       validationContext.initializeForPropertyValidator(propertyPath, this.propertyName as string);
       validationContext.messageFormatter.reset();
 
@@ -42,12 +46,16 @@ export class PropertyValidator<T, P> extends AbstractPropertyValidator<T, P> {
    * @returns A Promise that resolves to void when the validation is complete.
    */
   public async validatePropertyAsync(propertyValue: P, validationContext: ValidationContext<T>): Promise<void> {
+    const propertyPath = validationContext.propertyChain.buildPropertyPath(this.propertyName as string);
+    if (validationContext.selector.canExecute(this, propertyPath, validationContext) === false) {
+      return;
+    }
+
     for (const rule of this.propertyRules) {
       if (!this.processRuleWhen(rule, validationContext) || !this.processRuleUnless(rule, validationContext)) {
         continue;
       }
 
-      const propertyPath = validationContext.propertyChain.buildPropertyPath(this.propertyName as string);
       validationContext.initializeForPropertyValidator(propertyPath, this.propertyName as string);
       validationContext.messageFormatter.reset();
 

@@ -7,6 +7,7 @@ import { AbstractRuleBuilder } from './rules/rule-builder';
 import { TypedRuleBuilder } from './rules/rule-builders';
 import { ArrayKeyOf, EmptyObject, KeyOf } from './ts-helpers';
 import { ValidationContext } from './validation-context';
+import { ValidationStrategy } from './validation-strategy';
 
 type PropertyValidators<T> = {
   [K in keyof T]: AbstractPropertyValidator<T, T[K]>;
@@ -137,6 +138,12 @@ export abstract class AbstractValidator<T extends object = EmptyObject> {
    */
   public validate(instance: T): ValidationResult;
   /**
+   * Validates the given instance using the specified validation strategy.
+   * @param instance - The instance to validate.
+   * @param options - A function that takes a `ValidationStrategy` and configures it with the desired options.
+   */
+  public validate(instance: T, options: (strategy: ValidationStrategy<T>) => void): ValidationResult;
+  /**
    * Validates the given validation context.
    * @param validationContext - The validation context to validate.
    * @returns The validation result.
@@ -147,11 +154,11 @@ export abstract class AbstractValidator<T extends object = EmptyObject> {
    * @param instanceOrValidationContext - The instance or validation context to validate.
    * @returns The validation result.
    */
-  public validate(instanceOrValidationContext: T | ValidationContext<T>): ValidationResult {
-    const validationContext =
-      instanceOrValidationContext instanceof ValidationContext
-        ? instanceOrValidationContext
-        : new ValidationContext(instanceOrValidationContext);
+  public validate(
+    instanceOrValidationContext: T | ValidationContext<T>,
+    options?: (strategy: ValidationStrategy<T>) => void
+  ): ValidationResult {
+    const validationContext = this.getValidationContext(instanceOrValidationContext, options);
 
     for (const [key, rule] of Object.entries(this.propertyValidators)) {
       const typeKey = key as KeyOf<T>;
@@ -178,6 +185,12 @@ export abstract class AbstractValidator<T extends object = EmptyObject> {
    */
   public async validateAsync(instance: T): Promise<ValidationResult>;
   /**
+   * Asynchonously validates the given instance using the specified validation strategy.
+   * @param instance - The instance to validate.
+   * @param options - A function that takes a `ValidationStrategy` and configures it with the desired options.
+   */
+  public async validateAsync(instance: T, options: (strategy: ValidationStrategy<T>) => void): Promise<ValidationResult>;
+  /**
    * Asynchonously validates the given validation context.
    * @param validationContext - The validation context to validate.
    * @returns The validation result.
@@ -188,11 +201,11 @@ export abstract class AbstractValidator<T extends object = EmptyObject> {
    * @param instanceOrValidationContext - The instance or validation context to validate.
    * @returns The validation result.
    */
-  public async validateAsync(instanceOrValidationContext: T | ValidationContext<T>): Promise<ValidationResult> {
-    const validationContext =
-      instanceOrValidationContext instanceof ValidationContext
-        ? instanceOrValidationContext
-        : new ValidationContext(instanceOrValidationContext);
+  public async validateAsync(
+    instanceOrValidationContext: T | ValidationContext<T>,
+    options?: (strategy: ValidationStrategy<T>) => void
+  ): Promise<ValidationResult> {
+    const validationContext = this.getValidationContext(instanceOrValidationContext, options);
 
     for (const [key, rule] of Object.entries(this.propertyValidators)) {
       const typeKey = key as KeyOf<T>;
@@ -228,5 +241,25 @@ export abstract class AbstractValidator<T extends object = EmptyObject> {
       return propertyName as KeyOf<T>;
     }
     throw new Error(`Invalid MemberExpression: '${expressionString}'`);
+  }
+
+  /**
+   * Gets the validation context for the given instance or validation context.
+   * If the instanceOrValidationContext is already a ValidationContext, it is returned as is.
+   * If options are provided, a new ValidationContext is created with the instanceOrValidationContext and options.
+   * If options are not provided, a new ValidationContext is created with the instanceOrValidationContext.
+   * @param instanceOrValidationContext The instance or validation context.
+   * @param options Optional function to configure the validation strategy.
+   * @returns The validation context.
+   */
+  private getValidationContext(
+    instanceOrValidationContext: T | ValidationContext<T>,
+    options?: (strategy: ValidationStrategy<T>) => void
+  ): ValidationContext<T> {
+    return instanceOrValidationContext instanceof ValidationContext
+      ? instanceOrValidationContext
+      : options === undefined
+      ? new ValidationContext(instanceOrValidationContext)
+      : ValidationContext.createWithOptions(instanceOrValidationContext, options);
   }
 }
