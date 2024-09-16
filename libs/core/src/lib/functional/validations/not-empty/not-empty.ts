@@ -1,4 +1,5 @@
-import { ValidationFn, LengthProperty } from '../../types';
+import { LengthProperty } from '../../types/properties';
+import { ValidationFn } from '../../types/types';
 import { empty } from '../empty/empty';
 import { not } from '../not/not';
 

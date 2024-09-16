@@ -5,6 +5,7 @@ export interface Person {
   address: Address;
   pets: string[];
   orders: Order[];
+  registred: boolean;
 }
 
 export interface Address {

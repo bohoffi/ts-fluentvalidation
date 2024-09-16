@@ -1,4 +1,4 @@
-import { ValidationFailure } from './failure';
+import { ValidationFailure } from './validation-failure';
 
 export type ValidationResult = {
   readonly failures: ValidationFailure[];
@@ -7,7 +7,7 @@ export type ValidationResult = {
   toDictionary(): Record<string, string[]>;
 };
 
-export function createResult(failures: ValidationFailure[] = []): ValidationResult {
+export function createValidationResult(failures: ValidationFailure[] = []): ValidationResult {
   return {
     failures,
     get isValid() {

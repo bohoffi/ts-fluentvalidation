@@ -11,6 +11,7 @@ export function createPersonWith(overrides: Partial<Person> = {}): Person {
     address: createAddressWith(overrides.address),
     pets: [],
     orders: [],
+    registred: faker.datatype.boolean(),
     ...overrides
   };
 }

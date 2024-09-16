@@ -1,5 +1,6 @@
-import { ValidationFn, LengthProperty } from '../../types';
-import { createValidationFn } from '../../validations';
+import { LengthProperty } from '../../types/properties';
+import { ValidationFn } from '../../types/types';
+import { createValidationFn } from '../create-validation-fn';
 
 export function maxLength(max: number): ValidationFn<LengthProperty>;
 export function maxLength(max: number, message: string): ValidationFn<LengthProperty>;

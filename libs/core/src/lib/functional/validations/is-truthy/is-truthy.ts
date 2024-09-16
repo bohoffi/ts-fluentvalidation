@@ -1,5 +1,5 @@
-import { ValidationFn } from '../../types';
-import { createValidationFn } from '../../validations';
+import { ValidationFn } from '../../types/types';
+import { createValidationFn } from '../create-validation-fn';
 
 export function isTruthy(): ValidationFn;
 export function isTruthy(message: string): ValidationFn;

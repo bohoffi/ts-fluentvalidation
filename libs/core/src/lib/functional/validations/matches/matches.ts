@@ -1,5 +1,6 @@
-import { ValidationFn, StringProperty } from '../../types';
-import { createValidationFn } from '../../validations';
+import { StringProperty } from '../../types/properties';
+import { ValidationFn } from '../../types/types';
+import { createValidationFn } from '../create-validation-fn';
 
 export function matches(pattern: RegExp): ValidationFn<StringProperty>;
 export function matches(pattern: RegExp, message: string): ValidationFn<StringProperty>;

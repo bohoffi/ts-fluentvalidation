@@ -1,5 +1,6 @@
-import { ValidationFn, NumberProperty } from '../../types';
-import { createValidationFn } from '../../validations';
+import { NumberProperty } from '../../types/properties';
+import { ValidationFn } from '../../types/types';
+import { createValidationFn } from '../create-validation-fn';
 
 export function greaterThanOrEquals(comparisonValue: number): ValidationFn<NumberProperty>;
 export function greaterThanOrEquals(comparisonValue: number, message: string): ValidationFn<NumberProperty>;

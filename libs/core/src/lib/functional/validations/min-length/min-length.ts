@@ -1,5 +1,6 @@
-import { ValidationFn, LengthProperty } from '../../types';
-import { createValidationFn } from '../../validations';
+import { LengthProperty } from '../../types/properties';
+import { ValidationFn } from '../../types/types';
+import { createValidationFn } from '../create-validation-fn';
 
 export function minLength(min: number): ValidationFn<LengthProperty>;
 export function minLength(min: number, message: string): ValidationFn<LengthProperty>;

@@ -1,4 +1,4 @@
-import { ValidationFn } from '../../types';
+import { ValidationFn } from '../../types/types';
 import { isTruthy } from '../is-truthy/is-truthy';
 import { not } from '../not/not';
 

@@ -1,5 +1,6 @@
-import { NumberProperty, ValidationFn } from '../../types';
-import { createValidationFn } from '../../validations';
+import { NumberProperty } from '../../types/properties';
+import { ValidationFn } from '../../types/types';
+import { createValidationFn } from '../create-validation-fn';
 
 export function exclusiveBetween(lowerBound: number, upperBound: number): ValidationFn<NumberProperty>;
 export function exclusiveBetween(lowerBound: number, upperBound: number, message: string): ValidationFn<NumberProperty>;

@@ -1,4 +1,4 @@
-import { ValidationFn } from '../../types';
+import { ValidationFn } from '../../types/types';
 import { isNull } from '../is-null/is-null';
 import { not } from '../not/not';
 
