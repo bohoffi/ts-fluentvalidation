@@ -1,11 +1,7 @@
 import { createPersonWith } from '../testing/test-data';
 import { Person } from '../testing/test-models';
 import { createValidator } from './create-validator';
-import { equals } from './validations/equals/equals';
-import { isTrue } from './validations/is-true/is-true';
-import { matches } from './validations/matches/matches';
-import { minLength } from './validations/min-length/min-length';
-import { notEquals } from './validations/not-equals/not-equals';
+import { equals, isTrue, matches, minLength, notEquals } from './validations';
 
 describe(createValidator.name, () => {
   describe('validate should return result', () => {

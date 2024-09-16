@@ -12,37 +12,7 @@ describe('must', () => {
   });
 
   it('should return a validation function that returns false if the value is null or undefined', () => {
-    const isPositive = must<number>(value => (value || 0) > 0);
-    expect(isPositive(null)).toBe(false);
-    expect(isPositive(undefined)).toBe(false);
-  });
-
-  it('should return a validation function that returns false if the value is null or undefined', () => {
-    const isPositive = must<number>(value => (value || 0) > 0);
-    expect(isPositive(null)).toBe(false);
-    expect(isPositive(undefined)).toBe(false);
-  });
-
-  it('should return a validation function that returns false if the value is null or undefined', () => {
-    const isPositive = must<number>(value => (value || 0) > 0);
-    expect(isPositive(null)).toBe(false);
-    expect(isPositive(undefined)).toBe(false);
-  });
-
-  it('should return a validation function that returns false if the value is null or undefined', () => {
-    const isPositive = must<number>(value => (value || 0) > 0);
-    expect(isPositive(null)).toBe(false);
-    expect(isPositive(undefined)).toBe(false);
-  });
-
-  it('should return a validation function that returns false if the value is null or undefined', () => {
-    const isPositive = must<number>(value => (value || 0) > 0);
-    expect(isPositive(null)).toBe(false);
-    expect(isPositive(undefined)).toBe(false);
-  });
-
-  it('should return a validation function that returns false if the value is null or undefined', () => {
-    const isPositive = must<number>(value => (value || 0) > 0);
+    const isPositive = must<number | null | undefined>(value => (value || 0) > 0);
     expect(isPositive(null)).toBe(false);
     expect(isPositive(undefined)).toBe(false);
   });

@@ -1,7 +1,5 @@
 import { ValidationError } from '../result/validation-error';
-import { createValidationFn } from '../validations/create-validation-fn';
-import { minLength } from '../validations/min-length/min-length';
-import { notEmpty } from '../validations/not-empty/not-empty';
+import { createValidationFn, minLength, notEmpty } from '../validations';
 import { validateKeySync } from './validate-key-sync';
 
 describe('validateKeySync', () => {

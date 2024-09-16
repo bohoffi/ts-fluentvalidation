@@ -4,7 +4,7 @@ import { KeyOf, Prettify, RequiredByKeys } from './ts-helpers';
  * Represents a validation function.
  */
 export type ValidationFn<TValue = unknown> = {
-  (value: TValue | null | undefined): boolean;
+  (value: TValue): boolean;
   message?: string;
 };
 
