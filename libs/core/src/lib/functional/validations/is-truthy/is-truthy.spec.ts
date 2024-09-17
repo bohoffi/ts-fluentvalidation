@@ -1,6 +1,6 @@
 import { isTruthy } from './is-truthy';
 
-describe('isTruthy', () => {
+describe(isTruthy.name, () => {
   it('should return true for truthy values', () => {
     expect(isTruthy()('foo')).toBe(true);
     expect(isTruthy()(1)).toBe(true);

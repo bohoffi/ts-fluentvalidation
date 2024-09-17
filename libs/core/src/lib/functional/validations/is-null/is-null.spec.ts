@@ -1,6 +1,6 @@
 import { isNull } from './is-null';
 
-describe('isNull', () => {
+describe(isNull.name, () => {
   it('should return true for null', () => {
     expect(isNull()(null)).toBe(true);
   });

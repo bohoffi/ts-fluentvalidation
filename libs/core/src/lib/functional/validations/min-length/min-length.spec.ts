@@ -1,6 +1,6 @@
 import { minLength } from './min-length';
 
-describe('minLength', () => {
+describe(minLength.name, () => {
   it('should return true if the value length is greater than or equal to the min', () => {
     const min = 5;
     const validationFn = minLength(min);

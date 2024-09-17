@@ -1,6 +1,6 @@
 import { required } from './required';
 
-describe('required', () => {
+describe(required.name, () => {
   it('should return an error message when the value is empty', () => {
     const validation = required();
     expect(validation(null)).toBe(false);

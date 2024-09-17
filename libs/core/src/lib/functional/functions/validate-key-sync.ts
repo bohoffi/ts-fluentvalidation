@@ -13,7 +13,7 @@ import { CascadeMode, ValidationFn } from '../types/types';
  * @param throwOnFailures - If true, the function will throw a ValidationError if any failures occur.
  * @returns The validation failures.
  */
-export function validateKeySync<TModel extends object, Key extends KeyOf<TModel>, KeyValidation extends ValidationFn<TModel[Key]>>(
+export function validateKeySync<TModel extends object, Key extends KeyOf<TModel>, KeyValidation extends ValidationFn<TModel[Key], TModel>>(
   model: TModel,
   key: Key,
   keyValidations: ReadonlyArray<KeyValidation>,
@@ -22,6 +22,17 @@ export function validateKeySync<TModel extends object, Key extends KeyOf<TModel>
 ): ValidationFailure[] {
   const failures: ValidationFailure[] = [];
   for (const validation of keyValidations) {
+    // check conditions - when
+    const when = validation.metadata.when;
+    if (when && !when(model)) {
+      continue;
+    }
+    // check conditions - unless
+    const unless = validation.metadata.unless;
+    if (unless && unless(model)) {
+      continue;
+    }
+
     if (!validation(model[key])) {
       const validationFailure: ValidationFailure = {
         propertyName: key,

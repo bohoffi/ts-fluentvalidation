@@ -1,14 +1,7 @@
 import { validateSync } from './functions/validate-sync';
 import { createValidationResult, ValidationResult } from './result/validation-result';
-import { EmptyObject, KeyOf } from './types/ts-helpers';
+import { EmptyObject, getLastElement, KeyOf } from './types/ts-helpers';
 import { CascadeMode, MergedValidations, ValidateConfig, ValidationFn, ValidationsDictionary, ValidatorConfig } from './types/types';
-
-/**
- * Represents the arguments for the `ruleFor` method. It can be either an array of validation functions or an array of validation functions followed by a cascade mode.
- */
-type RuleForArgs<TModel extends object, Key extends KeyOf<TModel>> =
-  | [...ValidationFn<TModel[Key]>[]]
-  | [...ValidationFn<TModel[Key]>[], CascadeMode];
 
 type Validator<TModel extends object, Validations extends ValidationsDictionary<TModel>> = {
   /**
@@ -16,14 +9,14 @@ type Validator<TModel extends object, Validations extends ValidationsDictionary<
    */
   readonly validations: Validations;
   /**
-   * Adds one or more validations for the given key.
+   * Adds one or more validations for the given key optionally preceded with the specified cascade mode.
    *
    * @param key - The key to validate.
-   * @param validations - The validations to add optionally followed by the cascade mode for the given key.
+   * @param args - Validations to add optionally preceded by the cascade mode for the given key.
    */
   ruleFor<Key extends KeyOf<TModel>>(
     key: Key,
-    ...validations: RuleForArgs<TModel, Key>
+    ...args: [CascadeMode, ...ValidationFn<TModel[Key], TModel>[]] | ValidationFn<TModel[Key], TModel>[]
   ): Validator<TModel, MergedValidations<TModel, Key, Validations>>;
   /**
    * Validates the given value against the validations.
@@ -73,19 +66,15 @@ export function createValidator<TModel extends object, Validations extends Valid
     ...(config || {})
   };
 
-  function setKeyCascadeMode<Key extends KeyOf<TModel>>(key: Key, ...validations: RuleForArgs<TModel, Key>): void {
-    const keyCascadeMode: CascadeMode =
-      typeof validations[validations.length - 1] === 'string' ? (validations.pop() as CascadeMode) : 'Continue';
-    _keyCascadeModes[key] = keyCascadeMode;
-  }
-
   return {
     validations: _validations,
-    ruleFor<Key extends KeyOf<TModel>, KeyValidation extends ValidationFn<TModel[Key]>>(
+    ruleFor<Key extends KeyOf<TModel>, KeyValidation extends ValidationFn<TModel[Key], TModel>>(
       key: Key,
-      ...validations: RuleForArgs<TModel, Key>
+      ...args: [CascadeMode, ...ValidationFn<TModel[Key], TModel>[]] | ValidationFn<TModel[Key], TModel>[]
     ): Validator<TModel, MergedValidations<TModel, Key, Validations>> {
-      setKeyCascadeMode(key, ...validations);
+      const cascadeMode = typeof args[0] === 'string' ? (args.shift() as CascadeMode) : undefined;
+      const validations = args as KeyValidation[];
+      _keyCascadeModes[key] = cascadeMode || 'Continue';
       return mergeValidations(this, key, ...(validations as KeyValidation[]));
     },
     validate(model: TModel, config?: (config: ValidatorConfig<TModel>) => void): ValidationResult {
@@ -121,13 +110,44 @@ function mergeValidations<
   TModel extends object,
   Key extends KeyOf<TModel>,
   Validations extends ValidationsDictionary<TModel>,
-  KeyValidation extends ValidationFn<TModel[Key]>
+  KeyValidation extends ValidationFn<TModel[Key], TModel>
 >(
   validator: Validator<TModel, Validations>,
   key: Key,
   ...validations: KeyValidation[]
 ): Validator<TModel, MergedValidations<TModel, Key, Validations>> {
   const existingValidations = (validator.validations[key] ?? []) as unknown as KeyValidation[];
+
+  // the latest validation to add which contains `ApplyConditionTo === 'AllValidators'` or none which will default to 'AllValidators'
+  // will aplly its condition to all preceding validators from the same `ruleFor` call
+  const lastWhenValidation = getLastElement(
+    validations,
+    v => v.metadata.when !== undefined && v.metadata.whenApplyTo !== 'CurrentValidator'
+  );
+  if (lastWhenValidation) {
+    const index = validations.indexOf(lastWhenValidation);
+    const when = lastWhenValidation.metadata.when as ((model: TModel) => boolean) | undefined;
+    if (when) {
+      for (let i = 0; i < index; i++) {
+        validations[i].metadata.when = when;
+      }
+    }
+  }
+
+  const lastUnlessValidation = getLastElement(
+    validations,
+    v => v.metadata.unless !== undefined && v.metadata.unlessApplyTo !== 'CurrentValidator'
+  );
+  if (lastUnlessValidation) {
+    const index = validations.indexOf(lastUnlessValidation);
+    const unless = lastUnlessValidation.metadata.unless as ((model: TModel) => boolean) | undefined;
+    if (unless) {
+      for (let i = 0; i < index; i++) {
+        validations[i].metadata.unless = unless;
+      }
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (validator.validations as any)[key] = existingValidations.concat(validations);
   return validator as Validator<TModel, MergedValidations<TModel, Key, Validations>>;

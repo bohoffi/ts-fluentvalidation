@@ -1,6 +1,6 @@
 import { exclusiveBetween } from './exclusive-between';
 
-describe('exclusiveBetween', () => {
+describe(exclusiveBetween.name, () => {
   it('should return a validation function that returns true for values between the bounds', () => {
     const validation = exclusiveBetween(1, 10);
     expect(validation(5)).toBe(true);

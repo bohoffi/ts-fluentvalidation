@@ -1,6 +1,6 @@
 import { maxLength } from './max-length';
 
-describe('maxLength', () => {
+describe(maxLength.name, () => {
   it('should validate max length', () => {
     const val = maxLength(3);
 

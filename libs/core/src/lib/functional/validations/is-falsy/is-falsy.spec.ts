@@ -1,6 +1,6 @@
 import { isFalsy } from './is-falsy';
 
-describe('isFalsy', () => {
+describe(isFalsy.name, () => {
   it('should return true for falsy values', () => {
     expect(isFalsy()(null)).toBe(true);
     expect(isFalsy()(undefined)).toBe(true);

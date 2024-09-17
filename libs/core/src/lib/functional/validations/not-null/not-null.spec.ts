@@ -1,6 +1,6 @@
 import { notNull } from './not-null';
 
-describe('notNull', () => {
+describe(notNull.name, () => {
   it('should return false for null', () => {
     expect(notNull()(null)).toBe(false);
   });

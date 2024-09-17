@@ -1,6 +1,6 @@
 import { inclusiveBetween } from './inclusive-between';
 
-describe('inclusiveBetween', () => {
+describe(inclusiveBetween.name, () => {
   it('should return a validation function that passes when the value is between the bounds', () => {
     const validation = inclusiveBetween(1, 5);
     expect(validation(3)).toBe(true);

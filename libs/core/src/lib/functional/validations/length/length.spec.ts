@@ -1,6 +1,6 @@
 import { length } from './length';
 
-describe('length', () => {
+describe(length.name, () => {
   it('should validate length', () => {
     const val = length(1, 3);
 

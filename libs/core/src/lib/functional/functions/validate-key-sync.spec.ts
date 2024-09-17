@@ -1,8 +1,8 @@
 import { ValidationError } from '../result/validation-error';
-import { createValidationFn, minLength, notEmpty } from '../validations';
+import { minLength, must, notEmpty } from '../validations';
 import { validateKeySync } from './validate-key-sync';
 
-describe('validateKeySync', () => {
+describe(validateKeySync.name, () => {
   interface TestModel {
     name: string;
     age: number;
@@ -13,64 +13,77 @@ describe('validateKeySync', () => {
     age: 30
   };
 
-  it('should return no failures when all validations pass', () => {
-    const validationFn = notEmpty('Name cannot be empty');
+  const notEmptyValidationFn = notEmpty<TestModel>('Name cannot be empty');
+  const minLengthValidationFn = minLength<TestModel>(11, 'Name must be longer than 10 characters');
+  const mustIncludeDoeValidationFn = must<string, TestModel>(value => value.includes('Doe'), 'Name must include Doe');
+  const mustIncludeJaneValidationFn = must<string, TestModel>(value => value.includes('Jane'), 'Name must include Jane');
 
-    const result = validateKeySync(model, 'name', [validationFn], 'Continue');
-    expect(result).toEqual([]);
+  describe('validate', () => {
+    it('should return no failures when all validations pass', () => {
+      const result = validateKeySync(model, 'name', [notEmptyValidationFn], 'Continue');
+      expect(result).toEqual([]);
+    });
+
+    it('should return a failure when a validation fails', () => {
+      const result = validateKeySync(model, 'name', [minLengthValidationFn], 'Continue');
+      expect(result).toEqual([
+        {
+          propertyName: 'name',
+          message: 'Name must be longer than 10 characters',
+          attemptedValue: 'John Doe'
+        }
+      ]);
+    });
   });
 
-  it('should return a failure when a validation fails', () => {
-    const failingValidationFn = minLength(11, 'Name must be longer than 10 characters');
-
-    const result = validateKeySync(model, 'name', [failingValidationFn], 'Continue');
-    expect(result).toEqual([
-      {
-        propertyName: 'name',
-        message: 'Name must be longer than 10 characters',
-        attemptedValue: 'John Doe'
-      }
-    ]);
+  describe('throwOnFailures', () => {
+    it('should throw a ValidationError when throwOnFailures is true', () => {
+      expect(() => validateKeySync(model, 'name', [minLengthValidationFn], 'Continue', true)).toThrow(ValidationError);
+    });
   });
 
-  it('should throw a ValidationError when throwOnFailures is true', () => {
-    const failingValidationFn = minLength(11, 'Name must be longer than 10 characters');
+  describe('cascade mode', () => {
+    it('should stop validation on first failure when cascade mode is Stop', () => {
+      const result = validateKeySync(model, 'name', [minLengthValidationFn, mustIncludeDoeValidationFn], 'Stop');
+      expect(result).toEqual([
+        {
+          propertyName: 'name',
+          message: 'Name must be longer than 10 characters',
+          attemptedValue: 'John Doe'
+        }
+      ]);
+    });
 
-    expect(() => validateKeySync(model, 'name', [failingValidationFn], 'Continue', true)).toThrow(ValidationError);
+    it('should continue validation on failure when cascade mode is Continue', () => {
+      const result = validateKeySync(model, 'name', [minLengthValidationFn, mustIncludeJaneValidationFn], 'Continue');
+      expect(result).toEqual([
+        {
+          propertyName: 'name',
+          message: 'Name must be longer than 10 characters',
+          attemptedValue: 'John Doe'
+        },
+        {
+          propertyName: 'name',
+          message: 'Name must include Jane',
+          attemptedValue: 'John Doe'
+        }
+      ]);
+    });
   });
 
-  it('should stop validation on first failure when cascade mode is Stop', () => {
-    const failingValidationFn1 = minLength(11, 'Name must be longer than 10 characters');
+  describe('conditions', () => {
+    it('should not run validation when when condition is false', () => {
+      const failingValidationFn = mustIncludeDoeValidationFn.when(model => model.age > 30);
 
-    const failingValidationFn2 = createValidationFn<string>(value => value?.includes('Doe') === true, 'Name must include Doe');
+      const result = validateKeySync(model, 'name', [failingValidationFn], 'Continue');
+      expect(result).toEqual([]);
+    });
 
-    const result = validateKeySync(model, 'name', [failingValidationFn1, failingValidationFn2], 'Stop');
-    expect(result).toEqual([
-      {
-        propertyName: 'name',
-        message: 'Name must be longer than 10 characters',
-        attemptedValue: 'John Doe'
-      }
-    ]);
-  });
+    it('should not run validation when unless condition is true', () => {
+      const failingValidationFn = mustIncludeDoeValidationFn.unless(model => model.age > 30);
 
-  it('should continue validation on failure when cascade mode is Continue', () => {
-    const failingValidationFn1 = minLength(11, 'Name must be longer than 10 characters');
-
-    const failingValidationFn2 = createValidationFn<string>(value => value?.includes('Jane') === true, 'Name must include Jane');
-
-    const result = validateKeySync(model, 'name', [failingValidationFn1, failingValidationFn2], 'Continue');
-    expect(result).toEqual([
-      {
-        propertyName: 'name',
-        message: 'Name must be longer than 10 characters',
-        attemptedValue: 'John Doe'
-      },
-      {
-        propertyName: 'name',
-        message: 'Name must include Jane',
-        attemptedValue: 'John Doe'
-      }
-    ]);
+      const result = validateKeySync(model, 'name', [failingValidationFn], 'Continue');
+      expect(result).toEqual([]);
+    });
   });
 });

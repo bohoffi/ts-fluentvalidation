@@ -1,6 +1,6 @@
 import { empty } from './empty';
 
-describe('empty', () => {
+describe(empty.name, () => {
   it('should return true for null', () => {
     expect(empty()(null)).toBe(true);
   });

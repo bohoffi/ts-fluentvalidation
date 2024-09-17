@@ -1,6 +1,6 @@
 import { notEmpty } from './not-empty';
 
-describe('notEmpty', () => {
+describe(notEmpty.name, () => {
   it('should return false for null', () => {
     expect(notEmpty()(null)).toBe(false);
   });

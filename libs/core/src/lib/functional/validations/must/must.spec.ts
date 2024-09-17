@@ -1,6 +1,6 @@
 import { must } from './must';
 
-describe('must', () => {
+describe(must.name, () => {
   it('should return a validation function that returns true if the value meets the specified criteria', () => {
     const isPositive = must<number>(value => (value || 0) > 0);
     expect(isPositive(1)).toBe(true);

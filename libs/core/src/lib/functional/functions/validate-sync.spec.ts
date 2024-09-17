@@ -6,7 +6,7 @@ import { validateSync } from './validate-sync';
 
 jest.mock('./validate-key-sync');
 
-describe('validateSync', () => {
+describe(validateSync.name, () => {
   const mockValidateKeySync = validateKeySync as jest.MockedFunction<typeof validateKeySync>;
 
   beforeEach(() => {
@@ -24,8 +24,8 @@ describe('validateSync', () => {
   };
 
   const validations: ValidationsDictionary<TestModel> = {
-    prop1: [jest.fn()],
-    prop2: [jest.fn()]
+    prop1: [],
+    prop2: []
   };
 
   const validatorConfig: ValidateConfig<TestModel> = {

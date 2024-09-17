@@ -12,3 +12,8 @@ export type Prettify<T> = { [K in keyof T]: T[K] } & EmptyObject;
  * Represents a type where given keys are required.
  */
 export type RequiredByKeys<T, K extends keyof T> = Prettify<Omit<T, K> & { [P in K]-?: T[P] }>;
+
+export function getLastElement<T>(array: T[], condition: (element: T) => boolean): T | undefined {
+  const filteredArray = [...array].filter(condition);
+  return filteredArray.pop();
+}
