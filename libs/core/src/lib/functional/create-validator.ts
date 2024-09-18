@@ -3,7 +3,7 @@ import { createValidationResult, ValidationResult } from './result/validation-re
 import { EmptyObject, getLastElement, KeyOf } from './types/ts-helpers';
 import { CascadeMode, MergedValidations, ValidateConfig, ValidationFn, ValidationsDictionary, ValidatorConfig } from './types/types';
 
-type Validator<TModel extends object, Validations extends ValidationsDictionary<TModel>> = {
+export type Validator<TModel extends object, Validations extends ValidationsDictionary<TModel>> = {
   /**
    * The validations for the validator.
    */
@@ -74,7 +74,7 @@ export function createValidator<TModel extends object, Validations extends Valid
     ): Validator<TModel, MergedValidations<TModel, Key, Validations>> {
       const cascadeMode = typeof args[0] === 'string' ? (args.shift() as CascadeMode) : undefined;
       const validations = args as KeyValidation[];
-      _keyCascadeModes[key] = cascadeMode || 'Continue';
+      _keyCascadeModes[key] = cascadeMode || validatorConfig.propertyCascadeMode || 'Continue';
       return mergeValidations(this, key, ...(validations as KeyValidation[]));
     },
     validate(model: TModel, config?: (config: ValidatorConfig<TModel>) => void): ValidationResult {

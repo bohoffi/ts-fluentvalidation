@@ -55,7 +55,7 @@ describe(createValidationFn.name, () => {
 
   describe('withMessage', () => {
     it('should create a validation function with a message', () => {
-      const isNonEmptyString = createValidationFn<string>(value => value.length > 0);
+      const isNonEmptyString = createValidationFn<string>(value => value.length > 0, 'FOO BAR');
       const validationWithMessage = isNonEmptyString.withMessage('Value must not be empty');
       expect(validationWithMessage.message).toBe('Value must not be empty');
     });

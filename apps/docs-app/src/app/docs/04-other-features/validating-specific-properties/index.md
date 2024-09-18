@@ -1,41 +1,22 @@
 # {{ NgDocPage.title }}
 
-If your validator contains rules for several properties you can limit execution to only validate specific properties by using the `includeProperties` function:
+If your validator contains validations for several properties you can limit execution to only validate specific properties by passing a configuration object conatining the `includeProperties` property to the `validate` function:
 
 ```typescript
 // Validator definition
-export class PersonValidator extends AbstractValidator<Person> {
-  constructor() {
-    super();
-    this.ruleFor('name').notEmpty();
-    this.ruleFor('age').greaterThanOrEqualTo(18);
-  }
-}
-```
+const personValidator = createValidator<Person>().ruleFor('name', notEmpty()).ruleFor('age', greaterThanOrEqualTo(18));
 
-```typescript
-var validator = new PersonValidator();
-validator.validate(person, strategy => {
-  strategy.includeProperties('name');
-  // results in the same as using the property expression
-  strategy.includeProperties(p => p.name);
+personValidator.validate(person, config => {
+  strategy.includeProperties = ['name'];
 });
 ```
 
-In the example above only the rule for the `name` property will be executed.
+In the example above only the validation for the `name` property will be executed.
 
 You can define multiple inclusions like:
 
 ```typescript
-validator.validate(person, strategy => {
-  strategy.includeProperties('name', 'age');
-  // results in the same as using the property expressions
-  strategy.includeProperties(
-    p => p.name,
-    p => p.age
-  );
+personValidator.validate(person, config => {
+  config.includeProperties = ['name', 'age'];
 });
 ```
-
-> **Note**
-> Restriction for nested properties becomes available with the implementation of [#39 - `includeProperties` to restrict validation to nested properties](https://github.com/bohoffi/ts-fluentvalidation/issues/39)

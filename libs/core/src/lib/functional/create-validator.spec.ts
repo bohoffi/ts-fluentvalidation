@@ -10,7 +10,7 @@ describe(createValidator.name, () => {
 
       const result = val.validate(createPersonWith({ name: '' }));
       expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([{ propertyName: 'name', message: 'Value must have a minimum length of 1', attemptedValue: '' }]);
+      expect(result.failures).toEqual([{ propertyName: 'name', message: 'Value must have a minimum length of 1.', attemptedValue: '' }]);
     });
 
     it('should validate multiple rules and return result', () => {
@@ -22,9 +22,9 @@ describe(createValidator.name, () => {
       const result = val.validate(createPersonWith({ name: 'world', age: 0, registred: false }));
       expect(result.isValid).toBe(false);
       expect(result.failures).toEqual([
-        { propertyName: 'name', message: 'Value must have a minimum length of 6', attemptedValue: 'world' },
-        { propertyName: 'age', message: 'Value must not equal 0', attemptedValue: 0 },
-        { propertyName: 'registred', message: 'Value must be true', attemptedValue: false }
+        { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world' },
+        { propertyName: 'age', message: 'Value must not equal 0.', attemptedValue: 0 },
+        { propertyName: 'registred', message: 'Value must be true.', attemptedValue: false }
       ]);
     });
   });
@@ -96,7 +96,10 @@ describe(createValidator.name, () => {
           createPersonWith({
             name: '',
             age: 5
-          })
+          }),
+          config => {
+            config.includeProperties = ['name', 'age'];
+          }
         );
         expect(result.isValid).toBe(false);
         expect(result.failures.find(failure => failure.propertyName === 'name')).toBeDefined();
@@ -114,7 +117,7 @@ describe(createValidator.name, () => {
         const result = val.validate(createPersonWith({ name: 'world', age: 0, registred: false }));
         expect(result.isValid).toBe(false);
         expect(result.failures).toEqual([
-          { propertyName: 'name', message: 'Value must have a minimum length of 6', attemptedValue: 'world' }
+          { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world' }
         ]);
       });
 
@@ -127,9 +130,9 @@ describe(createValidator.name, () => {
         const result = val.validate(createPersonWith({ name: 'world', age: 0, registred: false }));
         expect(result.isValid).toBe(false);
         expect(result.failures).toEqual([
-          { propertyName: 'name', message: 'Value must have a minimum length of 6', attemptedValue: 'world' },
-          { propertyName: 'age', message: 'Value must not equal 0', attemptedValue: 0 },
-          { propertyName: 'registred', message: 'Value must be true', attemptedValue: false }
+          { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world' },
+          { propertyName: 'age', message: 'Value must not equal 0.', attemptedValue: 0 },
+          { propertyName: 'registred', message: 'Value must be true.', attemptedValue: false }
         ]);
       });
     });
@@ -152,7 +155,7 @@ describe(createValidator.name, () => {
 
       const result = val.validate(createPersonWith({ age: 31 }));
       expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3', attemptedValue: 31 }]);
+      expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 31 }]);
     });
 
     it('should run unless validation when unless condition is false', () => {
@@ -171,7 +174,7 @@ describe(createValidator.name, () => {
 
       const result = val.validate(createPersonWith({ age: 4 }));
       expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3', attemptedValue: 4 }]);
+      expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 4 }]);
     });
 
     describe('ApplyConditionTo', () => {
@@ -185,8 +188,8 @@ describe(createValidator.name, () => {
         const result = val.validate(createPersonWith({ name: 'John Doe', age: 31 }));
         expect(result.isValid).toBe(false);
         expect(result.failures).toEqual([
-          { propertyName: 'name', message: 'Value must have a maximum length of 6', attemptedValue: 'John Doe' },
-          { propertyName: 'name', message: 'Value must match pattern', attemptedValue: 'John Doe' }
+          { propertyName: 'name', message: 'Value must have a maximum length of 6.', attemptedValue: 'John Doe' },
+          { propertyName: 'name', message: 'Value must match pattern.', attemptedValue: 'John Doe' }
         ]);
       });
 
@@ -200,7 +203,7 @@ describe(createValidator.name, () => {
         const result = val.validate(createPersonWith({ name: 'John Doe', age: 31 }));
         expect(result.isValid).toBe(false);
         expect(result.failures).toEqual([
-          { propertyName: 'name', message: 'Value must have a maximum length of 6', attemptedValue: 'John Doe' }
+          { propertyName: 'name', message: 'Value must have a maximum length of 6.', attemptedValue: 'John Doe' }
         ]);
       });
     });
@@ -213,7 +216,7 @@ describe(createValidator.name, () => {
       const result = val.validate(createPersonWith({ name: 'world' }));
       expect(result.isValid).toBe(false);
       expect(result.failures).toEqual([
-        { propertyName: 'name', message: 'Value must have a minimum length of 6', attemptedValue: 'world' }
+        { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world' }
       ]);
     });
 
@@ -223,8 +226,8 @@ describe(createValidator.name, () => {
       const result = val.validate(createPersonWith({ name: 'world' }));
       expect(result.isValid).toBe(false);
       expect(result.failures).toEqual([
-        { propertyName: 'name', message: 'Value must have a minimum length of 6', attemptedValue: 'world' },
-        { propertyName: 'name', message: 'Value must equal hello', attemptedValue: 'world' }
+        { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world' },
+        { propertyName: 'name', message: 'Value must equal hello.', attemptedValue: 'world' }
       ]);
     });
   });

@@ -2,11 +2,24 @@ import { LengthProperty } from '../../types/properties';
 import { ValidationFn } from '../../types/types';
 import { createValidationFn } from '../create-validation-fn';
 
-export function length<TModel>(min: number, max: number): ValidationFn<LengthProperty, TModel>;
-export function length<TModel>(min: number, max: number, message: string): ValidationFn<LengthProperty, TModel>;
-export function length<TModel>(min: number, max: number, message?: string): ValidationFn<LengthProperty, TModel> {
+/**
+ * Creates a validation function that checks if the values length is between (inclusive) the specified minimum and maximum.
+ *
+ * @param minLength - The minimum length.
+ * @param maxLength - The maximum length.
+ */
+export function length<TModel>(minLength: number, maxLength: number): ValidationFn<LengthProperty, TModel>;
+/**
+ * Creates a validation function that checks if the values length is between (inclusive) the specified minimum and maximum.
+ *
+ * @param minLength - The minimum length.
+ * @param maxLength - The maximum length.
+ * @param message - The message to display if the validation fails.
+ */
+export function length<TModel>(minLength: number, maxLength: number, message: string): ValidationFn<LengthProperty, TModel>;
+export function length<TModel>(minLength: number, maxLength: number, message?: string): ValidationFn<LengthProperty, TModel> {
   return createValidationFn(
-    value => (value?.length || 0) >= min && (value?.length || 0) <= max,
-    message || `Value must have a length between ${min} and ${max}`
+    value => (value?.length || 0) >= minLength && (value?.length || 0) <= maxLength,
+    message || `Value must have a length between (inclusive) ${minLength} and ${maxLength}.`
   );
 }

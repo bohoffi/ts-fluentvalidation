@@ -1,46 +1,19 @@
 # {{ NgDocPage.title }}
 
-You can override the default error message for a rule by calling the `withMessage` function on a rule.
+A validations message can be ovewritten in two ways.
+
+As a validations parameter - all built-in validations support a message as the last parameter:
 
 ```typescript
-validator
-  .ruleFor(person => person.name)
-  .notNull()
-  .withMessage('Please ensure you have entered a name');
+const validator = createValidator<Person>()
+  .ruleFor('name', notEmpty('Name shall not be empty.'))
+  .ruleFor('age', greaterThanOrEquals(18, 'The persons age must be at least 18.'));
 ```
 
-Note that custom error messages can contain certain placeholders such as `{propertyName}` - which will be replaced in this example with the name of the property being validated. This means the above error message could be re-written as:
+Using the `withMessage` function of a `ValidationFn`.
 
 ```typescript
-validator
-  .ruleFor(person => person.name)
-  .notNull()
-  .withMessage('Please ensure you have entered a {propertyName}');
+export function shouldNotStartWith<TModel>(referenceValue: string): ValidationFn<string, TModel> {
+  return must((value: string) => !value.startsWith(referenceValue)).withMessage(`The value shall not start with ${referenceValue}.`);
+}
 ```
-
-...and the value `name` will be inserted.
-
-## Placeholders
-
-As shown in the example above, the message can contain placeholders for special values such as the `{propertyName}` and `{propertyValue}` - which will be replaced at runtime. Each built-in rule has its own list of placeholders.
-
-The placeholders used in all rules are:
-
-- `{propertyName}`: name of the property being validated
-- `{propertyValue}`: value of the property being validated
-
-Used in comparison rules (such as `equal`, `notEqual`, `greaterThan`, `lessThan`, etc.):
-
-- `{comparisonValue}`: value that the property should be compared to
-
-Used in bounding rules only:
-
-- `lowerBound` - lower end of a range
-- `upperBound` - upper end of a range
-
-Used in length rules only:
-
-- `{maxLength}` - maximum allowed length
-- `{minLength}` - minimum allowed length
-
-For a complete list of error message placeholders see the `*BuildingRulesBuiltInRules` page.

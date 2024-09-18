@@ -1,6 +1,6 @@
 import { KeyOf, Prettify, RequiredByKeys } from './ts-helpers';
 
-type ValidationFnMetadata<TModel> = {
+export type ValidationFnMetadata<TModel> = {
   when?: (model: TModel) => boolean;
   whenApplyTo?: ApplyConditionTo;
   unless?: (model: TModel) => boolean;
@@ -100,6 +100,10 @@ export type ValidatorConfig<TModel extends object> = {
    * The cascade mode on validator level.
    */
   cascadeMode?: CascadeMode;
+  /**
+   * The cascade mode on property level.
+   */
+  propertyCascadeMode?: CascadeMode;
 };
 
 /**

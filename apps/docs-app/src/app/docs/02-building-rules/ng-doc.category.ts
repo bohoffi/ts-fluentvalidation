@@ -1,10 +1,10 @@
 import { NgDocCategory } from '@ng-doc/core';
 
-const BuildingRules: NgDocCategory = {
-  title: 'Building Rules',
+const BuildingValidations: NgDocCategory = {
+  title: 'Building validations',
   expandable: true,
-  route: 'building-rules',
+  route: 'building-validations',
   order: 2
 };
 
-export default BuildingRules;
+export default BuildingValidations;

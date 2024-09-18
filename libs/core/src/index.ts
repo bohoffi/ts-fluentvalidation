@@ -1,19 +1,40 @@
-export { AbstractValidator } from './lib/abstract-validator';
-export { createValidator, ValidatorArgs, ValidatorInitFn, ValidatorInitializer } from './lib/create-validator';
+export { Validator, createValidator } from './lib/functional/create-validator';
+export { ValidationError, ValidationFailure, ValidationResult } from './lib/functional/result';
 export {
   ApplyConditionTo,
-  AsyncCustomRulePredicate,
-  AsyncRulePredicate,
+  BooleanProperty,
   CascadeMode,
-  CustomRulePredicate,
-  MemberExpression,
-  RuleCondition,
-  RulePredicate,
-  Severity,
-  SeverityProvider,
+  DateProperty,
+  LengthProperty,
+  NumberProperty,
+  StringProperty,
+  ValidationFn,
+  ValidationFnMetadata,
   ValidatorConfig
-} from './lib/models';
-export { ValidationFailure, ValidationResult } from './lib/result';
-export { KeyOf } from './lib/ts-helpers';
-export { ValidationContext } from './lib/validation-context';
+} from './lib/functional/types';
+export {
+  empty,
+  equals,
+  exclusiveBetween,
+  greaterThan,
+  greaterThanOrEquals,
+  inclusiveBetween,
+  isFalse,
+  isFalsy,
+  isNull,
+  isTrue,
+  isTruthy,
+  length,
+  lessThan,
+  lessThanOrEquals,
+  matches,
+  maxLength,
+  minLength,
+  must,
+  notEmpty,
+  notEquals,
+  notNull,
+  required
+} from './lib/functional/validations';
+
 export { VERSION } from './lib/version';
