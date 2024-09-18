@@ -39,6 +39,12 @@ export type ValidationFn<TValue = unknown, TModel = unknown> = {
    * @returns A new validation function with the condition applied.
    */
   unless(predicate: (model: TModel) => boolean, applyTo?: ApplyConditionTo): ValidationFn<TValue, TModel>;
+  /**
+   * Adds a message to the validation function.
+   *
+   * @param message - The message to use when the validation fails.
+   */
+  withMessage(message: string): ValidationFn<TValue, TModel>;
 };
 
 type ValidationFnArray<TModel extends object, Key extends KeyOf<TModel>> = ReadonlyArray<ValidationFn<TModel[Key], TModel>>;

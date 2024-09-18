@@ -57,6 +57,11 @@ export function createValidationFn<TValue, TModel>(
     unlessFn.metadata = { unless, unlessApplyTo };
     return unlessFn;
   };
+  validationFn.withMessage = (message: string) => {
+    const withMessageFn = createValidationFn<TValue, TModel>(fn, { ...otherOptions, message });
+    withMessageFn.metadata = { ...validationFn.metadata };
+    return withMessageFn;
+  };
 
   return validationFn;
 }
