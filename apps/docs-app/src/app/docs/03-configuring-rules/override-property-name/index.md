@@ -1,4 +1,4 @@
-# {{ NgDocPage.title }}
+
 
 The default rule error message contains the property name being validated. For example, if you'd define a validation like this:
 

@@ -1,4 +1,4 @@
-# {{ NgDocPage.title }}
+
 
 Instead of writing the same rules for different validators over and over again you can create a function which provides a validator including predefined rules and extend it when needed. Given the following models:
 
