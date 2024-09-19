@@ -12,7 +12,7 @@
     "@angular/platform-browser-dynamic": "18.2.5",
     "@angular/router": "18.2.5",
     "@ng-doc/app": "17.5.6",
-    "@ng-doc/builder": "17.5.6",
+    "@ng-doc/builder": "18.0.3",
     "@ng-doc/core": "17.5.6",
     "@ng-doc/ui-kit": "17.5.6",
     "@nx/devkit": "19.7.4",

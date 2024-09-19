@@ -1,0 +1,11 @@
+{
+  "migrations": [
+    {
+      "version": "18.0.0",
+      "description": "Updates NgDoc to v18",
+      "factory": "./ng-update/index#update",
+      "package": "@ng-doc/builder",
+      "name": "migration-v18"
+    }
+  ]
+}
