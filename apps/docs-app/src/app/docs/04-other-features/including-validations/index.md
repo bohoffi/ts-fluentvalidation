@@ -13,3 +13,6 @@ Because both of these validators are targetting the same model type `Person`, yo
 ```typescript
 export const personValidator = createValidator<Person>().include(personAgeValidator).include(personNameValidator);
 ```
+
+> **Note**
+> You can only include validators that target the same type as the root validator.
