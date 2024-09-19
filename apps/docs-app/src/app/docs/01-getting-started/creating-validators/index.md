@@ -1,4 +1,4 @@
-# {{ NgDocPage.title }}
+
 
 To define a validator for a model you can use either the `createValidator` function to create an inline validator:
 

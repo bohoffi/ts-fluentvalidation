@@ -1,4 +1,4 @@
-# {{ NgDocPage.title }}
+
 
 `@ts-fluentvalidation/core` provides some extensions that can aid with testing you validators.
 

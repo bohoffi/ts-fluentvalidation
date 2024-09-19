@@ -250,7 +250,6 @@ const BuiltinRules: NgDocPage = {
   route: `built-in-rules`,
   category: BuildingRules,
   order: 1,
-  keyword: 'BuildingRulesBuiltInRules',
   data: {
     ruleCategories: ruleCategories
   }

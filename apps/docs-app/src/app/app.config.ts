@@ -6,8 +6,8 @@ import {
   NG_DOC_DEFAULT_PAGE_PROCESSORS,
   NG_DOC_DEFAULT_PAGE_SKELETON,
   NgDocDefaultSearchEngine,
-  provideNgDocApp,
   provideMainPageProcessor,
+  provideNgDocApp,
   providePageSkeleton,
   provideSearchEngine
 } from '@ng-doc/app';
@@ -17,7 +17,8 @@ import { DocsComponent } from './docs.component';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideNgDocContext(),
-    provideNgDocApp({ defaultThemeId: 'auto' }),
+    // provideNgDocApp({ defaultThemeId: 'auto' }),
+    provideNgDocApp(),
     provideSearchEngine(NgDocDefaultSearchEngine),
     providePageSkeleton(NG_DOC_DEFAULT_PAGE_SKELETON),
     provideMainPageProcessor(NG_DOC_DEFAULT_PAGE_PROCESSORS),

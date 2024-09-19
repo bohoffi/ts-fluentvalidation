@@ -1,4 +1,4 @@
-# {{ NgDocPage.title }}
+
 
 There are several ways to create a custom, reusable rule. The recommended way is to make use of the `MustRule` to write a custom validation function.
 

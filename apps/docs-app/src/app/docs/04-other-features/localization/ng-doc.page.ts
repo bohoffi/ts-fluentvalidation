@@ -6,7 +6,6 @@ const Localization: NgDocPage = {
   mdFile: './index.md',
   route: `localization`,
   category: OtherFeatures,
-  keyword: 'OtherFeaturesLocalization',
   order: 6
 };
 

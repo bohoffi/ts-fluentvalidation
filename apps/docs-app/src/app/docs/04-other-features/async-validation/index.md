@@ -1,4 +1,4 @@
-# {{ NgDocPage.title }}
+
 
 In some situations, you may wish to define asynchronous rules, for example when working with an external API. By default, `@ts-fluentvalidation/core` allows custom rules defined with `mustAsync` to be run asynchronously.
 
