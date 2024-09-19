@@ -1,4 +1,4 @@
-# {{ NgDocPage.title }}
+
 
 `@ts-fluentvalidation/core` is a TypeScript library for building strongly-typed human-readable validators without any further depedencies.
 The goal is to create a TypeScript port of the .NET library FluentValidation with a nearly matching syntax and feature set.

@@ -1,4 +1,7 @@
-# {{ NgDocPage.title }}
+---
+keyword: 'ConfiguringRulesOverrideMessage'
+---
+
 
 A validations message can be ovewritten in two ways.
 

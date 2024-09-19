@@ -1,4 +1,4 @@
-# {{ NgDocPage.title }}
+
 
 If your validator contains validations for several properties you can limit execution to only validate specific properties by passing a configuration object conatining the `includeProperties` property to the `validate` function:
 

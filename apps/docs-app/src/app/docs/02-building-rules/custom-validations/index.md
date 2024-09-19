@@ -1,5 +1,3 @@
-# {{ NgDocPage.title }}
-
 There are several ways to extend the ruleset beyond the built-in set. The easiest way is to make use of the `must()` function to write a custom validation function.
 
 For these examples, we’ll imagine a scenario where you want to create a reusable validator that will ensure a string property does not start with a certain reference value.

@@ -1,5 +1,3 @@
-# {{ NgDocPage.title }}
-
 You can include validations from other validators provided they validate the same type. This allows you to split validations across multiple validators and compose them together (in a similar way to how other languages support traits). For example, imagine you have 2 validators that validate different properties of a `Person`:
 
 ```typescript

@@ -1,6 +1,8 @@
-{% import "../../templates/macros/validations.md" as validations %}
+---
+keyword: 'BuildingRulesBuiltInRules'
+---
 
-# {{ NgDocPage.title }}
+{% import "../../templates/macros/validations.md" as validations %}
 
 `@ts-fluentvalidation/core` comes with a set of predefined validations.
 

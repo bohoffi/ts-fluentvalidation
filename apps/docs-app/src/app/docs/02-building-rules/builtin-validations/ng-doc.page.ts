@@ -279,7 +279,6 @@ const BuiltinValidations: NgDocPage = {
   route: `built-in-validations`,
   category: BuildingValidations,
   order: 1,
-  keyword: 'BuildingValidationsBuiltinValidations',
   data: {
     validationCategories: validationCategories
   }

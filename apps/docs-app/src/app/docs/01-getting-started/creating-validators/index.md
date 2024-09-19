@@ -1,5 +1,3 @@
-# {{ NgDocPage.title }}
-
 To define a validator for a model you can use the `createValidator` function:
 
 ```typescript
