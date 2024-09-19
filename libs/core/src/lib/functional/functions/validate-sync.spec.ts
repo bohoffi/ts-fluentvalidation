@@ -1,6 +1,6 @@
 import { ValidationFailure } from '../result/validation-failure';
 import { KeyOf } from '../types/ts-helpers';
-import { CascadeMode, ValidateConfig, ValidationsDictionary } from '../types/types';
+import { CascadeMode, ValidateConfig } from '../types/types';
 import { validateKeySync } from './validate-key-sync';
 import { validateSync } from './validate-sync';
 
@@ -23,7 +23,7 @@ describe(validateSync.name, () => {
     prop2: 42
   };
 
-  const validations: ValidationsDictionary<TestModel> = {
+  const validations = {
     prop1: [],
     prop2: []
   };

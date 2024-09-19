@@ -1,4 +1,4 @@
-export { Validator, createValidator } from './lib/functional/create-validator';
+export { createValidator } from './lib/functional/create-validator';
 export { ValidationError, ValidationFailure, ValidationResult } from './lib/functional/result';
 export {
   ApplyConditionTo,
@@ -10,6 +10,7 @@ export {
   StringProperty,
   ValidationFn,
   ValidationFnMetadata,
+  Validator,
   ValidatorConfig
 } from './lib/functional/types';
 export {

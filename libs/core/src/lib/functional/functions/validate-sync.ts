@@ -1,6 +1,6 @@
 import { ValidationFailure } from '../result/validation-failure';
 import { KeyOf } from '../types/ts-helpers';
-import { CascadeMode, ValidateConfig, ValidationsDictionary } from '../types/types';
+import { CascadeMode, ValidateConfig } from '../types/types';
 import { validateKeySync } from './validate-key-sync';
 
 /**
@@ -12,7 +12,7 @@ import { validateKeySync } from './validate-key-sync';
  * @param keyCascadeModes - The cascade modes for the keys.
  * @returns The validation failures.
  */
-export function validateSync<TModel extends object, Validations extends ValidationsDictionary<TModel>>(
+export function validateSync<TModel extends object, Validations extends object>(
   model: TModel,
   validations: Validations,
   validatorConfig: ValidateConfig<TModel>,

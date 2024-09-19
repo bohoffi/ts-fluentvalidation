@@ -1,7 +1,7 @@
 import { createPersonWith } from '../testing/test-data';
 import { Person } from '../testing/test-models';
 import { createValidator } from './create-validator';
-import { equals, isTrue, matches, maxLength, minLength, notEquals } from './validations';
+import { equals, greaterThanOrEquals, isTrue, matches, maxLength, minLength, notEquals, notNull } from './validations';
 
 describe(createValidator.name, () => {
   describe('validate should return result', () => {
@@ -42,6 +42,20 @@ describe(createValidator.name, () => {
 
       expect(val.validations).toEqual({ name: [expect.any(Function), expect.any(Function)] });
       expect(val.validations.name.length).toBe(2);
+    });
+  });
+
+  describe('include', () => {
+    it('should include validator', () => {
+      const personAgeValidator = createValidator<Person>().ruleFor('age', greaterThanOrEquals(18));
+
+      const personNameValidator = createValidator<Person>().ruleFor('name', notNull());
+
+      const personValidator = createValidator<Person>().include(personAgeValidator).include(personNameValidator);
+
+      expect(personValidator.validations).toEqual({ name: [expect.any(Function)], age: [expect.any(Function)] });
+      expect(personValidator.validations.name.length).toBe(1);
+      expect(personValidator.validations.age.length).toBe(1);
     });
   });
 

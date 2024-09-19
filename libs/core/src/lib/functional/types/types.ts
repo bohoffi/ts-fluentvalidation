@@ -1,4 +1,75 @@
-import { KeyOf, Prettify, RequiredByKeys } from './ts-helpers';
+import { ValidationResult } from '../result/validation-result';
+import { EmptyObject, KeyOf, RequiredByKeys } from './ts-helpers';
+
+/**
+ * Utility type for extracting the validations from a validator.
+ *
+ * @param T - The type to extract the validations from if it is a Validator type.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export type InferValidations<T> = T extends Validator<infer TModel, infer Validations> ? Validations : EmptyObject;
+
+/**
+ * Represents a validator.
+ */
+export type Validator<TModel extends object, Validations extends object = EmptyObject> = {
+  /**
+   * The validations for the validator.
+   */
+  readonly validations: Validations;
+
+  /**
+   * Adds one or more validations for the given key optionally preceded with the specified cascade mode.
+   *
+   * @param key - The key to validate.
+   * @param args - Validations to add optionally preceded by the cascade mode for the given key.
+   */
+  ruleFor<Key extends KeyOf<TModel>>(
+    key: Key,
+    ...args: [CascadeMode, ...ValidationFn<TModel[Key], TModel>[]] | ValidationFn<TModel[Key], TModel>[]
+  ): Validator<TModel, Validations & { [P in Key]: ValidationFn<TModel[Key], TModel>[] }>;
+
+  /**
+   * Includes the validations from the given validator.
+   *
+   * **Note** neither the `cascadeMode` will be included nor the conditions applied to preceding validations.
+   *
+   * @param validator - The validator to include.
+   */
+  include<TIncludeModel extends TModel, IncludeValidations extends object = InferValidations<Validator<TIncludeModel>>>(
+    validator: Validator<TIncludeModel, IncludeValidations>
+  ): Validator<TModel & TIncludeModel, Validations & IncludeValidations>;
+
+  /**
+   * Validates the given value against the validations.
+   *
+   * @param model - The model to validate.
+   */
+  validate(model: TModel): ValidationResult;
+
+  /**
+   * Validates the given value against the validations respecting the passed configuration.
+   *
+   * @param model - The model to validate.
+   * @param config - The configuration to apply.
+   */
+  validate(model: TModel, config: (config: ValidatorConfig<TModel>) => void): ValidationResult;
+
+  /**
+   * Validates the given value against the validations and throws a ValidationError if any failures occur.
+   *
+   * @param model - The model to validate.
+   */
+  validateAndThrow(model: TModel): ValidationResult;
+
+  /**
+   * Validates the given value against the validations and throws a ValidationError if any failures occur respecting the passed configuration.
+   *
+   * @param model - The model to validate.
+   * @param config - The configuration to apply.
+   */
+  validateAndThrow(model: TModel, config: (config: ValidatorConfig<TModel>) => void): ValidationResult;
+};
 
 export type ValidationFnMetadata<TModel> = {
   when?: (model: TModel) => boolean;
@@ -46,25 +117,6 @@ export type ValidationFn<TValue = unknown, TModel = unknown> = {
    */
   withMessage(message: string): ValidationFn<TValue, TModel>;
 };
-
-type ValidationFnArray<TModel extends object, Key extends KeyOf<TModel>> = ReadonlyArray<ValidationFn<TModel[Key], TModel>>;
-
-export type ValidationsDictionary<TModel extends object> = Record<string, ValidationFnArray<TModel, KeyOf<TModel>>>;
-
-type ValidationsDictionaryInput<TModel extends object, Key extends KeyOf<TModel>> = Prettify<{
-  [P in Key]: ValidationFnArray<TModel, Key>;
-  // TODO use ConcatArray instead of ReadonlyArray?
-  // [P in Key]: ConcatArray<ValidationFn<TModel[Key], TModel>>;
-}>;
-
-/**
- * Represents the merged validations for a given key.
- */
-export type MergedValidations<
-  TModel extends object,
-  Key extends KeyOf<TModel>,
-  ValidationsInput extends ValidationsDictionary<TModel>
-> = Prettify<Readonly<ValidationsInput & ValidationsDictionaryInput<TModel, Key>>>;
 
 /**
  * Represents the cascade mode for validation.

@@ -5,7 +5,7 @@ const ValidatingSpecificPropertiesPage: NgDocPage = {
   title: `Validating specific properties`,
   mdFile: './index.md',
   category: OtherFeatures,
-  order: 8
+  order: 2
 };
 
 export default ValidatingSpecificPropertiesPage;
