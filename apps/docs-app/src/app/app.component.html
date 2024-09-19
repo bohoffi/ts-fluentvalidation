@@ -1,26 +1,24 @@
 <ng-doc-root [footerContent]="footerContent">
-  <ng-doc-navbar [leftContent]="leftContent" [rightContent]="rightContent" [glassEffect]="true" [search]="true"> </ng-doc-navbar>
+  <ng-doc-navbar [glassEffect]="true" [search]="true">
+    <h3 ngDocNavbarLeft class="brand" style="margin: 0">{{ libName }}</h3>
+
+    <div ngDocNavbarRight>
+      <ng-doc-theme-toggle></ng-doc-theme-toggle>
+      <a
+        href="https://github.com/bohoffi/ts-fluentvalidation"
+        ng-doc-button-icon
+        ngDocTooltip="Repository on GitHub"
+        size="large"
+        target="_blank"
+      >
+        <ng-doc-icon [size]="24" customIcon="github"></ng-doc-icon>
+      </a>
+    </div>
+  </ng-doc-navbar>
 
   <ng-doc-sidebar></ng-doc-sidebar>
   <router-outlet></router-outlet>
 </ng-doc-root>
-
-<ng-template #leftContent>
-  <h3 class="brand" style="margin: 0">{{ libName }}</h3>
-</ng-template>
-
-<ng-template #rightContent>
-  <ng-doc-theme-toggle></ng-doc-theme-toggle>
-  <a
-    href="https://github.com/bohoffi/ts-fluentvalidation"
-    ng-doc-button-icon
-    ngDocTooltip="Repository on GitHub"
-    size="large"
-    target="_blank"
-  >
-    <ng-doc-icon [size]="24" customIcon="github"></ng-doc-icon>
-  </a>
-</ng-template>
 
 <ng-template #footerContent>
   <div class="doc-footer">Library version: {{ libVersion.fullVersion }}</div>
