@@ -1,12 +1,12 @@
-import { ValidationFn } from '../../types/types';
-import { createValidationFn } from '../create-validation-fn';
+import { SyncValidation } from '../../types/types';
+import { createValidation } from '../create-validation-fn';
 
 /**
  * Creates a validation function that checks if the value meets the specified criteria.
  *
  * @param predicate - The predicate to check against.
  */
-export function must<TValue = unknown, TModel = unknown>(predicate: (value: TValue) => boolean): ValidationFn<TValue, TModel>;
+export function must<TValue = unknown, TModel = unknown>(predicate: (value: TValue) => boolean): SyncValidation<TValue, TModel>;
 /**
  * Creates a validation function that checks if the value meets the specified criteria.
  *
@@ -16,10 +16,10 @@ export function must<TValue = unknown, TModel = unknown>(predicate: (value: TVal
 export function must<TValue = unknown, TModel = unknown>(
   predicate: (value: TValue) => boolean,
   message: string
-): ValidationFn<TValue, TModel>;
+): SyncValidation<TValue, TModel>;
 export function must<TValue = unknown, TModel = unknown>(
   predicate: (value: TValue) => boolean,
   message?: string
-): ValidationFn<TValue, TModel> {
-  return createValidationFn(predicate, message || 'Value must meet the specified criteria.');
+): SyncValidation<TValue, TModel> {
+  return createValidation(predicate, message || 'Value must meet the specified criteria.');
 }

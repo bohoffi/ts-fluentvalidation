@@ -1,4 +1,4 @@
-import { ValidationError } from '../result/validation-error';
+import { ValidationError } from '../errors/validation-error';
 import { minLength, must, notEmpty } from '../validations';
 import { validateKeySync } from './validate-key-sync';
 

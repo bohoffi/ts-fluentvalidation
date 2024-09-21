@@ -1,5 +1,5 @@
 import { ValidationResult } from '../result/validation-result';
-import { EmptyObject, KeyOf, RequiredByKeys } from './ts-helpers';
+import { EmptyObject, IsAsyncCallable, KeyOf, RequiredByKeys } from './ts-helpers';
 
 /**
  * Utility type for extracting the validations from a validator.
@@ -12,11 +12,11 @@ export type InferValidations<T> = T extends Validator<infer TModel, infer Valida
 /**
  * Represents a validator.
  */
-export type Validator<TModel extends object, Validations extends object = EmptyObject> = {
+export type Validator<TModel extends object, ModelValidations extends object = EmptyObject> = {
   /**
    * The validations for the validator.
    */
-  readonly validations: Validations;
+  readonly validations: ModelValidations;
 
   /**
    * Adds one or more validations for the given key optionally preceded with the specified cascade mode.
@@ -26,8 +26,8 @@ export type Validator<TModel extends object, Validations extends object = EmptyO
    */
   ruleFor<Key extends KeyOf<TModel>>(
     key: Key,
-    ...args: [CascadeMode, ...ValidationFn<TModel[Key], TModel>[]] | ValidationFn<TModel[Key], TModel>[]
-  ): Validator<TModel, Validations & { [P in Key]: ValidationFn<TModel[Key], TModel>[] }>;
+    ...args: [CascadeMode, ...Validation<TModel[Key], TModel>[]] | Validation<TModel[Key], TModel>[]
+  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }>;
 
   /**
    * Includes the validations from the given validator.
@@ -38,85 +38,100 @@ export type Validator<TModel extends object, Validations extends object = EmptyO
    */
   include<TIncludeModel extends TModel, IncludeValidations extends object = InferValidations<Validator<TIncludeModel>>>(
     validator: Validator<TIncludeModel, IncludeValidations>
-  ): Validator<TModel & TIncludeModel, Validations & IncludeValidations>;
+  ): Validator<TModel & TIncludeModel, ModelValidations & IncludeValidations>;
 
   /**
-   * Validates the given value against the validations.
+   * Validates the given model against the validations.
    *
    * @param model - The model to validate.
+   * @returns The validation result.
    */
   validate(model: TModel): ValidationResult;
 
   /**
-   * Validates the given value against the validations respecting the passed configuration.
+   * Validates the given model against the validations respecting the passed configuration.
    *
    * @param model - The model to validate.
    * @param config - The configuration to apply.
+   * @returns The validation result.
+   * @throws {ValidationError} if the validator is configured to throw and any failures occur.
    */
   validate(model: TModel, config: (config: ValidatorConfig<TModel>) => void): ValidationResult;
 
   /**
-   * Validates the given value against the validations and throws a ValidationError if any failures occur.
+   * Validates the given model asynchonously against the validations.
    *
    * @param model - The model to validate.
+   * @returns The validation result.
+   */
+  validateAsync(model: TModel): Promise<ValidationResult>;
+
+  /**
+   * Validates the given model asynchonously against the validations respecting the passed configuration.
+   *
+   * @param model - The model to validate.
+   * @param config - The configuration to apply.
+   * @returns The validation result.
+   * @throws {ValidationError} if the validator is configured to throw and any failures occur.
+   */
+  validateAsync(model: TModel, config: (config: ValidatorConfig<TModel>) => void): Promise<ValidationResult>;
+
+  /**
+   * Validates the given model against the validations and throws a ValidationError if any failures occur.
+   *
+   * @param model - The model to validate.
+   * @returns The validation result.
+   * @throws {ValidationError} if any failures occur.
    */
   validateAndThrow(model: TModel): ValidationResult;
 
   /**
-   * Validates the given value against the validations and throws a ValidationError if any failures occur respecting the passed configuration.
+   * Validates the given model against the validations and throws a ValidationError if any failures occur respecting the passed configuration.
    *
    * @param model - The model to validate.
    * @param config - The configuration to apply.
+   * @throws {ValidationError} if any failures occur.
    */
   validateAndThrow(model: TModel, config: (config: ValidatorConfig<TModel>) => void): ValidationResult;
 };
 
-export type ValidationFnMetadata<TModel> = {
+export type ValidationMetadata<TAsync extends boolean, TModel = unknown> = {
+  isAsync: TAsync;
   when?: (model: TModel) => boolean;
+  whenAsync?: (model: TModel) => Promise<boolean>;
   whenApplyTo?: ApplyConditionTo;
   unless?: (model: TModel) => boolean;
+  unlessAsync?: (model: TModel) => Promise<boolean>;
   unlessApplyTo?: ApplyConditionTo;
 };
 
-/**
- * Represents a validation function.
- */
-export type ValidationFn<TValue = unknown, TModel = unknown> = {
-  /**
-   * The validation function that takes a value of type TValue and returns a boolean indicating whether the value is valid.
-   */
-  (value: TValue): boolean;
-  /**
-   * The message to use when the validation fails.
-   */
+export type ValidationFunction<TValue> = ((value: TValue) => boolean) | ((value: TValue) => Promise<boolean>);
+
+type ValidationType<
+  TValue,
+  TValidationFunction extends ValidationFunction<TValue>,
+  TModel = unknown
+> = IsAsyncCallable<TValidationFunction> extends true ? AsyncValidation<TValue, TModel> : SyncValidation<TValue, TModel>;
+
+export type ValidationBase<TValue, TValidationFunction extends ValidationFunction<TValue>, TModel = unknown> = {
   message?: string;
-  /**
-   * The metadata for the validation function.
-   */
-  metadata: ValidationFnMetadata<TModel>;
-  /**
-   * Adds a when condition to the validation function.
-   *
-   * @param when - The condition to apply.
-   * @param applyTo - The target to which the condition should be applied.
-   * @returns A new validation function with the condition applied.
-   */
-  when(predicate: (model: TModel) => boolean, applyTo?: ApplyConditionTo): ValidationFn<TValue, TModel>;
-  /**
-   * Adds an unless condition to the validation function.
-   *
-   * @param unless - The condition to apply.
-   * @param applyTo - The target to which the condition should be applied.
-   * @returns A new validation function with the condition applied.
-   */
-  unless(predicate: (model: TModel) => boolean, applyTo?: ApplyConditionTo): ValidationFn<TValue, TModel>;
-  /**
-   * Adds a message to the validation function.
-   *
-   * @param message - The message to use when the validation fails.
-   */
-  withMessage(message: string): ValidationFn<TValue, TModel>;
-};
+  metadata: ValidationMetadata<IsAsyncCallable<TValidationFunction>, TModel>;
+  when(condition: (value: TModel) => boolean, applyTo?: ApplyConditionTo): ValidationType<TValue, TValidationFunction, TModel>;
+  whenAsync(
+    condition: (value: TModel) => Promise<boolean>,
+    applyTo?: ApplyConditionTo
+  ): ValidationType<TValue, TValidationFunction, TModel>;
+  unless(condition: (value: TModel) => boolean, applyTo?: ApplyConditionTo): ValidationType<TValue, TValidationFunction, TModel>;
+  unlessAsync(
+    condition: (value: TModel) => Promise<boolean>,
+    applyTo?: ApplyConditionTo
+  ): ValidationType<TValue, TValidationFunction, TModel>;
+  withMessage(message: string): ValidationType<TValue, TValidationFunction, TModel>;
+} & TValidationFunction;
+
+export type Validation<TValue = unknown, TModel = unknown> = SyncValidation<TValue, TModel> | AsyncValidation<TValue, TModel>;
+export type SyncValidation<TValue, TModel = unknown> = ValidationBase<TValue, (value: TValue) => boolean, TModel>;
+export type AsyncValidation<TValue, TModel = unknown> = ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>;
 
 /**
  * Represents the cascade mode for validation.

@@ -13,18 +13,26 @@ import { CascadeMode, Validation } from '../types/types';
  * @param throwOnFailures - If true, the function will throw a ValidationError if any failures occur.
  * @returns The validation failures.
  */
-export function validateKeySync<TModel extends object, Key extends KeyOf<TModel>, KeyValidation extends Validation<TModel[Key], TModel>>(
+export async function validateKeyAsync<
+  TModel extends object,
+  Key extends KeyOf<TModel>,
+  KeyValidation extends Validation<TModel[KeyOf<TModel>], TModel>
+>(
   model: TModel,
   key: Key,
-  keyValidations: ReadonlyArray<KeyValidation>,
+  validations: KeyValidation[],
   keyCascadeMode: CascadeMode,
   throwOnFailures?: boolean
-): ValidationFailure[] {
+): Promise<ValidationFailure[]> {
   const failures: ValidationFailure[] = [];
-  for (const validation of keyValidations) {
+  for (const validation of validations) {
     // check conditions - when
     const when = validation.metadata.when;
     if (when && !when(model)) {
+      continue;
+    }
+    const whenAsync = validation.metadata.whenAsync;
+    if (whenAsync && !(await whenAsync(model))) {
       continue;
     }
     // check conditions - unless
@@ -32,8 +40,12 @@ export function validateKeySync<TModel extends object, Key extends KeyOf<TModel>
     if (unless && unless(model)) {
       continue;
     }
+    const unlessAsync = validation.metadata.unlessAsync;
+    if (unlessAsync && (await unlessAsync(model))) {
+      continue;
+    }
 
-    if (!validation(model[key])) {
+    if (!(await validation(model[key]))) {
       const validationFailure: ValidationFailure = {
         propertyName: key,
         message: validation.message || 'Validation failed',

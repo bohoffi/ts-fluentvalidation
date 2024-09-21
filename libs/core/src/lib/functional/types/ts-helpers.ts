@@ -1,5 +1,8 @@
 export type KeyOf<T extends object> = Extract<keyof T, string> & string;
 export type EmptyObject = NonNullable<unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Callable = (...args: any) => any;
+export type IsAsyncCallable<T extends Callable> = ReturnType<T> extends Promise<unknown> ? true : false;
 
 /**
  * Represents a type that prettifies another type by preserving all its properties.

@@ -1,2 +1,12 @@
 export { BooleanProperty, DateProperty, LengthProperty, NumberProperty, StringProperty } from './properties';
-export { ApplyConditionTo, CascadeMode, ValidationFn, ValidationFnMetadata, Validator, ValidatorConfig } from './types';
+export {
+  ApplyConditionTo,
+  AsyncValidation,
+  CascadeMode,
+  SyncValidation,
+  ValidateConfig,
+  Validation,
+  ValidationMetadata,
+  Validator,
+  ValidatorConfig
+} from './types';

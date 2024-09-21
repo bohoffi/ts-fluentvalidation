@@ -1,15 +1,19 @@
 export { createValidator } from './lib/functional/create-validator';
-export { ValidationError, ValidationFailure, ValidationResult } from './lib/functional/result';
+export { AsyncValidatorInvokedSynchronouslyError, ValidationError } from './lib/functional/errors';
+export { ValidationFailure, ValidationResult } from './lib/functional/result';
 export {
   ApplyConditionTo,
+  AsyncValidation,
   BooleanProperty,
   CascadeMode,
   DateProperty,
   LengthProperty,
   NumberProperty,
   StringProperty,
-  ValidationFn,
-  ValidationFnMetadata,
+  SyncValidation,
+  ValidateConfig,
+  Validation,
+  ValidationMetadata,
   Validator,
   ValidatorConfig
 } from './lib/functional/types';
@@ -32,6 +36,7 @@ export {
   maxLength,
   minLength,
   must,
+  mustAsync,
   notEmpty,
   notEquals,
   notNull,

@@ -1,7 +1,8 @@
 import { createPersonWith } from '../testing/test-data';
 import { Person } from '../testing/test-models';
 import { createValidator } from './create-validator';
-import { equals, greaterThanOrEquals, isTrue, matches, maxLength, minLength, notEquals, notNull } from './validations';
+import { AsyncValidatorInvokedSynchronouslyError } from './errors/async-validator-invoked-synchronously-error';
+import { equals, greaterThanOrEquals, isTrue, matches, maxLength, minLength, mustAsync, notEquals, notNull } from './validations';
 
 describe(createValidator.name, () => {
   describe('validate should return result', () => {
@@ -153,42 +154,84 @@ describe(createValidator.name, () => {
   });
 
   describe('rule conditions', () => {
-    it('should not run validation when when condition is false', () => {
-      const failingValidationFn = equals<number, Person>(3).when(model => model.age > 30);
+    describe('synchronous conditions', () => {
+      it('should not run validation when when condition is false', () => {
+        const failingValidationFn = equals<number, Person>(3).when(model => model.age > 30);
 
-      const val = createValidator<Person>().ruleFor('age', failingValidationFn);
+        const val = createValidator<Person>().ruleFor('age', failingValidationFn);
 
-      const result = val.validate(createPersonWith({ age: 3 }));
-      expect(result.isValid).toBe(true);
+        const result = val.validate(createPersonWith({ age: 3 }));
+        expect(result.isValid).toBe(true);
+      });
+
+      it('should run validation when when condition is true', () => {
+        const failingValidationFn = equals<number, Person>(3).when(model => model.age > 30);
+
+        const val = createValidator<Person>().ruleFor('age', failingValidationFn);
+
+        const result = val.validate(createPersonWith({ age: 31 }));
+        expect(result.isValid).toBe(false);
+        expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 31 }]);
+      });
+
+      it('should run unless validation when unless condition is false', () => {
+        const failingValidationFn = equals<number, Person>(3).unless(model => model.age > 30);
+
+        const val = createValidator<Person>().ruleFor('age', failingValidationFn);
+
+        const result = val.validate(createPersonWith({ age: 31 }));
+        expect(result.isValid).toBe(true);
+      });
+
+      it('should not run unless validation when unless condition is true', () => {
+        const failingValidationFn = equals<number, Person>(3).unless(model => model.age > 30);
+
+        const val = createValidator<Person>().ruleFor('age', failingValidationFn);
+
+        const result = val.validate(createPersonWith({ age: 4 }));
+        expect(result.isValid).toBe(false);
+        expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 4 }]);
+      });
     });
 
-    it('should run validation when when condition is true', () => {
-      const failingValidationFn = equals<number, Person>(3).when(model => model.age > 30);
+    describe('asynchronous conditions', () => {
+      it('should not run validation when whenAsync condition is false', async () => {
+        const failingValidationFn = equals<number, Person>(3).whenAsync(model => Promise.resolve(model.age > 30));
 
-      const val = createValidator<Person>().ruleFor('age', failingValidationFn);
+        const val = createValidator<Person>().ruleFor('age', failingValidationFn);
 
-      const result = val.validate(createPersonWith({ age: 31 }));
-      expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 31 }]);
-    });
+        const result = await val.validateAsync(createPersonWith({ age: 3 }));
+        expect(result.isValid).toBe(true);
+      });
 
-    it('should run unless validation when unless condition is false', () => {
-      const failingValidationFn = equals<number, Person>(3).unless(model => model.age > 30);
+      it('should run validation when whenAsync condition is true', async () => {
+        const failingValidationFn = equals<number, Person>(3).whenAsync(model => Promise.resolve(model.age > 30));
 
-      const val = createValidator<Person>().ruleFor('age', failingValidationFn);
+        const val = createValidator<Person>().ruleFor('age', failingValidationFn);
 
-      const result = val.validate(createPersonWith({ age: 31 }));
-      expect(result.isValid).toBe(true);
-    });
+        const result = await val.validateAsync(createPersonWith({ age: 31 }));
+        expect(result.isValid).toBe(false);
+        expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 31 }]);
+      });
 
-    it('should not run unless validation when unless condition is true', () => {
-      const failingValidationFn = equals<number, Person>(3).unless(model => model.age > 30);
+      it('should run unless validation when unlessAsync condition is false', async () => {
+        const failingValidationFn = equals<number, Person>(3).unlessAsync(model => Promise.resolve(model.age > 30));
 
-      const val = createValidator<Person>().ruleFor('age', failingValidationFn);
+        const val = createValidator<Person>().ruleFor('age', failingValidationFn);
 
-      const result = val.validate(createPersonWith({ age: 4 }));
-      expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 4 }]);
+        const result = await val.validateAsync(createPersonWith({ age: 31 }));
+        expect(result.isValid).toBe(true);
+      });
+
+      it('should not run unless validation when unlessAsync condition is true', async () => {
+        const failingValidationFn = equals<number, Person>(3).unlessAsync(model => Promise.resolve(model.age > 30));
+
+        const val = createValidator<Person>().ruleFor('age', failingValidationFn);
+
+        const result = await val.validateAsync(createPersonWith({ age: 4 }));
+        expect(result.isValid).toBe(false);
+        expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 4 }]);
+      });
     });
 
     describe('ApplyConditionTo', () => {
@@ -243,6 +286,25 @@ describe(createValidator.name, () => {
         { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world' },
         { propertyName: 'name', message: 'Value must equal hello.', attemptedValue: 'world' }
       ]);
+    });
+  });
+
+  describe('throw error when async is called sync', () => {
+    it('should throw when async validation is called synchronously', () => {
+      const val = createValidator<Person>().ruleFor(
+        'name',
+        mustAsync(name => Promise.resolve(name.startsWith('J')))
+      );
+
+      expect(() => val.validate(createPersonWith({ name: 'John Doe', age: 31 }))).toThrow(AsyncValidatorInvokedSynchronouslyError);
+    });
+
+    it('should throw when async condition is called synchronously', () => {
+      const failingValidationFn = equals<number, Person>(3).whenAsync(model => Promise.resolve(model.age > 30));
+
+      const val = createValidator<Person>().ruleFor('age', failingValidationFn);
+
+      expect(() => val.validate(createPersonWith({ name: 'John Doe', age: 31 }))).toThrow(AsyncValidatorInvokedSynchronouslyError);
     });
   });
 });

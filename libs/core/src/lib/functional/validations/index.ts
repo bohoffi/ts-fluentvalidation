@@ -15,6 +15,7 @@ export { lessThan } from './less-than/less-than';
 export { matches } from './matches/matches';
 export { maxLength } from './max-length/max-length';
 export { minLength } from './min-length/min-length';
+export { mustAsync } from './must-async/must-async';
 export { must } from './must/must';
 export { notEmpty } from './not-empty/not-empty';
 export { notEquals } from './not-equals/not-equals';
@@ -22,4 +23,4 @@ export { notNull } from './not-null/not-null';
 export { not } from './not/not';
 export { required } from './required/required';
 
-export { createValidationFn } from './create-validation-fn';
+export { createAsyncValidation, createValidation } from './create-validation-fn';
