@@ -20,7 +20,7 @@ export function validateSync<TModel extends object, Validations extends object>(
   validatorConfig: ValidateConfig<TModel>,
   keyCascadeModes: Record<KeyOf<TModel>, CascadeMode>
 ): ValidationFailure[] {
-  const ruleEntries: Array<[string, Validation[]]> = validatorConfig.includeProperties
+  const ruleEntries: Array<[string, Validation<TModel[KeyOf<TModel>], TModel>[]]> = validatorConfig.includeProperties
     ? Object.entries(validations).filter(([key]) => validatorConfig.includeProperties?.includes(key as KeyOf<TModel>))
     : Object.entries(validations);
 

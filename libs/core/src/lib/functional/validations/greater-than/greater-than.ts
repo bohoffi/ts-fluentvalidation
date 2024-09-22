@@ -7,8 +7,14 @@ import { createValidation } from '../create-validation-fn';
  *
  * @param comparisonValue - The value to compare against.
  */
-export function greaterThan<TModel>(comparisonValue: number): SyncValidation<NumberProperty, TModel>;
-export function greaterThan<TModel>(comparisonValue: number, message: string): SyncValidation<NumberProperty, TModel>;
-export function greaterThan<TModel>(comparisonValue: number, message?: string): SyncValidation<NumberProperty, TModel> {
+export function greaterThan<TValue extends NumberProperty, TModel>(comparisonValue: number): SyncValidation<TValue, TModel>;
+export function greaterThan<TValue extends NumberProperty, TModel>(
+  comparisonValue: number,
+  message: string
+): SyncValidation<TValue, TModel>;
+export function greaterThan<TValue extends NumberProperty, TModel>(
+  comparisonValue: number,
+  message?: string
+): SyncValidation<TValue, TModel> {
   return createValidation(value => (value || 0) > comparisonValue, message || `Value must be greater than ${comparisonValue}.`);
 }

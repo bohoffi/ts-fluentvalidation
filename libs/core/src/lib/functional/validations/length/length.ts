@@ -8,7 +8,7 @@ import { createValidation } from '../create-validation-fn';
  * @param minLength - The minimum length.
  * @param maxLength - The maximum length.
  */
-export function length<TModel>(minLength: number, maxLength: number): SyncValidation<LengthProperty, TModel>;
+export function length<TValue extends LengthProperty, TModel>(minLength: number, maxLength: number): SyncValidation<TValue, TModel>;
 /**
  * Creates a validation function that checks if the values length is between (inclusive) the specified minimum and maximum.
  *
@@ -16,8 +16,16 @@ export function length<TModel>(minLength: number, maxLength: number): SyncValida
  * @param maxLength - The maximum length.
  * @param message - The message to display if the validation fails.
  */
-export function length<TModel>(minLength: number, maxLength: number, message: string): SyncValidation<LengthProperty, TModel>;
-export function length<TModel>(minLength: number, maxLength: number, message?: string): SyncValidation<LengthProperty, TModel> {
+export function length<TValue extends LengthProperty, TModel>(
+  minLength: number,
+  maxLength: number,
+  message: string
+): SyncValidation<TValue, TModel>;
+export function length<TValue extends LengthProperty, TModel>(
+  minLength: number,
+  maxLength: number,
+  message?: string
+): SyncValidation<TValue, TModel> {
   return createValidation(
     value => (value?.length || 0) >= minLength && (value?.length || 0) <= maxLength,
     message || `Value must have a length between (inclusive) ${minLength} and ${maxLength}.`

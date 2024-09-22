@@ -3,9 +3,11 @@ export {
   ApplyConditionTo,
   AsyncValidation,
   CascadeMode,
+  Severity,
   SyncValidation,
   ValidateConfig,
   Validation,
+  ValidationBase,
   ValidationMetadata,
   Validator,
   ValidatorConfig

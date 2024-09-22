@@ -9,10 +9,12 @@ export {
   DateProperty,
   LengthProperty,
   NumberProperty,
+  Severity,
   StringProperty,
   SyncValidation,
   ValidateConfig,
   Validation,
+  ValidationBase,
   ValidationMetadata,
   Validator,
   ValidatorConfig

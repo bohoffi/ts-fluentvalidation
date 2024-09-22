@@ -18,7 +18,7 @@ export async function validateAsync<TModel extends object, Validations extends o
   validatorConfig: ValidateConfig<TModel>,
   keyCascadeModes: Record<KeyOf<TModel>, CascadeMode>
 ) {
-  const ruleEntries: Array<[string, Validation[]]> = validatorConfig.includeProperties
+  const ruleEntries: Array<[string, Validation<TModel[KeyOf<TModel>], TModel>[]]> = validatorConfig.includeProperties
     ? Object.entries(validations).filter(([key]) => validatorConfig.includeProperties?.includes(key as KeyOf<TModel>))
     : Object.entries(validations);
 

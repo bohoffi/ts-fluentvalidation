@@ -51,7 +51,7 @@ describe(validateSync.name, () => {
   });
 
   it('should stop validation when cascadeMode is Stop and there are failures', () => {
-    const failure: ValidationFailure = { propertyName: 'prop1', message: 'error' };
+    const failure: ValidationFailure = { propertyName: 'prop1', message: 'error', severity: 'Error' };
     mockValidateKeySync.mockReturnValueOnce([failure]);
 
     validatorConfig.cascadeMode = 'Stop';

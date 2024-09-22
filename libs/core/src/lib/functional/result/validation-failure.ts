@@ -1,13 +1,8 @@
+import { Severity } from '../types/types';
+
 export type ValidationFailure = {
   propertyName: string;
   message: string;
   attemptedValue?: unknown;
+  severity: Severity;
 };
-
-export function createFailure(propertyName: string, message: string, attemptedValue?: unknown): ValidationFailure {
-  return {
-    propertyName,
-    message,
-    attemptedValue
-  };
-}

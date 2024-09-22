@@ -7,7 +7,7 @@ export class ValidationError extends Error {
   }
 
   private static buildErrorMessage(failures: ValidationFailure[]): string {
-    const failureMessages = failures.map(failure => `\n -- ${failure.propertyName}: ${failure.message}`);
+    const failureMessages = failures.map(failure => `\n -- ${failure.propertyName}: ${failure.message} Severity: ${failure.severity}`);
     return `Validation failed: ${failureMessages.join()}`;
   }
 }

@@ -95,43 +95,136 @@ export type Validator<TModel extends object, ModelValidations extends object = E
   validateAndThrow(model: TModel, config: (config: ValidatorConfig<TModel>) => void): ValidationResult;
 };
 
-export type ValidationMetadata<TAsync extends boolean, TModel = unknown> = {
+/**
+ * Represents the metadata for validation.
+ */
+export type ValidationMetadata<TAsync extends boolean, TModel> = {
+  /**
+   * Indicates if the validation is asynchronous.
+   */
   isAsync: TAsync;
+  /**
+   * A function that determines if the validation should be applied based on the model.
+   *
+   * @param model The model to validate.
+   * @returns True if the validation should be applied; otherwise, false.
+   */
   when?: (model: TModel) => boolean;
+  /**
+   * An asynchronous function that determines if the validation should be applied based on the model.
+   *
+   * @param model The model to validate.
+   * @returns Promise resolving to True if the validation should be applied; otherwise, false.
+   */
   whenAsync?: (model: TModel) => Promise<boolean>;
+  /**
+   * The target to which the condition should be applied.
+   */
   whenApplyTo?: ApplyConditionTo;
+  /**
+   * A function that determines if the validation should be skipped based on the model.
+   *
+   * @param model The model to validate.
+   * @returns True if the validation should be skipped; otherwise, false.
+   */
   unless?: (model: TModel) => boolean;
+  /**
+   * An asynchronous function that determines if the validation should be skipped based on the model.
+   *
+   * @param model The model to validate.
+   * @returns True if the validation should be skipped; otherwise, false.
+   */
   unlessAsync?: (model: TModel) => Promise<boolean>;
+  /**
+   * The target to which the condition should be applied.
+   */
   unlessApplyTo?: ApplyConditionTo;
+  /**
+   * A function that provides the severity of the validation failure.
+   *
+   * @param model The model to validate.
+   * @param value The value to validate.
+   * @returns The severity of the validation failure.
+   */
+  severityProvider?: (model: TModel, value: unknown) => Severity;
 };
 
 export type ValidationFunction<TValue> = ((value: TValue) => boolean) | ((value: TValue) => Promise<boolean>);
 
-type ValidationType<
-  TValue,
-  TValidationFunction extends ValidationFunction<TValue>,
-  TModel = unknown
-> = IsAsyncCallable<TValidationFunction> extends true ? AsyncValidation<TValue, TModel> : SyncValidation<TValue, TModel>;
-
-export type ValidationBase<TValue, TValidationFunction extends ValidationFunction<TValue>, TModel = unknown> = {
+export type ValidationBase<TValue, TValidationFunction extends ValidationFunction<TValue>, TModel> = {
+  /**
+   * The message to use when the validation fails.
+   */
   message?: string;
+  /**
+   * Metadata containing additional information about the validation.
+   */
   metadata: ValidationMetadata<IsAsyncCallable<TValidationFunction>, TModel>;
-  when(condition: (value: TModel) => boolean, applyTo?: ApplyConditionTo): ValidationType<TValue, TValidationFunction, TModel>;
-  whenAsync(
+  /**
+   * Applies a synchronous condition when to execute the validation.
+   *
+   * @param condition The condition to apply.
+   * @param applyTo The target to which the condition should be applied.
+   */
+  when<TModel>(condition: (value: TModel) => boolean, applyTo?: ApplyConditionTo): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Applies an asynchronous condition when to execute the validation.
+   *
+   * @param condition The condition to apply.
+   * @param applyTo The target to which the condition should be applied.
+   */
+  whenAsync<TModel>(
     condition: (value: TModel) => Promise<boolean>,
     applyTo?: ApplyConditionTo
-  ): ValidationType<TValue, TValidationFunction, TModel>;
-  unless(condition: (value: TModel) => boolean, applyTo?: ApplyConditionTo): ValidationType<TValue, TValidationFunction, TModel>;
-  unlessAsync(
+  ): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Applies a synchronous condition when to skip the validation.
+   *
+   * @param condition The condition to apply.
+   * @param applyTo The target to which the condition should be applied.
+   */
+  unless<TModel>(condition: (value: TModel) => boolean, applyTo?: ApplyConditionTo): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Applies an asynchronous condition when to skip the validation.
+   *
+   * @param condition The condition to apply.
+   * @param applyTo The target to which the condition should be applied.
+   */
+  unlessAsync<TModel>(
     condition: (value: TModel) => Promise<boolean>,
     applyTo?: ApplyConditionTo
-  ): ValidationType<TValue, TValidationFunction, TModel>;
-  withMessage(message: string): ValidationType<TValue, TValidationFunction, TModel>;
+  ): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Sets the message to use when the validation fails.
+   *
+   * @param message The message to use when the validation fails.
+   */
+  withMessage(message: string): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Sets the severity of the validation failure.
+   *
+   * @param severity The severity of the validation failure.
+   */
+  withSeverity(severity: Severity): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Sets the severity of the validation failure based on the model.
+   *
+   * @param severityProvider A function that provides the severity of the validation failure based on the model.
+   */
+  withSeverity<TModel>(severityProvider: (model: TModel) => Severity): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Sets the severity of the validation failure based on the model and value.
+   *
+   * @param severityProvider A function that provides the severity of the validation failure based on the model and value.
+   */
+  withSeverity<TModel, TSeverityValue>(
+    severityProvider: (model: TModel, value: TSeverityValue) => Severity
+  ): ValidationBase<TValue, TValidationFunction, TModel>;
 } & TValidationFunction;
 
-export type Validation<TValue = unknown, TModel = unknown> = SyncValidation<TValue, TModel> | AsyncValidation<TValue, TModel>;
-export type SyncValidation<TValue, TModel = unknown> = ValidationBase<TValue, (value: TValue) => boolean, TModel>;
-export type AsyncValidation<TValue, TModel = unknown> = ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>;
+export type Validation<TValue, TModel> = SyncValidation<TValue, TModel> | AsyncValidation<TValue, TModel>;
+export type SyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => boolean, TModel>;
+export type AsyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>;
 
 /**
  * Represents the cascade mode for validation.
@@ -150,6 +243,11 @@ export type CascadeMode = 'Continue' | 'Stop';
  * **Note:** The default value is `'AllValidators'`.
  */
 export type ApplyConditionTo = 'AllValidators' | 'CurrentValidator';
+
+/**
+ * Represents the severity of a validation failure.
+ */
+export type Severity = 'Error' | 'Warning' | 'Info';
 
 /**
  * Configuration for the validator.

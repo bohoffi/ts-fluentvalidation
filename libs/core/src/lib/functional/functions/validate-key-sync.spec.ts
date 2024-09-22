@@ -13,8 +13,8 @@ describe(validateKeySync.name, () => {
     age: 30
   };
 
-  const notEmptyValidationFn = notEmpty<TestModel>('Name cannot be empty');
-  const minLengthValidationFn = minLength<TestModel>(11, 'Name must be longer than 10 characters');
+  const notEmptyValidationFn = notEmpty<string, TestModel>('Name cannot be empty');
+  const minLengthValidationFn = minLength<string, TestModel>(11, 'Name must be longer than 10 characters');
   const mustIncludeDoeValidationFn = must<string, TestModel>(value => value.includes('Doe'), 'Name must include Doe');
   const mustIncludeJaneValidationFn = must<string, TestModel>(value => value.includes('Jane'), 'Name must include Jane');
 
@@ -30,7 +30,8 @@ describe(validateKeySync.name, () => {
         {
           propertyName: 'name',
           message: 'Name must be longer than 10 characters',
-          attemptedValue: 'John Doe'
+          attemptedValue: 'John Doe',
+          severity: 'Error'
         }
       ]);
     });
@@ -49,7 +50,8 @@ describe(validateKeySync.name, () => {
         {
           propertyName: 'name',
           message: 'Name must be longer than 10 characters',
-          attemptedValue: 'John Doe'
+          attemptedValue: 'John Doe',
+          severity: 'Error'
         }
       ]);
     });
@@ -60,12 +62,14 @@ describe(validateKeySync.name, () => {
         {
           propertyName: 'name',
           message: 'Name must be longer than 10 characters',
-          attemptedValue: 'John Doe'
+          attemptedValue: 'John Doe',
+          severity: 'Error'
         },
         {
           propertyName: 'name',
           message: 'Name must include Jane',
-          attemptedValue: 'John Doe'
+          attemptedValue: 'John Doe',
+          severity: 'Error'
         }
       ]);
     });
@@ -73,14 +77,14 @@ describe(validateKeySync.name, () => {
 
   describe('conditions', () => {
     it('should not run validation when when condition is false', () => {
-      const failingValidationFn = mustIncludeDoeValidationFn.when(model => model.age > 30);
+      const failingValidationFn = mustIncludeDoeValidationFn.when<TestModel>(model => model.age > 30);
 
       const result = validateKeySync(model, 'name', [failingValidationFn], 'Continue');
       expect(result).toEqual([]);
     });
 
     it('should not run validation when unless condition is true', () => {
-      const failingValidationFn = mustIncludeDoeValidationFn.unless(model => model.age > 30);
+      const failingValidationFn = mustIncludeDoeValidationFn.unless<TestModel>(model => model.age > 30);
 
       const result = validateKeySync(model, 'name', [failingValidationFn], 'Continue');
       expect(result).toEqual([]);

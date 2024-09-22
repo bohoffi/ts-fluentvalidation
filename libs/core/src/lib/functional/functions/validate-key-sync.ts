@@ -37,7 +37,8 @@ export function validateKeySync<TModel extends object, Key extends KeyOf<TModel>
       const validationFailure: ValidationFailure = {
         propertyName: key,
         message: validation.message || 'Validation failed',
-        attemptedValue: model[key]
+        attemptedValue: model[key],
+        severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
       };
       if (throwOnFailures) {
         throw new ValidationError([validationFailure]);
