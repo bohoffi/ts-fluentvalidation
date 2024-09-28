@@ -2,6 +2,7 @@ import { createPersonWith } from '../testing/test-data';
 import { Person } from '../testing/test-models';
 import { createValidator } from './create-validator';
 import { AsyncValidatorInvokedSynchronouslyError } from './errors/async-validator-invoked-synchronously-error';
+import { testValidate, testValidateAsync } from './testing/src/test-validate';
 import { SyncValidation } from './types/types';
 import { equals, greaterThanOrEquals, isTrue, matches, maxLength, minLength, must, mustAsync, notEquals, notNull } from './validations';
 
@@ -10,11 +11,11 @@ describe(createValidator.name, () => {
     it('should validate object and return result', () => {
       const val = createValidator<Person>().ruleFor('name', minLength(1));
 
-      const result = val.validate(createPersonWith({ name: '' }));
+      const result = testValidate(val, createPersonWith({ name: '' }));
       expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([
-        { propertyName: 'name', message: 'Value must have a minimum length of 1.', attemptedValue: '', severity: 'Error' }
-      ]);
+      expect(result.failures).toHaveLength(1);
+
+      result.shouldHaveValidationErrorFor('name').withMessage('Value must have a minimum length of 1.').withSeverity('Error');
     });
 
     it('should validate multiple rules and return result', () => {
@@ -23,13 +24,13 @@ describe(createValidator.name, () => {
         .ruleFor('age', notEquals<number, Person>(0))
         .ruleFor('registred', isTrue());
 
-      const result = val.validate(createPersonWith({ name: 'world', age: 0, registred: false }));
+      const result = testValidate(val, createPersonWith({ name: 'world', age: 0, registred: false }));
       expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([
-        { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world', severity: 'Error' },
-        { propertyName: 'age', message: 'Value must not equal 0.', attemptedValue: 0, severity: 'Error' },
-        { propertyName: 'registred', message: 'Value must be true.', attemptedValue: false, severity: 'Error' }
-      ]);
+      expect(result.failures).toHaveLength(3);
+
+      result.shouldHaveValidationErrorFor('name').withMessage('Value must have a minimum length of 6.').withSeverity('Error');
+      result.shouldHaveValidationErrorFor('age').withMessage('Value must not equal 0.').withSeverity('Error');
+      result.shouldHaveValidationErrorFor('registred').withMessage('Value must be true.').withSeverity('Error');
     });
   });
 
@@ -54,11 +55,11 @@ describe(createValidator.name, () => {
       }
 
       const validator = createValidator<Person>().ruleFor('name', shouldNotStartWith('John'));
-      const result = validator.validate(createPersonWith({ name: 'John Doe' }));
+      const result = testValidate(validator, createPersonWith({ name: 'John Doe' }));
       expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([
-        { propertyName: 'name', message: 'The value shall not start with John.', attemptedValue: 'John Doe', severity: 'Error' }
-      ]);
+      expect(result.failures).toHaveLength(1);
+
+      result.shouldHaveValidationErrorFor('name').withMessage('The value shall not start with John.').withSeverity('Error');
     });
   });
 
@@ -109,32 +110,27 @@ describe(createValidator.name, () => {
           .ruleFor('name', minLength(1))
           .ruleFor('age', equals<number, Person>(3));
 
-        let result = val.validate(
-          createPersonWith({
-            name: '',
-            age: 5
-          })
-        );
+        const person = createPersonWith({
+          name: '',
+          age: 5
+        });
+        let result = testValidate(val, person);
         expect(result.isValid).toBe(false);
-        expect(result.failures.find(failure => failure.propertyName === 'name')).toBeDefined();
-        expect(result.failures.find(failure => failure.propertyName === 'age')).toBeUndefined();
+        expect(result.failures).toHaveLength(1);
+        result.shouldHaveValidationErrorFor('name');
+        result.shouldNotHaveValidationErrorFor('age');
 
         val = createValidator<Person>({ includeProperties: ['name', 'age'] })
           .ruleFor('name', minLength(1))
           .ruleFor('age', equals<number, Person>(3));
 
-        result = val.validate(
-          createPersonWith({
-            name: '',
-            age: 5
-          }),
-          config => {
-            config.includeProperties = ['name', 'age'];
-          }
-        );
+        result = testValidate(val, person, config => {
+          config.includeProperties = ['name', 'age'];
+        });
         expect(result.isValid).toBe(false);
-        expect(result.failures.find(failure => failure.propertyName === 'name')).toBeDefined();
-        expect(result.failures.find(failure => failure.propertyName === 'age')).toBeDefined();
+        expect(result.failures).toHaveLength(2);
+        result.shouldHaveValidationErrorFor('name');
+        result.shouldHaveValidationErrorFor('age');
       });
     });
 
@@ -145,11 +141,12 @@ describe(createValidator.name, () => {
           .ruleFor('age', notEquals<number, Person>(0))
           .ruleFor('registred', isTrue());
 
-        const result = val.validate(createPersonWith({ name: 'world', age: 0, registred: false }));
+        const result = testValidate(val, createPersonWith({ name: 'world', age: 0, registred: false }));
         expect(result.isValid).toBe(false);
-        expect(result.failures).toEqual([
-          { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world', severity: 'Error' }
-        ]);
+        expect(result.failures).toHaveLength(1);
+        result.shouldHaveValidationErrorFor('name').withMessage('Value must have a minimum length of 6.').withSeverity('Error');
+        result.shouldNotHaveValidationErrorFor('age');
+        result.shouldNotHaveValidationErrorFor('registred');
       });
 
       it('should continue validation on failure', () => {
@@ -158,13 +155,12 @@ describe(createValidator.name, () => {
           .ruleFor('age', notEquals<number, Person>(0))
           .ruleFor('registred', isTrue());
 
-        const result = val.validate(createPersonWith({ name: 'world', age: 0, registred: false }));
+        const result = testValidate(val, createPersonWith({ name: 'world', age: 0, registred: false }));
         expect(result.isValid).toBe(false);
-        expect(result.failures).toEqual([
-          { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world', severity: 'Error' },
-          { propertyName: 'age', message: 'Value must not equal 0.', attemptedValue: 0, severity: 'Error' },
-          { propertyName: 'registred', message: 'Value must be true.', attemptedValue: false, severity: 'Error' }
-        ]);
+        expect(result.failures).toHaveLength(3);
+        result.shouldHaveValidationErrorFor('name').withMessage('Value must have a minimum length of 6.').withSeverity('Error');
+        result.shouldHaveValidationErrorFor('age').withMessage('Value must not equal 0.').withSeverity('Error');
+        result.shouldHaveValidationErrorFor('registred').withMessage('Value must be true.').withSeverity('Error');
       });
     });
   });
@@ -187,9 +183,10 @@ describe(createValidator.name, () => {
           equals<number, Person>(3).when(model => model.age > 30)
         );
 
-        const result = val.validate(createPersonWith({ age: 31 }));
+        const result = testValidate(val, createPersonWith({ age: 31 }));
         expect(result.isValid).toBe(false);
-        expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 31, severity: 'Error' }]);
+        expect(result.failures).toHaveLength(1);
+        result.shouldHaveValidationErrorFor('age').withMessage('Value must equal 3.').withSeverity('Error');
       });
 
       it('should run unless validation when unless condition is false', () => {
@@ -208,9 +205,10 @@ describe(createValidator.name, () => {
           equals<number, Person>(3).unless(model => model.age > 30)
         );
 
-        const result = val.validate(createPersonWith({ age: 4 }));
+        const result = testValidate(val, createPersonWith({ age: 4 }));
         expect(result.isValid).toBe(false);
-        expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 4, severity: 'Error' }]);
+        expect(result.failures).toHaveLength(1);
+        result.shouldHaveValidationErrorFor('age').withMessage('Value must equal 3.').withSeverity('Error');
       });
     });
 
@@ -231,9 +229,10 @@ describe(createValidator.name, () => {
           equals<number, Person>(3).whenAsync(model => Promise.resolve(model.age > 30))
         );
 
-        const result = await val.validateAsync(createPersonWith({ age: 31 }));
+        const result = await testValidateAsync(val, createPersonWith({ age: 31 }));
         expect(result.isValid).toBe(false);
-        expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 31, severity: 'Error' }]);
+        expect(result.failures).toHaveLength(1);
+        result.shouldHaveValidationErrorFor('age').withMessage('Value must equal 3.').withSeverity('Error');
       });
 
       it('should run unless validation when unlessAsync condition is false', async () => {
@@ -252,9 +251,10 @@ describe(createValidator.name, () => {
           equals<number, Person>(3).unlessAsync(model => Promise.resolve(model.age > 30))
         );
 
-        const result = await val.validateAsync(createPersonWith({ age: 4 }));
+        const result = await testValidateAsync(val, createPersonWith({ age: 4 }));
         expect(result.isValid).toBe(false);
-        expect(result.failures).toEqual([{ propertyName: 'age', message: 'Value must equal 3.', attemptedValue: 4, severity: 'Error' }]);
+        expect(result.failures).toHaveLength(1);
+        result.shouldHaveValidationErrorFor('age').withMessage('Value must equal 3.').withSeverity('Error');
       });
     });
 
@@ -266,12 +266,11 @@ describe(createValidator.name, () => {
           matches(/hello/).when(model => model.age > 30)
         );
 
-        const result = val.validate(createPersonWith({ name: 'John Doe', age: 31 }));
+        const result = testValidate(val, createPersonWith({ name: 'John Doe', age: 31 }));
         expect(result.isValid).toBe(false);
-        expect(result.failures).toEqual([
-          { propertyName: 'name', message: 'Value must have a maximum length of 6.', attemptedValue: 'John Doe', severity: 'Error' },
-          { propertyName: 'name', message: 'Value must match pattern.', attemptedValue: 'John Doe', severity: 'Error' }
-        ]);
+        expect(result.failures).toHaveLength(2);
+        result.shouldHaveValidationErrorFor('name').withMessage('Value must have a maximum length of 6.').withSeverity('Error');
+        result.shouldHaveValidationErrorFor('name').withMessage('Value must match pattern.').withSeverity('Error');
       });
 
       it('should apply condition to current validator only', () => {
@@ -281,11 +280,10 @@ describe(createValidator.name, () => {
           matches(/hello/).when(model => model.age > 35, 'CurrentValidator')
         );
 
-        const result = val.validate(createPersonWith({ name: 'John Doe', age: 31 }));
+        const result = testValidate(val, createPersonWith({ name: 'John Doe', age: 31 }));
         expect(result.isValid).toBe(false);
-        expect(result.failures).toEqual([
-          { propertyName: 'name', message: 'Value must have a maximum length of 6.', attemptedValue: 'John Doe', severity: 'Error' }
-        ]);
+        expect(result.failures).toHaveLength(1);
+        result.shouldHaveValidationErrorFor('name').withMessage('Value must have a maximum length of 6.').withSeverity('Error');
       });
     });
   });
@@ -294,22 +292,20 @@ describe(createValidator.name, () => {
     it('should stop validation on first failure', () => {
       const val = createValidator<Person>().ruleFor('name', 'Stop', minLength(6), equals<string, Person>('hello'));
 
-      const result = val.validate(createPersonWith({ name: 'world' }));
+      const result = testValidate(val, createPersonWith({ name: 'world' }));
       expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([
-        { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world', severity: 'Error' }
-      ]);
+      expect(result.failures).toHaveLength(1);
+      result.shouldHaveValidationErrorFor('name').withMessage('Value must have a minimum length of 6.').withSeverity('Error');
     });
 
     it('should continue validation on failure', () => {
       const val = createValidator<Person>().ruleFor('name', minLength(6), equals<string, Person>('hello'));
 
-      const result = val.validate(createPersonWith({ name: 'world' }));
+      const result = testValidate(val, createPersonWith({ name: 'world' }));
       expect(result.isValid).toBe(false);
-      expect(result.failures).toEqual([
-        { propertyName: 'name', message: 'Value must have a minimum length of 6.', attemptedValue: 'world', severity: 'Error' },
-        { propertyName: 'name', message: 'Value must equal hello.', attemptedValue: 'world', severity: 'Error' }
-      ]);
+      expect(result.failures).toHaveLength(2);
+      result.shouldHaveValidationErrorFor('name').withMessage('Value must have a minimum length of 6.').withSeverity('Error');
+      result.shouldHaveValidationErrorFor('name').withMessage('Value must equal hello.').withSeverity('Error');
     });
   });
 

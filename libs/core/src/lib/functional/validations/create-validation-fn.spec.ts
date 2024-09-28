@@ -1,4 +1,5 @@
 import { createValidator } from '../create-validator';
+import { testValidate, testValidateAsync } from '../testing/src/test-validate';
 import { createAsyncValidation, createValidation } from './create-validation-fn';
 
 interface TestModel {
@@ -67,17 +68,17 @@ describe(createValidation.name, () => {
     it('should create a validation function with a severity', () => {
       const isNonEmptyString = createValidation<string, TestModel>(value => value.length > 0).withSeverity('Warning');
       const validator = createValidator<TestModel>().ruleFor('name', isNonEmptyString);
-      const result = validator.validate({ name: '' });
+      const result = testValidate(validator, { name: '' });
       expect(result.isValid).toBe(false);
-      expect(result.failures[0].severity).toBe('Warning');
+      result.shouldHaveValidationErrorFor('name').withSeverity('Warning');
     });
 
     it('should create a validation function with a severity provider using model', () => {
       const isNonEmptyString = createValidation<string, TestModel>(value => value.length > 0).withSeverity<TestModel>(model => 'Warning');
       const validator = createValidator<TestModel>().ruleFor('name', isNonEmptyString);
-      const result = validator.validate({ name: '' });
+      const result = testValidate(validator, { name: '' });
       expect(result.isValid).toBe(false);
-      expect(result.failures[0].severity).toBe('Warning');
+      result.shouldHaveValidationErrorFor('name').withSeverity('Warning');
     });
 
     it('should create a validation function with a severity provider using model and value', () => {
@@ -85,9 +86,9 @@ describe(createValidation.name, () => {
         (model, value) => 'Warning'
       );
       const validator = createValidator<TestModel>().ruleFor('name', isNonEmptyString);
-      const result = validator.validate({ name: '' });
+      const result = testValidate(validator, { name: '' });
       expect(result.isValid).toBe(false);
-      expect(result.failures[0].severity).toBe('Warning');
+      result.shouldHaveValidationErrorFor('name').withSeverity('Warning');
     });
   });
 });
@@ -152,9 +153,9 @@ describe(createAsyncValidation.name, () => {
     it('should create a validation function with a severity', async () => {
       const isNonEmptyString = createAsyncValidation<string, TestModel>(value => Promise.resolve(value.length > 0)).withSeverity('Warning');
       const validator = createValidator<TestModel>().ruleFor('name', isNonEmptyString);
-      const result = await validator.validateAsync({ name: '' });
+      const result = await testValidateAsync(validator, { name: '' });
       expect(result.isValid).toBe(false);
-      expect(result.failures[0].severity).toBe('Warning');
+      result.shouldHaveValidationErrorFor('name').withSeverity('Warning');
     });
 
     it('should create a validation function with a severity provider using model', async () => {
@@ -162,9 +163,9 @@ describe(createAsyncValidation.name, () => {
         model => 'Warning'
       );
       const validator = createValidator<TestModel>().ruleFor('name', isNonEmptyString);
-      const result = await validator.validateAsync({ name: '' });
+      const result = await testValidateAsync(validator, { name: '' });
       expect(result.isValid).toBe(false);
-      expect(result.failures[0].severity).toBe('Warning');
+      result.shouldHaveValidationErrorFor('name').withSeverity('Warning');
     });
 
     it('should create a validation function with a severity provider using model and value', async () => {
@@ -173,9 +174,9 @@ describe(createAsyncValidation.name, () => {
         string
       >((model, value) => 'Warning');
       const validator = createValidator<TestModel>().ruleFor('name', isNonEmptyString);
-      const result = await validator.validateAsync({ name: '' });
+      const result = await testValidateAsync(validator, { name: '' });
       expect(result.isValid).toBe(false);
-      expect(result.failures[0].severity).toBe('Warning');
+      result.shouldHaveValidationErrorFor('name').withSeverity('Warning');
     });
   });
 });
