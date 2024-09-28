@@ -18,6 +18,21 @@ describe(createValidator.name, () => {
       result.shouldHaveValidationErrorFor('name').withMessage('Value must have a minimum length of 1.').withSeverity('Error');
     });
 
+    it('should validate object async and return result', async () => {
+      const val = createValidator<Person>().ruleFor(
+        'name',
+        minLength(1),
+        mustAsync(name => Promise.resolve(name.startsWith('J')))
+      );
+
+      const result = await testValidateAsync(val, createPersonWith({ name: '' }));
+      expect(result.isValid).toBe(false);
+      expect(result.failures).toHaveLength(2);
+
+      result.shouldHaveValidationErrorFor('name').withMessage('Value must have a minimum length of 1.').withSeverity('Error');
+      result.shouldHaveValidationErrorFor('name').withMessage('Value must meet the specified criteria.').withSeverity('Error');
+    });
+
     it('should validate multiple rules and return result', () => {
       const val = createValidator<Person>()
         .ruleFor('name', minLength(6))
