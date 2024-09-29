@@ -1,4 +1,22 @@
 export type KeyOf<T extends object> = Extract<keyof T, string> & string;
+
+/**
+ * Represents a type that extracts the array property values of an object type `T`.
+ *
+ * @typeParam T - The object type from which to extract the array property values.
+ * @returns A union type of array property values of `T`.
+ */
+export type ArrayKeyOf<T extends object> = {
+  [K in KeyOf<T>]: T[K] extends Array<unknown> ? K : never;
+}[KeyOf<T>];
+
+/**
+ * This type alias will allow you to create strings that represent a key of `T` followed by an index in square brackets.
+ *
+ * For example, if `T` has a key `order` for an array property, `ArrayKeyOfWithIndex<T>` would allow strings like `order[0]`, `order[1]`, etc.
+ */
+export type ArrayKeyOfWithIndex<T extends object> = `${ArrayKeyOf<T>}[${number}]`;
+
 export type EmptyObject = NonNullable<unknown>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Callable = (...args: any) => any;

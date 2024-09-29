@@ -1,5 +1,5 @@
 import { ValidationResult } from '../result/validation-result';
-import { EmptyObject, IsAsyncCallable, KeyOf, RequiredByKeys } from './ts-helpers';
+import { ArrayKeyOf, EmptyObject, IsAsyncCallable, KeyOf, RequiredByKeys } from './ts-helpers';
 
 /**
  * Utility type for extracting the validations from a validator.
@@ -28,6 +28,17 @@ export type Validator<TModel extends object, ModelValidations extends object = E
     key: Key,
     ...args: [CascadeMode, ...Validation<TModel[Key], TModel>[]] | Validation<TModel[Key], TModel>[]
   ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }>;
+
+  /**
+   * Adds one or more array validations for the given key optionally preceded with the specified cascade mode.
+   *
+   * @param key - The key to validate.
+   * @param args - Validations to add optionally preceded by the cascade mode for the given key.
+   */
+  ruleForEach<Key extends ArrayKeyOf<TModel>, TItem extends TModel[Key] extends Array<infer Item> ? Item : never>(
+    key: Key,
+    ...args: [CascadeMode, ...Validation<TItem, TModel>[]] | Validation<TItem, TModel>[]
+  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }>;
 
   /**
    * Includes the validations from the given validator.
@@ -86,13 +97,13 @@ export type Validator<TModel extends object, ModelValidations extends object = E
   validateAndThrow(model: TModel): ValidationResult;
 
   /**
-   * Validates the given model against the validations and throws a ValidationError if any failures occur respecting the passed configuration.
+   * Validates the given model asynchronously against the validations and throws a ValidationError if any failures occur.
    *
    * @param model - The model to validate.
-   * @param config - The configuration to apply.
+   * @returns The validation result.
    * @throws {ValidationError} if any failures occur.
    */
-  validateAndThrow(model: TModel, config: (config: ValidatorConfig<TModel>) => void): ValidationResult;
+  validateAndThrowAsync(model: TModel): Promise<ValidationResult>;
 };
 
 /**

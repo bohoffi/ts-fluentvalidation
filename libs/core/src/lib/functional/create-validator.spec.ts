@@ -78,6 +78,46 @@ describe(createValidator.name, () => {
     });
   });
 
+  describe('ruleForEach', () => {
+    it('should add rule for each item', () => {
+      const val = createValidator<Person>().ruleForEach('pets', minLength(6));
+
+      expect(val.validations).toEqual({ pets: [expect.any(Function)] });
+      expect(val.validations.pets.length).toBe(1);
+    });
+
+    it('should add multiple rules for each item', () => {
+      const val = createValidator<Person>().ruleForEach('pets', minLength(6), matches(/^pet_/));
+
+      expect(val.validations).toEqual({ pets: [expect.any(Function), expect.any(Function)] });
+      expect(val.validations.pets.length).toBe(2);
+    });
+
+    it('should work with custom validations', () => {
+      function shouldNotStartWith<TModel>(referenceValue: string): SyncValidation<string, TModel> {
+        return must((value: string) => !value.startsWith(referenceValue), `The value shall not start with ${referenceValue}.`);
+      }
+
+      const validator = createValidator<Person>().ruleForEach('pets', shouldNotStartWith('John'));
+      const result = testValidate(validator, createPersonWith({ pets: ['John Doe'] }));
+      expect(result.isValid).toBe(false);
+      expect(result.failures).toHaveLength(1);
+
+      result.shouldHaveValidationErrorFor('pets[0]').withMessage('The value shall not start with John.').withSeverity('Error');
+    });
+
+    it('should validate async', async () => {
+      const val = createValidator<Person>().ruleForEach('pets', minLength(6));
+
+      const result = await testValidateAsync(val, createPersonWith({ pets: ['pet1', 'pet2abc', 'pet3'] }));
+      expect(result.isValid).toBe(false);
+      expect(result.failures).toHaveLength(2);
+
+      result.shouldHaveValidationErrorFor('pets[0]').withMessage('Value must have a minimum length of 6.').withSeverity('Error');
+      result.shouldHaveValidationErrorFor('pets[2]').withMessage('Value must have a minimum length of 6.').withSeverity('Error');
+    });
+  });
+
   describe('include', () => {
     it('should include validator', () => {
       const personAgeValidator = createValidator<Person>().ruleFor('age', greaterThanOrEquals(18));

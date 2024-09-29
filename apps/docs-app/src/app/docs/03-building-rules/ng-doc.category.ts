@@ -4,7 +4,7 @@ const BuildingValidations: NgDocCategory = {
   title: 'Building validations',
   expandable: true,
   route: 'building-validations',
-  order: 2
+  order: 3
 };
 
 export default BuildingValidations;

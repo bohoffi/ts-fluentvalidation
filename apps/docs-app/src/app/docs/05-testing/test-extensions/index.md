@@ -44,6 +44,9 @@ result.shouldHaveValidationErrorFor('name');
 
 // Assert that there should be no failure for the age property
 result.shouldNotHaveValidationErrorFor('age');
+
+// You can also use an array propertys key with an index to check for a specific array item
+result.shouldHaveValidationErrorFor('pets[0]');
 ```
 
 You can also chain additional function calls to the result of `shouldHaveValidationErrorFor` that test individual components of the validation failure including the error message and severity:

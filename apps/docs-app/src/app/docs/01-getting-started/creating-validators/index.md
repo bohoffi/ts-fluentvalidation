@@ -89,6 +89,13 @@ if (!result.isValid) {
 }
 ```
 
+You can also call `toString()` on the `ValidationResult` to combine all error messages into a single string. By default, the messages will be separated with new lines, but if you want to customize this behaviour you can pass a different separator character to `toString()`.
+
+```typescript
+const result = personValidator.validate(person);
+const allMessages: string = result.toString('~');
+```
+
 ## Chaining validations
 
 It's possible to assign multiple validations to an objects property using chaining:
@@ -98,3 +105,36 @@ personValidator.ruleFor('name', notEmpty(), notEquals<string, Person>('foo'));
 ```
 
 This would ensure that the name is neither empty nor equals the string 'foo'.
+
+## Throwing errors
+
+Instead of returning a `ValidationResult` you can alternatively tell `@ts-fluentvalidation/core` to throw an error if validation fails by using the `validateAndThrow()` / `throwAndValidateAsync()` function:
+
+```typescript
+const personValidator = createValidator<Person>().ruleFor('name', notEmpty());
+personValidator.validateAndThrow({ name: '' });
+```
+
+This throws a `ValidationError` which contains the validation failures in the `failures` property.
+
+The `validateAndThrow()` function is a helpful wrapper around `@ts-fluentvalidation/core`'s options API and is the equivalent of doing the following:
+
+```typescript
+// will set the behaviour validator wide --> each subsequent `validate()` call will throw on failure
+// except when explicitly overwritten by the validate call itself
+createValidator<Person>({ throwOnFailures: true });
+
+// will set the behaviour for the specific validate call
+personValidator.validate({ name: '' }, config => {
+  config.throwOnFailures = true;
+});
+```
+
+If you need to combine throwing an error with validating individual properties you can combine both options using this syntax:
+
+```typescript
+personValidator.validate({ name: '' }, config => {
+  config.throwOnFailures = true;
+  config.includeProperties = ['name'];
+});
+```

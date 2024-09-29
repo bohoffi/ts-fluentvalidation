@@ -1,6 +1,6 @@
 import { ValidationError } from '../errors/validation-error';
 import { ValidationFailure } from '../result/validation-failure';
-import { KeyOf } from '../types/ts-helpers';
+import { ArrayKeyOf, KeyOf } from '../types/ts-helpers';
 import { CascadeMode, Validation } from '../types/types';
 
 /**
@@ -13,7 +13,11 @@ import { CascadeMode, Validation } from '../types/types';
  * @param throwOnFailures - If true, the function will throw a ValidationError if any failures occur.
  * @returns The validation failures.
  */
-export function validateKeySync<TModel extends object, Key extends KeyOf<TModel>, KeyValidation extends Validation<TModel[Key], TModel>>(
+export function validateKeySync<
+  TModel extends object,
+  Key extends KeyOf<TModel> | ArrayKeyOf<TModel>,
+  KeyValidation extends Validation<TModel[Key], TModel>
+>(
   model: TModel,
   key: Key,
   keyValidations: ReadonlyArray<KeyValidation>,
@@ -33,17 +37,62 @@ export function validateKeySync<TModel extends object, Key extends KeyOf<TModel>
       continue;
     }
 
-    if (!validation(model[key])) {
-      const validationFailure: ValidationFailure = {
-        propertyName: key,
+    const propertyValue = model[key];
+    const failuresForProperty = Array.isArray(model[key])
+      ? validateCollectionPropertySync(
+          model,
+          key as ArrayKeyOf<TModel>,
+          propertyValue as TModel[ArrayKeyOf<TModel>] & any[],
+          validation,
+          keyCascadeMode
+        )
+      : [validatePropertySync(model, key, propertyValue, validation)];
+    const filteredFailures = failuresForProperty.filter<ValidationFailure>(f => f !== undefined);
+
+    if (filteredFailures.length > 0 && throwOnFailures) {
+      throw new ValidationError(filteredFailures);
+    }
+    failures.push(...filteredFailures);
+    if (failures.length > 0 && keyCascadeMode === 'Stop') {
+      break;
+    }
+  }
+  return failures;
+}
+
+function validatePropertySync<TModel extends object, Key extends KeyOf<TModel>, KeyValidation extends Validation<TModel[Key], TModel>>(
+  model: TModel,
+  key: Key,
+  propertyValue: TModel[Key],
+  validation: KeyValidation
+): ValidationFailure | undefined {
+  if (!validation(propertyValue)) {
+    return {
+      propertyName: key,
+      message: validation.message || 'Validation failed',
+      attemptedValue: model[key],
+      severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
+    };
+  }
+  return undefined;
+}
+
+function validateCollectionPropertySync<
+  TModel extends object,
+  Key extends ArrayKeyOf<TModel>,
+  TProperty extends TModel[Key] & Array<any>,
+  TItem extends TProperty[0],
+  KeyValidation extends Validation<TItem, TModel>
+>(model: TModel, key: Key, propertyValue: TProperty, validation: KeyValidation, keyCascadeMode: CascadeMode): ValidationFailure[] {
+  const failures: ValidationFailure[] = [];
+  for (const [index, item] of propertyValue.entries()) {
+    if (!validation(item)) {
+      failures.push({
+        propertyName: `${key}[${index}]`,
         message: validation.message || 'Validation failed',
         attemptedValue: model[key],
         severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
-      };
-      if (throwOnFailures) {
-        throw new ValidationError([validationFailure]);
-      }
-      failures.push(validationFailure);
+      });
       if (failures.length > 0 && keyCascadeMode === 'Stop') {
         break;
       }
