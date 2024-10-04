@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { isTruthy } from './is-truthy';
 
 describe(isTruthy.name, () => {
@@ -34,5 +35,10 @@ describe(isTruthy.name, () => {
 
   it('should return false for an empty string', () => {
     expect(isTruthy()('')).toBe(false);
+  });
+
+  it('should return defined message', () => {
+    const validation = isTruthy('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

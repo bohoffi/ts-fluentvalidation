@@ -137,6 +137,10 @@ export type ValidationMetadata<TAsync extends boolean, TModel> = {
    */
   isAsync: TAsync;
   /**
+   * The message to use when the validation fails.
+   */
+  message?: string;
+  /**
    * A function that determines if the validation should be applied based on the model.
    *
    * @param model The model to validate.
@@ -185,10 +189,6 @@ export type ValidationMetadata<TAsync extends boolean, TModel> = {
 export type ValidationFunction<TValue> = ((value: TValue) => boolean) | ((value: TValue) => Promise<boolean>);
 
 export type ValidationBase<TValue, TValidationFunction extends ValidationFunction<TValue>, TModel> = {
-  /**
-   * The message to use when the validation fails.
-   */
-  message?: string;
   /**
    * Metadata containing additional information about the validation.
    */

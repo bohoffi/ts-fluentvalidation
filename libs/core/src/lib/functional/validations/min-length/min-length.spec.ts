@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { minLength } from './min-length';
 
 describe(minLength.name, () => {
@@ -28,8 +29,7 @@ describe(minLength.name, () => {
   });
 
   it('should return defined message', () => {
-    const val = minLength(3, 'Custom message');
-
-    expect(val.message).toBe('Custom message');
+    const validation = minLength(3, 'Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

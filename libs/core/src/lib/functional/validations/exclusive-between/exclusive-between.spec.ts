@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { exclusiveBetween } from './exclusive-between';
 
 describe(exclusiveBetween.name, () => {
@@ -25,6 +26,6 @@ describe(exclusiveBetween.name, () => {
 
   it('should return custom message', () => {
     const validation = exclusiveBetween(4, 2, 'Custom message');
-    expect(validation.message).toBe('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

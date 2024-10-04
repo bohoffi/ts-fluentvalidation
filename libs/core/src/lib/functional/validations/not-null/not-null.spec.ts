@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { notNull } from './not-null';
 
 describe(notNull.name, () => {
@@ -19,5 +20,10 @@ describe(notNull.name, () => {
 
   it('should return true for an empty string', () => {
     expect(notNull()('')).toBe(true);
+  });
+
+  it('should return defined message', () => {
+    const validation = notNull('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { equals } from './equals';
 
 describe(equals.name, () => {
@@ -13,6 +14,6 @@ describe(equals.name, () => {
 
   it('should return custom message', () => {
     const validation = equals(42, 'Custom message');
-    expect(validation.message).toBe('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

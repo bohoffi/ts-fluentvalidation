@@ -69,7 +69,7 @@ function validatePropertySync<TModel extends object, Key extends KeyOf<TModel>, 
   if (!validation(propertyValue)) {
     return {
       propertyName: key,
-      message: validation.message || 'Validation failed',
+      message: validation.metadata.message || 'Validation failed',
       attemptedValue: model[key],
       severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
     };
@@ -89,7 +89,7 @@ function validateCollectionPropertySync<
     if (!validation(item)) {
       failures.push({
         propertyName: `${key}[${index}]`,
-        message: validation.message || 'Validation failed',
+        message: validation.metadata.message || 'Validation failed',
         attemptedValue: model[key],
         severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
       });

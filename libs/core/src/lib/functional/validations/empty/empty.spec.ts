@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { empty } from './empty';
 
 describe(empty.name, () => {
@@ -26,8 +27,7 @@ describe(empty.name, () => {
   });
 
   it('should return defined message', () => {
-    const val = empty('Custom message');
-
-    expect(val.message).toBe('Custom message');
+    const validation = empty('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { isTrue } from './is-true';
 
 describe(isTrue.name, () => {
@@ -13,6 +14,6 @@ describe(isTrue.name, () => {
 
   it('should return custom message', () => {
     const validation = isTrue('Custom message');
-    expect(validation.message).toBe('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

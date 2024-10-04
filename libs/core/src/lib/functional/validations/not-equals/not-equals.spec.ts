@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { notEquals } from './not-equals';
 
 describe(notEquals.name, () => {
@@ -13,6 +14,6 @@ describe(notEquals.name, () => {
 
   it('should return custom message', () => {
     const validation = notEquals(42, 'Custom message');
-    expect(validation.message).toBe('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

@@ -76,7 +76,7 @@ async function validatePropertyAsync<
   if (!(await validation(propertyValue))) {
     return {
       propertyName: key,
-      message: validation.message || 'Validation failed',
+      message: validation.metadata.message || 'Validation failed',
       attemptedValue: model[key],
       severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
     };
@@ -96,7 +96,7 @@ async function validateCollectionPropertyAsync<
     if (!(await validation(item))) {
       failures.push({
         propertyName: `${key}[${index}]`,
-        message: validation.message || 'Validation failed',
+        message: validation.metadata.message || 'Validation failed',
         attemptedValue: model[key],
         severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
       });

@@ -9,7 +9,7 @@ import {
   ValidationMetadata
 } from '../types/types';
 
-type ValidationOptions<TModel> = Pick<SyncValidation<unknown, TModel>, 'message'>;
+type ValidationOptions<TModel> = Pick<ValidationMetadata<boolean, TModel>, 'message'>;
 
 /**
  * Creates a validation function.
@@ -105,8 +105,7 @@ function createValidationBase<
   const { message, ...otherOptions } = typeof messageOrOptions === 'string' ? { message: messageOrOptions } : messageOrOptions || {};
 
   const validation = (value: TValue) => fn(value);
-  validation.message = message;
-  validation.metadata = { isAsync } as ValidationMetadata<IsAsyncCallable<TValidationFunction>, TModel>;
+  validation.metadata = { isAsync, message } as ValidationMetadata<IsAsyncCallable<TValidationFunction>, TModel>;
   validation.when = (
     when: (model: TModel) => boolean,
     whenApplyTo: ApplyConditionTo = 'AllValidators'
@@ -160,7 +159,7 @@ function createValidationBase<
       ...otherOptions,
       message
     });
-    withMessageValidation.metadata = { ...validation.metadata };
+    withMessageValidation.metadata = { ...validation.metadata, message };
     return withMessageValidation;
   };
   validation.withSeverity = (

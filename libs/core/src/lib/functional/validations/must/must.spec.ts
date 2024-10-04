@@ -1,4 +1,6 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { must } from './must';
+import exp = require('constants');
 
 describe(must.name, () => {
   it('should return a validation function that returns true if the value meets the specified criteria', () => {
@@ -19,6 +21,6 @@ describe(must.name, () => {
 
   it('should return custom message', () => {
     const validation = must<number>(value => (value || 0) > 0, 'Custom message');
-    expect(validation.message).toBe('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

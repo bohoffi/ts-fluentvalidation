@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { maxLength } from './max-length';
 
 describe(maxLength.name, () => {
@@ -14,8 +15,7 @@ describe(maxLength.name, () => {
   });
 
   it('should return defined message', () => {
-    const val = maxLength(3, 'Custom message');
-
-    expect(val.message).toBe('Custom message');
+    const validation = maxLength(3, 'Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

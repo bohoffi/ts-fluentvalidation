@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { length } from './length';
 
 describe(length.name, () => {
@@ -14,8 +15,7 @@ describe(length.name, () => {
   });
 
   it('should return defined message', () => {
-    const val = length(1, 3, 'Custom message');
-
-    expect(val.message).toBe('Custom message');
+    const validation = length(1, 3, 'Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

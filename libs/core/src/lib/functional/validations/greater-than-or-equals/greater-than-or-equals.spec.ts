@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { greaterThanOrEquals } from './greater-than-or-equals';
 
 describe(greaterThanOrEquals.name, () => {
@@ -18,6 +19,6 @@ describe(greaterThanOrEquals.name, () => {
 
   it('should return custom message', () => {
     const validation = greaterThanOrEquals(42, 'Custom message');
-    expect(validation.message).toBe('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });

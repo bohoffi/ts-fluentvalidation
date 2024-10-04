@@ -53,7 +53,7 @@ export async function expectValidationToFailAsync<TValue, TModel extends object>
 }
 
 export function expectValidationMessageToBe<TValue, TModel extends object>(validation: Validation<TValue, TModel>, message: string): void {
-  expect(validation.message).toBe(message);
+  expect(validation.metadata.message).toBe(message);
 }
 
 export function expectValidationMetadataToBeDefined<TValue, TModel>(

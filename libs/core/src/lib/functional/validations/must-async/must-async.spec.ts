@@ -1,3 +1,4 @@
+import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { mustAsync } from './must-async';
 
 describe(mustAsync.name, () => {
@@ -19,6 +20,6 @@ describe(mustAsync.name, () => {
 
   it('should return custom message', () => {
     const validation = mustAsync<number>(value => Promise.resolve((value || 0) > 0), 'Custom message');
-    expect(validation.message).toBe('Custom message');
+    expectValidationMessageToBe(validation, 'Custom message');
   });
 });
