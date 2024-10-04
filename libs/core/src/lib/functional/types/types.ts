@@ -19,25 +19,47 @@ export type Validator<TModel extends object, ModelValidations extends object = E
   readonly validations: ModelValidations;
 
   /**
-   * Adds one or more validations for the given key optionally preceded with the specified cascade mode.
+   * Adds one or more validations for the given key.
    *
    * @param key - The key to validate.
-   * @param args - Validations to add optionally preceded by the cascade mode for the given key.
+   * @param validations - Validations to add.
    */
   ruleFor<Key extends KeyOf<TModel>>(
     key: Key,
-    ...args: [CascadeMode, ...Validation<TModel[Key], TModel>[]] | Validation<TModel[Key], TModel>[]
+    ...validations: Validation<TModel[Key], TModel>[]
   ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }>;
+
+  /**
+   * Adds one or more validations for the given key optionally preceded with the specified cascade mode.
+   *
+   * @param key - The key to validate.
+   * @param cascadeModeAndValidations - Validations to add optionally preceded by the cascade mode for the given key.
+   */
+  ruleFor<Key extends KeyOf<TModel>>(
+    key: Key,
+    ...cascadeModeAndValidations: [CascadeMode, ...Validation<TModel[Key], TModel>[]]
+  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }>;
+
+  /**
+   * Adds one or more array validations for the given key.
+   *
+   * @param key - The key to validate.
+   * @param validations - Validations to add.
+   */
+  ruleForEach<Key extends ArrayKeyOf<TModel>, TItem extends TModel[Key] extends Array<infer Item> ? Item : never>(
+    key: Key,
+    ...validations: Validation<TItem, TModel>[]
+  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }>;
 
   /**
    * Adds one or more array validations for the given key optionally preceded with the specified cascade mode.
    *
    * @param key - The key to validate.
-   * @param args - Validations to add optionally preceded by the cascade mode for the given key.
+   * @param cascadeModeAndValidations - Validations to add optionally preceded by the cascade mode for the given key.
    */
   ruleForEach<Key extends ArrayKeyOf<TModel>, TItem extends TModel[Key] extends Array<infer Item> ? Item : never>(
     key: Key,
-    ...args: [CascadeMode, ...Validation<TItem, TModel>[]] | Validation<TItem, TModel>[]
+    ...cascadeModeAndValidations: [CascadeMode, ...Validation<TItem, TModel>[]]
   ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }>;
 
   /**
@@ -271,7 +293,7 @@ export type ValidatorConfig<TModel extends object> = {
   /**
    * The properties to include in the validation.
    */
-  includeProperties?: KeyOf<TModel>[];
+  includeProperties?: KeyOf<TModel> | KeyOf<TModel>[];
   /**
    * The cascade mode on validator level.
    */

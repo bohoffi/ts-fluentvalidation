@@ -109,7 +109,7 @@ function createValidationBase<
   validation.metadata = { isAsync } as ValidationMetadata<IsAsyncCallable<TValidationFunction>, TModel>;
   validation.when = (
     when: (model: TModel) => boolean,
-    whenApplyTo?: ApplyConditionTo
+    whenApplyTo: ApplyConditionTo = 'AllValidators'
   ): ValidationBase<TValue, TValidationFunction, TModel> => {
     const whenValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, { ...otherOptions, message });
     whenValidation.metadata = {
@@ -121,7 +121,7 @@ function createValidationBase<
   };
   validation.whenAsync = (
     whenAsync: (model: TModel) => Promise<boolean>,
-    whenApplyTo?: ApplyConditionTo
+    whenApplyTo: ApplyConditionTo = 'AllValidators'
   ): ValidationBase<TValue, TValidationFunction, TModel> => {
     const whenValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, { ...otherOptions, message });
     whenValidation.metadata = {
@@ -133,7 +133,7 @@ function createValidationBase<
   };
   validation.unless = (
     unless: (model: TModel) => boolean,
-    unlessApplyTo?: ApplyConditionTo
+    unlessApplyTo: ApplyConditionTo = 'AllValidators'
   ): ValidationBase<TValue, TValidationFunction, TModel> => {
     const unlessValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, { ...otherOptions, message });
     unlessValidation.metadata = {
@@ -145,7 +145,7 @@ function createValidationBase<
   };
   validation.unlessAsync = (
     unlessAsync: (model: TModel) => Promise<boolean>,
-    unlessApplyTo?: ApplyConditionTo
+    unlessApplyTo: ApplyConditionTo = 'AllValidators'
   ): ValidationBase<TValue, TValidationFunction, TModel> => {
     const unlessValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, { ...otherOptions, message });
     unlessValidation.metadata = {

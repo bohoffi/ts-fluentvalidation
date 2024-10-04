@@ -1,6 +1,7 @@
 import { ValidationFailure } from '../result/validation-failure';
 import { KeyOf } from '../types/ts-helpers';
 import { CascadeMode, ValidateConfig, Validation } from '../types/types';
+import { wrapAsArray } from './utils';
 import { validateKeyAsync } from './validate-key-async';
 
 /**
@@ -18,13 +19,14 @@ export async function validateAsync<TModel extends object, Validations extends o
   validatorConfig: ValidateConfig<TModel>,
   keyCascadeModes: Record<KeyOf<TModel>, CascadeMode>
 ) {
-  const ruleEntries: Array<[string, Validation<TModel[KeyOf<TModel>], TModel>[]]> = validatorConfig.includeProperties
-    ? Object.entries(validations).filter(([key]) => validatorConfig.includeProperties?.includes(key as KeyOf<TModel>))
+  const includedProperties = validatorConfig.includeProperties ? wrapAsArray(validatorConfig.includeProperties) : undefined;
+  const ruleEntries: Array<[string, Validation<TModel[KeyOf<TModel>], TModel>[]]> = includedProperties
+    ? Object.entries(validations).filter(([key]) => includedProperties?.includes(key as KeyOf<TModel>))
     : Object.entries(validations);
 
   const failures: ValidationFailure[] = [];
   for (const [key, keyValidations] of ruleEntries) {
-    const keyCascadeMode = keyCascadeModes[key as KeyOf<TModel>] ?? 'Continue';
+    const keyCascadeMode = validatorConfig.propertyCascadeMode || keyCascadeModes[key as KeyOf<TModel>] || 'Continue';
     const keyFailures = await validateKeyAsync(
       model,
       key as KeyOf<TModel>,

@@ -37,20 +37,20 @@ export function createValidator<TModel extends object, ModelValidations extends 
 
     ruleFor<Key extends KeyOf<TModel>>(
       key: Key,
-      ...args: [CascadeMode, ...Validation<TModel[Key], TModel>[]] | Validation<TModel[Key], TModel>[]
+      ...cascadeModeAndValidations: [CascadeMode, ...Validation<TModel[Key], TModel>[]] | Validation<TModel[Key], TModel>[]
     ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }> {
-      const cascadeMode = typeof args[0] === 'string' ? (args.shift() as CascadeMode) : undefined;
-      const validations = args as Validation<TModel[Key], TModel>[];
+      const cascadeMode = typeof cascadeModeAndValidations[0] === 'string' ? (cascadeModeAndValidations.shift() as CascadeMode) : undefined;
+      const validations = cascadeModeAndValidations as Validation<TModel[Key], TModel>[];
       _keyCascadeModes[key] = cascadeMode || validatorConfig.propertyCascadeMode || 'Continue';
       return mergeValidations(this, key, true, ...(validations as Validation<TModel[Key], TModel>[]));
     },
 
     ruleForEach<Key extends ArrayKeyOf<TModel>, TItem extends TModel[Key] extends Array<infer Item> ? Item : never>(
       key: Key,
-      ...args: [CascadeMode, ...Validation<TItem, TModel>[]] | Validation<TItem, TModel>[]
+      ...cascadeModeAndValidations: [CascadeMode, ...Validation<TItem, TModel>[]] | Validation<TItem, TModel>[]
     ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }> {
-      const cascadeMode = typeof args[0] === 'string' ? (args.shift() as CascadeMode) : undefined;
-      const validations = args as Validation<TItem, TModel>[];
+      const cascadeMode = typeof cascadeModeAndValidations[0] === 'string' ? (cascadeModeAndValidations.shift() as CascadeMode) : undefined;
+      const validations = cascadeModeAndValidations as Validation<TItem, TModel>[];
       _keyCascadeModes[key] = cascadeMode || validatorConfig.propertyCascadeMode || 'Continue';
       return mergeValidations(this, key, true, ...(validations as Validation<TItem, TModel>[]));
     },
@@ -154,6 +154,34 @@ function mergeValidations<TModel extends object, Key extends KeyOf<TModel> | Arr
       if (unless) {
         for (let i = 0; i < index; i++) {
           validations[i].metadata.unless = unless;
+        }
+      }
+    }
+
+    const lastWhenAsyncValidation = getLastElement(
+      validations,
+      v => v.metadata.whenAsync !== undefined && v.metadata.whenApplyTo !== 'CurrentValidator'
+    );
+    if (lastWhenAsyncValidation) {
+      const index = validations.indexOf(lastWhenAsyncValidation);
+      const whenAsync = lastWhenAsyncValidation.metadata.whenAsync as ((model: TModel) => Promise<boolean>) | undefined;
+      if (whenAsync) {
+        for (let i = 0; i < index; i++) {
+          validations[i].metadata.whenAsync = whenAsync;
+        }
+      }
+    }
+
+    const lastUnlessAsyncValidation = getLastElement(
+      validations,
+      v => v.metadata.unlessAsync !== undefined && v.metadata.unlessApplyTo !== 'CurrentValidator'
+    );
+    if (lastUnlessAsyncValidation) {
+      const index = validations.indexOf(lastUnlessAsyncValidation);
+      const unlessAsync = lastUnlessAsyncValidation.metadata.unlessAsync as ((model: TModel) => Promise<boolean>) | undefined;
+      if (unlessAsync) {
+        for (let i = 0; i < index; i++) {
+          validations[i].metadata.unlessAsync = unlessAsync;
         }
       }
     }
