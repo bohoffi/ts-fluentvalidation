@@ -9,6 +9,8 @@ import {
   expectValidationMessageToBe,
   expectValidationMessageToBeUndefined,
   expectValidationMetadataToBeDefined,
+  expectValidationPropertyNameToBe,
+  expectValidationPropertyNameToBeUndefined,
   expectValidationToFail,
   expectValidationToFailAsync,
   expectValidationToPass,
@@ -60,6 +62,16 @@ describe(createValidation.name, () => {
 
       expectValidationErrorCodeToBeUndefined(isNonEmptyString);
       expectValidationErrorCodeToBe(validationWithMessage, 'ERR123');
+    });
+  });
+
+  describe('withPropertyName', () => {
+    it('should create a validation function with a property name', () => {
+      const isNonEmptyString = createValidation<string>(value => value.length > 0);
+      const validationWithMessage = isNonEmptyString.withName('FOO');
+
+      expectValidationPropertyNameToBeUndefined(isNonEmptyString);
+      expectValidationPropertyNameToBe(validationWithMessage, 'FOO');
     });
   });
 
@@ -146,6 +158,16 @@ describe(createAsyncValidation.name, () => {
 
       expectValidationErrorCodeToBeUndefined(isNonEmptyString);
       expectValidationErrorCodeToBe(validationWithMessage, 'ERR123');
+    });
+  });
+
+  describe('withPropertyName', () => {
+    it('should create a validation function with a property name', () => {
+      const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0));
+      const validationWithMessage = isNonEmptyString.withName('FOO');
+
+      expectValidationPropertyNameToBeUndefined(isNonEmptyString);
+      expectValidationPropertyNameToBe(validationWithMessage, 'FOO');
     });
   });
 

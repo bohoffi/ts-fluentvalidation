@@ -31,7 +31,7 @@ export function failureForValidation<TModel, TValue>(
     propertyName: propertyName,
     message: formatMessage(validation.metadata.message || 'Validation failed', {
       ...validation.metadata.placeholders,
-      [DEFAULT_PLACEHOLDERS.propertyName]: propertyName,
+      [DEFAULT_PLACEHOLDERS.propertyName]: validation.metadata.propertyName || propertyName,
       [DEFAULT_PLACEHOLDERS.propertyValue]: propertyValue
     }),
     errorCode: validation.metadata.errorCode,

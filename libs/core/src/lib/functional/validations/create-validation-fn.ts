@@ -180,6 +180,15 @@ function createValidationBase<
     return withMessageValidation;
   };
 
+  validation.withName = (propertyName: string): ValidationBase<TValue, TValidationFunction, TModel> => {
+    const withMessageValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
+      ...otherOptions,
+      message
+    });
+    withMessageValidation.metadata = { ...validation.metadata, propertyName };
+    return withMessageValidation;
+  };
+
   validation.withPlaceholder = (key: string, value: unknown): ValidationBase<TValue, TValidationFunction, TModel> => {
     const withPlaceholderValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
       ...otherOptions,
