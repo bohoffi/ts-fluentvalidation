@@ -117,7 +117,7 @@ personValidator.validateAndThrow({ name: '' });
 
 This throws a `ValidationError` which contains the validation failures in the `failures` property.
 
-The `validateAndThrow()` function is a helpful wrapper around `@ts-fluentvalidation/core`'s options API and is the equivalent of doing the following:
+The `validateAndThrow()` function is a helpful wrapper around `@ts-fluentvalidation/core`'s config API and is the equivalent of doing the following:
 
 ```typescript
 // will set the behaviour validator wide --> each subsequent `validate()` call will throw on failure
@@ -130,11 +130,55 @@ personValidator.validate({ name: '' }, config => {
 });
 ```
 
-If you need to combine throwing an error with validating individual properties you can combine both options using this syntax:
+If you need to combine throwing an error with validating individual properties you can combine both config values using this syntax:
 
 ```typescript
 personValidator.validate({ name: '' }, config => {
   config.throwOnFailures = true;
   config.includeProperties = ['name'];
 });
+```
+
+## Complex Properties
+
+### Using `must()` / `mustAsync()`
+
+You can combine `ruleFor()` with `must()` / `mustAsync()` when you want to create a validation for a complex property:
+
+```typescript
+export interface Person {
+  address: Address;
+}
+
+export interface Address {
+  city: string;
+}
+```
+
+```typescript
+const personValidator = createValidator<Person>().ruleFor(
+  'address',
+  must<Address, Person>(address => address.city !== '', 'City must not be empty.')
+);
+```
+
+Given the above validator and running the following validation:
+
+```typescript
+const result = personValidator.validate({
+  address: {
+    city: ''
+  }
+});
+```
+
+...will result with 1 failure for the address:
+
+```typescript
+{
+  propertyName: 'address',
+  message: 'City must not be empty.',
+  attemptedValue: '',
+  severity: 'Error'
+}
 ```
