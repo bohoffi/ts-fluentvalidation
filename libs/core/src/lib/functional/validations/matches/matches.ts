@@ -17,7 +17,7 @@ export function matches<TValue extends StringProperty, TModel>(pattern: RegExp):
 export function matches<TValue extends StringProperty, TModel>(pattern: RegExp, message: string): SyncValidation<TValue, TModel>;
 export function matches<TValue extends StringProperty, TModel>(pattern: RegExp, message?: string): SyncValidation<TValue, TModel> {
   return createValidation(value => pattern.test(value || ''), {
-    message: message || 'Value must match pattern.',
+    message: message || `'{propertyName}' must match pattern.`,
     errorCode: matches.name
   });
 }

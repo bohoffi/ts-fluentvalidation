@@ -44,7 +44,7 @@ describe(isFalsy.name, () => {
 
   it('should return with default metadata', () => {
     const validation = isFalsy();
-    expectValidationMessageToBe(validation, 'Value must be falsy.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must be falsy.`);
     expectValidationErrorCodeToBe(validation, isFalsy.name);
   });
 });

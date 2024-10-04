@@ -275,7 +275,7 @@ describe('ValidatorConfig', () => {
         const result = testValidate(validator, testPerson);
         expectResultInvalid(result);
         expectFailureLength(result, 1);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
       });
 
       it('should continue synchronous validation on failure with propertyCascadeMode set to Continue or undefined', () => {
@@ -284,8 +284,8 @@ describe('ValidatorConfig', () => {
         const result = testValidate(validator, testPerson);
         expectResultInvalid(result);
         expectFailureLength(result, 2);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must have a minimum length of 1.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must have a minimum length of 1.`);
       });
 
       it('should stop asynchronous validation on first failure with propertyCascadeMode set to Stop', async () => {
@@ -294,7 +294,7 @@ describe('ValidatorConfig', () => {
         const result = await testValidateAsync(validator, testPerson);
         expectResultInvalid(result);
         expectFailureLength(result, 1);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
       });
 
       it('should continue asynchronous validation on failure with propertyCascadeMode set to Continue or undefined', async () => {
@@ -303,8 +303,8 @@ describe('ValidatorConfig', () => {
         const result = await testValidateAsync(validator, testPerson);
         expectResultInvalid(result);
         expectFailureLength(result, 2);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must have a minimum length of 1.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must have a minimum length of 1.`);
       });
 
       it('should continue validation on first failure when propertyCascadeMode is overwritten by validate() call', () => {
@@ -313,8 +313,8 @@ describe('ValidatorConfig', () => {
         const result = testValidate(validator, testPerson, config => (config.propertyCascadeMode = 'Continue'));
         expectResultInvalid(result);
         expectFailureLength(result, 2);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must have a minimum length of 1.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must have a minimum length of 1.`);
       });
 
       it('should continue validation on first failure when propertyCascadeMode is overwritten by validateAsync() call', async () => {
@@ -323,8 +323,8 @@ describe('ValidatorConfig', () => {
         const result = await testValidateAsync(validator, testPerson, config => (config.propertyCascadeMode = 'Continue'));
         expectResultInvalid(result);
         expectFailureLength(result, 2);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must have a minimum length of 1.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must have a minimum length of 1.`);
       });
     });
 
@@ -335,7 +335,7 @@ describe('ValidatorConfig', () => {
         const result = testValidate(validator, testPerson, config => (config.propertyCascadeMode = 'Stop'));
         expectResultInvalid(result);
         expectFailureLength(result, 1);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
       });
 
       it('should continue synchronous validation on failure with propertyCascadeMode set to Continue or undefined', () => {
@@ -344,8 +344,8 @@ describe('ValidatorConfig', () => {
         const result = testValidate(validator, testPerson, config => (config.propertyCascadeMode = 'Continue'));
         expectResultInvalid(result);
         expectFailureLength(result, 2);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must have a minimum length of 1.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must have a minimum length of 1.`);
       });
     });
 
@@ -356,7 +356,7 @@ describe('ValidatorConfig', () => {
         const result = await testValidateAsync(validator, testPerson, config => (config.propertyCascadeMode = 'Stop'));
         expectResultInvalid(result);
         expectFailureLength(result, 1);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
       });
 
       it('should continue asynchronous validation on failure with propertyCascadeMode set to Continue or undefined', async () => {
@@ -365,8 +365,8 @@ describe('ValidatorConfig', () => {
         const result = await testValidateAsync(validator, testPerson, config => (config.propertyCascadeMode = 'Continue'));
         expectResultInvalid(result);
         expectFailureLength(result, 2);
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must not be empty.');
-        result.shouldHaveValidationErrorFor('firstName').withMessage('Value must have a minimum length of 1.');
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
+        result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must have a minimum length of 1.`);
       });
     });
   });

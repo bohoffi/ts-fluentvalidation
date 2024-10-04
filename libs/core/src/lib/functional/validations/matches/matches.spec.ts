@@ -27,7 +27,7 @@ describe(matches.name, () => {
 
   it('should return with default metadata', () => {
     const validation = matches(/hello/);
-    expectValidationMessageToBe(validation, 'Value must match pattern.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must match pattern.`);
     expectValidationErrorCodeToBe(validation, matches.name);
   });
 });

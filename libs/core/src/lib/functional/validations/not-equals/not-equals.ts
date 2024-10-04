@@ -1,5 +1,6 @@
 import { SyncValidation } from '../../types/types';
 import { equals } from '../equals/equals';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 import { not } from '../not/not';
 
 /**
@@ -16,5 +17,7 @@ export function notEquals<TValue, TModel>(comparisonValue: TValue): SyncValidati
  */
 export function notEquals<TValue, TModel>(comparisonValue: TValue, message: string): SyncValidation<TValue, TModel>;
 export function notEquals<TValue, TModel>(comparisonValue: TValue, message?: string): SyncValidation<TValue, TModel> {
-  return not(equals(comparisonValue, message || `Value must not equal ${comparisonValue}.`)).withErrorCode(notEquals.name);
+  return not(equals(comparisonValue, message || `'{propertyName}' must not equal {comparisonValue}.`))
+    .withErrorCode(notEquals.name)
+    .withPlaceholder(DEFAULT_PLACEHOLDERS.comparisonValue, comparisonValue);
 }

@@ -1,4 +1,9 @@
-import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import {
+  expectValidationErrorCodeToBe,
+  expectValidationMessageToBe,
+  expectValidationPlaceholdersToBe
+} from '../../../../__tests__/assertions';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 import { maxLength } from './max-length';
 
 describe(maxLength.name, () => {
@@ -21,7 +26,14 @@ describe(maxLength.name, () => {
 
   it('should return with default metadata', () => {
     const validation = maxLength(42);
-    expectValidationMessageToBe(validation, 'Value must have a maximum length of 42.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must have a maximum length of {maxLength}.`);
     expectValidationErrorCodeToBe(validation, maxLength.name);
+  });
+
+  it('should return with default placeholders', () => {
+    const validation = maxLength(42);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.maxLength]: 42
+    });
   });
 });

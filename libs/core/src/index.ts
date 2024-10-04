@@ -19,6 +19,9 @@ export {
   ValidatorConfig
 } from './lib/functional/types';
 export {
+  DEFAULT_PLACEHOLDERS,
+  createAsyncValidation,
+  createValidation,
   empty,
   equals,
   exclusiveBetween,
@@ -38,6 +41,7 @@ export {
   minLength,
   must,
   mustAsync,
+  not,
   notEmpty,
   notEquals,
   notNull,

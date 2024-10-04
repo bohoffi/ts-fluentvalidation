@@ -1,5 +1,6 @@
 import { ValidationFailure } from '../result/validation-failure';
 import { Validation } from '../types';
+import { DEFAULT_PLACEHOLDERS, formatMessage } from '../validations/message-formatter';
 
 /**
  * Wraps a value as an array if it is not already an array.
@@ -28,7 +29,11 @@ export function failureForValidation<TModel, TValue>(
 ): ValidationFailure {
   return {
     propertyName: propertyName,
-    message: validation.metadata.message || 'Validation failed',
+    message: formatMessage(validation.metadata.message || 'Validation failed', {
+      ...validation.metadata.placeholders,
+      [DEFAULT_PLACEHOLDERS.propertyName]: propertyName,
+      [DEFAULT_PLACEHOLDERS.propertyValue]: propertyValue
+    }),
     errorCode: validation.metadata.errorCode,
     attemptedValue: propertyValue,
     severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, propertyValue) : 'Error'

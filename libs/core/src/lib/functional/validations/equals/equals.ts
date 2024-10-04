@@ -1,5 +1,6 @@
 import { SyncValidation } from '../../types/types';
 import { createValidation } from '../create-validation-fn';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 
 /**
  * Creates a validation function that checks if the value is equal to the comparison value.
@@ -15,8 +16,8 @@ export function equals<TValue, TModel>(comparisonValue: TValue): SyncValidation<
  */
 export function equals<TValue, TModel>(comparisonValue: TValue, message: string): SyncValidation<TValue, TModel>;
 export function equals<TValue, TModel>(comparisonValue: TValue, message?: string): SyncValidation<TValue, TModel> {
-  return createValidation(value => value === comparisonValue, {
-    message: message || `Value must equal ${comparisonValue}.`,
+  return createValidation<TValue, TModel>(value => value === comparisonValue, {
+    message: message || `'{propertyName}' must equal {comparisonValue}.`,
     errorCode: equals.name
-  });
+  }).withPlaceholder(DEFAULT_PLACEHOLDERS.comparisonValue, comparisonValue);
 }

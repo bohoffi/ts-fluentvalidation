@@ -14,7 +14,7 @@ export function required<TValue, TModel>(): SyncValidation<TValue, TModel>;
 export function required<TValue, TModel>(message: string): SyncValidation<TValue, TModel>;
 export function required<TValue, TModel>(message?: string): SyncValidation<TValue, TModel> {
   return createValidation(value => !isEmptyValue(value), {
-    message: message || 'Value is required.',
+    message: message || `'{propertyName}' is required.`,
     errorCode: required.name
   });
 }

@@ -24,7 +24,7 @@ export function mustAsync<TValue = unknown, TModel = unknown>(
   message?: string
 ): AsyncValidation<TValue, TModel> {
   return createAsyncValidation(predicate, {
-    message: message || 'Value must meet the specified criteria.',
+    message: message || `'{propertyName}' must meet the specified criteria.`,
     errorCode: mustAsync.name
   });
 }

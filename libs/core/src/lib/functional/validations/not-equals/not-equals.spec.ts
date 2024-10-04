@@ -1,4 +1,9 @@
-import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import {
+  expectValidationErrorCodeToBe,
+  expectValidationMessageToBe,
+  expectValidationPlaceholdersToBe
+} from '../../../../__tests__/assertions';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 import { notEquals } from './not-equals';
 
 describe(notEquals.name, () => {
@@ -19,7 +24,14 @@ describe(notEquals.name, () => {
 
   it('should return with default metadata', () => {
     const validation = notEquals(42);
-    expectValidationMessageToBe(validation, 'Value must not equal 42.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must not equal {comparisonValue}.`);
     expectValidationErrorCodeToBe(validation, notEquals.name);
+  });
+
+  it('should return with default placeholders', () => {
+    const validation = notEquals(42);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonValue]: 42
+    });
   });
 });

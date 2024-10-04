@@ -14,5 +14,5 @@ export function notEmpty<TValue extends LengthProperty, TModel>(): SyncValidatio
  */
 export function notEmpty<TValue extends LengthProperty, TModel>(message: string): SyncValidation<TValue, TModel>;
 export function notEmpty<TValue extends LengthProperty, TModel>(message?: string): SyncValidation<TValue, TModel> {
-  return not(empty(message || 'Value must not be empty.')).withErrorCode(notEmpty.name);
+  return not(empty(message || `'{propertyName}' must not be empty.`)).withErrorCode(notEmpty.name);
 }

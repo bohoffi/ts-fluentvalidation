@@ -29,7 +29,7 @@ describe(notNull.name, () => {
 
   it('should return with default metadata', () => {
     const validation = notNull();
-    expectValidationMessageToBe(validation, 'Value must not be null.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must not be null.`);
     expectValidationErrorCodeToBe(validation, notNull.name);
   });
 });

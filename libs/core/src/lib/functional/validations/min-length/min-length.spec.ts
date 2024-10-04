@@ -1,4 +1,9 @@
-import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import {
+  expectValidationErrorCodeToBe,
+  expectValidationMessageToBe,
+  expectValidationPlaceholdersToBe
+} from '../../../../__tests__/assertions';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 import { minLength } from './min-length';
 
 describe(minLength.name, () => {
@@ -35,7 +40,14 @@ describe(minLength.name, () => {
 
   it('should return with default metadata', () => {
     const validation = minLength(42);
-    expectValidationMessageToBe(validation, 'Value must have a minimum length of 42.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must have a minimum length of {minLength}.`);
     expectValidationErrorCodeToBe(validation, minLength.name);
+  });
+
+  it('should return with default placeholders', () => {
+    const validation = minLength(42);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.minLength]: 42
+    });
   });
 });

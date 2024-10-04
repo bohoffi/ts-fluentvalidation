@@ -105,10 +105,11 @@ function createValidationBase<
   const { message, ...otherOptions } = typeof messageOrOptions === 'string' ? { message: messageOrOptions } : messageOrOptions || {};
 
   const validation = (value: TValue) => fn(value);
-  validation.metadata = { isAsync, message, errorCode: otherOptions.errorCode } as ValidationMetadata<
+  validation.metadata = { isAsync, message, errorCode: otherOptions.errorCode, placeholders: {} } as ValidationMetadata<
     IsAsyncCallable<TValidationFunction>,
     TModel
   >;
+
   validation.when = (
     when: (model: TModel) => boolean,
     whenApplyTo: ApplyConditionTo = 'AllValidators'
@@ -121,6 +122,7 @@ function createValidationBase<
     } as ValidationMetadata<IsAsyncCallable<TValidationFunction>, TModel>;
     return whenValidation;
   };
+
   validation.whenAsync = (
     whenAsync: (model: TModel) => Promise<boolean>,
     whenApplyTo: ApplyConditionTo = 'AllValidators'
@@ -133,6 +135,7 @@ function createValidationBase<
     };
     return whenValidation;
   };
+
   validation.unless = (
     unless: (model: TModel) => boolean,
     unlessApplyTo: ApplyConditionTo = 'AllValidators'
@@ -145,6 +148,7 @@ function createValidationBase<
     } as ValidationMetadata<IsAsyncCallable<TValidationFunction>, TModel>;
     return unlessValidation;
   };
+
   validation.unlessAsync = (
     unlessAsync: (model: TModel) => Promise<boolean>,
     unlessApplyTo: ApplyConditionTo = 'AllValidators'
@@ -157,6 +161,7 @@ function createValidationBase<
     };
     return unlessValidation;
   };
+
   validation.withMessage = (message: string): ValidationBase<TValue, TValidationFunction, TModel> => {
     const withMessageValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
       ...otherOptions,
@@ -165,6 +170,7 @@ function createValidationBase<
     withMessageValidation.metadata = { ...validation.metadata, message };
     return withMessageValidation;
   };
+
   validation.withErrorCode = (errorCode: string): ValidationBase<TValue, TValidationFunction, TModel> => {
     const withMessageValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
       ...otherOptions,
@@ -173,6 +179,19 @@ function createValidationBase<
     withMessageValidation.metadata = { ...validation.metadata, errorCode };
     return withMessageValidation;
   };
+
+  validation.withPlaceholder = (key: string, value: unknown): ValidationBase<TValue, TValidationFunction, TModel> => {
+    const withPlaceholderValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
+      ...otherOptions,
+      message
+    });
+    withPlaceholderValidation.metadata = {
+      ...validation.metadata,
+      placeholders: { ...validation.metadata.placeholders, [key]: value }
+    };
+    return withPlaceholderValidation;
+  };
+
   validation.withSeverity = (
     severityOrProvider: Severity | ((model: TModel, value: TValue) => Severity)
   ): ValidationBase<TValue, TValidationFunction, TModel> => {

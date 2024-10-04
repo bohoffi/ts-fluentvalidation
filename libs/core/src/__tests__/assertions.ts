@@ -71,6 +71,13 @@ export function expectValidationErrorCodeToBeUndefined<TValue, TModel extends ob
   expect(validation.metadata.errorCode).toBeUndefined();
 }
 
+export function expectValidationPlaceholdersToBe<TValue, TModel extends object>(
+  validation: Validation<TValue, TModel>,
+  placeholders: Record<string, unknown>
+): void {
+  expect(validation.metadata.placeholders).toEqual(placeholders);
+}
+
 export function expectValidationMetadataToBeDefined<TValue, TModel>(
   validation: Validation<TValue, TModel>,
   metadataKey: KeyOf<ValidationMetadata<boolean, TModel>>

@@ -22,7 +22,7 @@ export function must<TValue = unknown, TModel = unknown>(
   message?: string
 ): SyncValidation<TValue, TModel> {
   return createValidation(predicate, {
-    message: message || 'Value must meet the specified criteria.',
+    message: message || `'{propertyName}' must meet the specified criteria.`,
     errorCode: must.name
   });
 }

@@ -1,4 +1,9 @@
-import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import {
+  expectValidationErrorCodeToBe,
+  expectValidationMessageToBe,
+  expectValidationPlaceholdersToBe
+} from '../../../../__tests__/assertions';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 import { exclusiveBetween } from './exclusive-between';
 
 describe(exclusiveBetween.name, () => {
@@ -31,7 +36,15 @@ describe(exclusiveBetween.name, () => {
 
   it('should return with default metadata', () => {
     const validation = exclusiveBetween(4, 2);
-    expectValidationMessageToBe(validation, 'Value must be between 4 and 2 exclusively.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must be between {lowerBound} and {upperBound} exclusively.`);
     expectValidationErrorCodeToBe(validation, exclusiveBetween.name);
+  });
+
+  it('should return with default placeholders', () => {
+    const validation = exclusiveBetween(4, 2);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.lowerBound]: 4,
+      [DEFAULT_PLACEHOLDERS.upperBound]: 2
+    });
   });
 });

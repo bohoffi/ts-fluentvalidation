@@ -25,7 +25,7 @@ describe(mustAsync.name, () => {
 
   it('should return with default metadata', () => {
     const validation = mustAsync<number>(value => Promise.resolve((value || 0) > 0));
-    expectValidationMessageToBe(validation, 'Value must meet the specified criteria.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must meet the specified criteria.`);
     expectValidationErrorCodeToBe(validation, mustAsync.name);
   });
 });

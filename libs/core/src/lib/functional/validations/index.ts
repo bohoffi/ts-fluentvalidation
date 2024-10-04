@@ -24,3 +24,4 @@ export { not } from './not/not';
 export { required } from './required/required';
 
 export { createAsyncValidation, createValidation } from './create-validation-fn';
+export { DEFAULT_PLACEHOLDERS } from './message-formatter';

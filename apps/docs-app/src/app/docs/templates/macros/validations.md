@@ -44,4 +44,12 @@ Validation parameters:
 
 {% endif %}
 
+Validation placeholders:
+
+{% for placeholder in validation.placeholders %}
+
+- {{ placeholder.name }}: {{ placeholder.description }}
+
+{% endfor %}
+
 {% endmacro %}

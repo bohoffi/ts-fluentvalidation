@@ -86,7 +86,7 @@ describe('ruleForEach', () => {
       const result = testValidate(validator, ruleForEachPerson);
       expectResultInvalid(result);
       expectFailureLength(result, 1);
-      result.shouldHaveValidationErrorFor('orders[0]').withMessage('Value must meet the specified criteria.');
+      result.shouldHaveValidationErrorFor('orders[0]').withMessage(`'orders[0]' must meet the specified criteria.`);
     });
 
     it('should continue synchronous validation on failure with propertyCascadeMode set to Continue or undefined', () => {
@@ -99,8 +99,8 @@ describe('ruleForEach', () => {
       const result = testValidate(validator, ruleForEachPerson);
       expectResultInvalid(result);
       expectFailureLength(result, 2);
-      result.shouldHaveValidationErrorFor('orders[0]').withMessage('Value must meet the specified criteria.');
-      result.shouldHaveValidationErrorFor('orders[1]').withMessage('Value must meet the specified criteria.');
+      result.shouldHaveValidationErrorFor('orders[0]').withMessage(`'orders[0]' must meet the specified criteria.`);
+      result.shouldHaveValidationErrorFor('orders[1]').withMessage(`'orders[1]' must meet the specified criteria.`);
     });
 
     it('should stop asynchronous validation on first failure with propertyCascadeMode set to Stop', async () => {
@@ -113,7 +113,7 @@ describe('ruleForEach', () => {
       const result = await testValidateAsync(validator, ruleForEachPerson);
       expectResultInvalid(result);
       expectFailureLength(result, 1);
-      result.shouldHaveValidationErrorFor('orders[0]').withMessage('Value must meet the specified criteria.');
+      result.shouldHaveValidationErrorFor('orders[0]').withMessage(`'orders[0]' must meet the specified criteria.`);
     });
 
     it('should continue asynchronous validation on failure with propertyCascadeMode set to Continue or undefined', async () => {
@@ -126,8 +126,8 @@ describe('ruleForEach', () => {
       const result = await testValidateAsync(validator, ruleForEachPerson);
       expectResultInvalid(result);
       expectFailureLength(result, 2);
-      result.shouldHaveValidationErrorFor('orders[0]').withMessage('Value must meet the specified criteria.');
-      result.shouldHaveValidationErrorFor('orders[1]').withMessage('Value must meet the specified criteria.');
+      result.shouldHaveValidationErrorFor('orders[0]').withMessage(`'orders[0]' must meet the specified criteria.`);
+      result.shouldHaveValidationErrorFor('orders[1]').withMessage(`'orders[1]' must meet the specified criteria.`);
     });
 
     it('should use propertyCascadeMode from last ruleForForEach call for the same key', () => {
@@ -146,9 +146,9 @@ describe('ruleForEach', () => {
       const result = testValidate(validator, ruleForEachPerson);
       expectResultInvalid(result);
       expectFailureLength(result, 4);
-      result.shouldHaveValidationErrorFor('orders[0]').withMessage('Value must meet the specified criteria.');
+      result.shouldHaveValidationErrorFor('orders[0]').withMessage(`'orders[0]' must meet the specified criteria.`);
       result.shouldHaveValidationErrorFor('orders[0]').withMessage('Amount must be positive.');
-      result.shouldHaveValidationErrorFor('orders[1]').withMessage('Value must meet the specified criteria.');
+      result.shouldHaveValidationErrorFor('orders[1]').withMessage(`'orders[1]' must meet the specified criteria.`);
       result.shouldHaveValidationErrorFor('orders[1]').withMessage('Amount must be positive.');
     });
   });

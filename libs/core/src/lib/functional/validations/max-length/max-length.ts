@@ -1,6 +1,7 @@
 import { LengthProperty } from '../../types/properties';
 import { SyncValidation } from '../../types/types';
 import { createValidation } from '../create-validation-fn';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 
 /**
  * Creates a validation function that checks if the values length is less than or equal to the specified maximum.
@@ -17,7 +18,7 @@ export function maxLength<TValue extends LengthProperty, TModel>(maxLength: numb
 export function maxLength<TValue extends LengthProperty, TModel>(maxLength: number, message: string): SyncValidation<TValue, TModel>;
 export function maxLength<TValue extends LengthProperty, TModel>(maxLength: number, message?: string): SyncValidation<TValue, TModel> {
   return createValidation<TValue, TModel>(value => (value?.length || 0) <= maxLength, {
-    message: message || `Value must have a maximum length of ${maxLength}.`,
+    message: message || `'{propertyName}' must have a maximum length of {maxLength}.`,
     errorCode: 'maxLength'
-  });
+  }).withPlaceholder(DEFAULT_PLACEHOLDERS.maxLength, maxLength);
 }

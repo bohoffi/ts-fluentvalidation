@@ -1,4 +1,9 @@
-import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import {
+  expectValidationErrorCodeToBe,
+  expectValidationMessageToBe,
+  expectValidationPlaceholdersToBe
+} from '../../../../__tests__/assertions';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 import { inclusiveBetween } from './inclusive-between';
 
 describe(inclusiveBetween.name, () => {
@@ -49,7 +54,15 @@ describe(inclusiveBetween.name, () => {
 
   it('should return with default metadata', () => {
     const validation = inclusiveBetween(4, 2);
-    expectValidationMessageToBe(validation, 'Value must be between 4 and 2 inclusively.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must be between {lowerBound} and {upperBound} inclusively.`);
     expectValidationErrorCodeToBe(validation, inclusiveBetween.name);
+  });
+
+  it('should return with default placeholders', () => {
+    const validation = inclusiveBetween(4, 2);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.lowerBound]: 4,
+      [DEFAULT_PLACEHOLDERS.upperBound]: 2
+    });
   });
 });

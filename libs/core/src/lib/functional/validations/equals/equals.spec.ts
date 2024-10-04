@@ -1,4 +1,9 @@
-import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import {
+  expectValidationErrorCodeToBe,
+  expectValidationMessageToBe,
+  expectValidationPlaceholdersToBe
+} from '../../../../__tests__/assertions';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 import { equals } from './equals';
 
 describe(equals.name, () => {
@@ -19,7 +24,14 @@ describe(equals.name, () => {
 
   it('should return with default metadata', () => {
     const validation = equals(42);
-    expectValidationMessageToBe(validation, 'Value must equal 42.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must equal {comparisonValue}.`);
     expectValidationErrorCodeToBe(validation, equals.name);
+  });
+
+  it('should return with default placeholders', () => {
+    const validation = equals(42);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonValue]: 42
+    });
   });
 });

@@ -145,6 +145,10 @@ export type ValidationMetadata<TAsync extends boolean, TModel> = {
    */
   errorCode?: string;
   /**
+   * The placeholders to use in the message when the validation fails.
+   */
+  readonly placeholders: Record<string, unknown>;
+  /**
    * A function that determines if the validation should be applied based on the model.
    *
    * @param model The model to validate.
@@ -243,6 +247,13 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
    * @param errorCode The errorCode to use when the validation fails.
    */
   withErrorCode(errorCode: string): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Adds a placeholder to use in the message when the validation fails.
+   *
+   * @param key - The key of the placeholder.
+   * @param value - The value of the placeholder.
+   */
+  withPlaceholder(key: string, value: unknown): ValidationBase<TValue, TValidationFunction, TModel>;
   /**
    * Sets the severity of the validation failure.
    *

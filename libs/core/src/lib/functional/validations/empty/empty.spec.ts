@@ -33,7 +33,7 @@ describe(empty.name, () => {
 
   it('should return with default metadata', () => {
     const validation = empty();
-    expectValidationMessageToBe(validation, 'Value must be empty.');
+    expectValidationMessageToBe(validation, `'{propertyName}' must be empty.`);
     expectValidationErrorCodeToBe(validation, empty.name);
   });
 });

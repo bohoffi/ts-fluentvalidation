@@ -27,7 +27,7 @@ describe(required.name, () => {
 
   it('should return with default metadata', () => {
     const validation = required();
-    expectValidationMessageToBe(validation, 'Value is required.');
+    expectValidationMessageToBe(validation, `'{propertyName}' is required.`);
     expectValidationErrorCodeToBe(validation, required.name);
   });
 });

@@ -1,6 +1,7 @@
 import { NumberProperty } from '../../types/properties';
 import { SyncValidation } from '../../types/types';
 import { createValidation } from '../create-validation-fn';
+import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 
 /**
  * Creates a validation function that checks if the value is between the specified bounds exclusively.
@@ -29,8 +30,10 @@ export function exclusiveBetween<TValue extends NumberProperty, TModel>(
   upperBound: number,
   message?: string
 ): SyncValidation<TValue, TModel> {
-  return createValidation(value => (value || 0) > lowerBound && (value || 0) < upperBound, {
-    message: message || `Value must be between ${lowerBound} and ${upperBound} exclusively.`,
+  return createValidation<TValue, TModel>(value => (value || 0) > lowerBound && (value || 0) < upperBound, {
+    message: message || `'{propertyName}' must be between {lowerBound} and {upperBound} exclusively.`,
     errorCode: exclusiveBetween.name
-  });
+  })
+    .withPlaceholder(DEFAULT_PLACEHOLDERS.lowerBound, lowerBound)
+    .withPlaceholder(DEFAULT_PLACEHOLDERS.upperBound, upperBound);
 }
