@@ -8,6 +8,12 @@ import { createValidation } from '../create-validation-fn';
  * @param comparisonValue - The value to compare against.
  */
 export function greaterThan<TValue extends NumberProperty, TModel>(comparisonValue: number): SyncValidation<TValue, TModel>;
+/**
+ * Creates a validation function that checks if the value is greater than the specified value.
+ *
+ * @param comparisonValue - The value to compare against.
+ * @param message - The message to display if the validation fails.
+ */
 export function greaterThan<TValue extends NumberProperty, TModel>(
   comparisonValue: number,
   message: string
