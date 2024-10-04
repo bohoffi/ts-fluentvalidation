@@ -49,11 +49,11 @@ result.shouldNotHaveValidationErrorFor('age');
 result.shouldHaveValidationErrorFor('pets[0]');
 ```
 
-You can also chain additional function calls to the result of `shouldHaveValidationErrorFor` that test individual components of the validation failure including the error message and severity:
+You can also chain additional function calls to the result of `shouldHaveValidationErrorFor` that test individual components of the validation failure including the error message, error code and severity:
 
 ```typescript
 const result = testValidate(personValidator, { name: '' });
-result.shouldHaveValidationErrorFor('name').withErrorMessage('Value must not be empty.').withSeverity('Error');
+result.shouldHaveValidationErrorFor('name').withErrorMessage('Value must not be empty.').withErrorCode('notEmpty').withSeverity('Error');
 ```
 
 ## Asynchronous `testValidate`

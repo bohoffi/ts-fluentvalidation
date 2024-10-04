@@ -2,6 +2,7 @@ import { ValidationError } from '../errors/validation-error';
 import { ValidationFailure } from '../result/validation-failure';
 import { ArrayKeyOf, KeyOf } from '../types/ts-helpers';
 import { CascadeMode, Validation } from '../types/types';
+import { failureForValidation } from './utils';
 
 /**
  * Validates the given key synchronously.
@@ -38,7 +39,7 @@ export function validateKeySync<
     }
 
     const propertyValue = model[key];
-    const failuresForProperty = Array.isArray(model[key])
+    const failuresForProperty = Array.isArray(propertyValue)
       ? validateCollectionPropertySync(
           model,
           key as ArrayKeyOf<TModel>,
@@ -67,12 +68,7 @@ function validatePropertySync<TModel extends object, Key extends KeyOf<TModel>, 
   validation: KeyValidation
 ): ValidationFailure | undefined {
   if (!validation(propertyValue)) {
-    return {
-      propertyName: key,
-      message: validation.metadata.message || 'Validation failed',
-      attemptedValue: model[key],
-      severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
-    };
+    return failureForValidation(model, key, propertyValue, validation);
   }
   return undefined;
 }
@@ -87,12 +83,7 @@ function validateCollectionPropertySync<
   const failures: ValidationFailure[] = [];
   for (const [index, item] of propertyValue.entries()) {
     if (!validation(item)) {
-      failures.push({
-        propertyName: `${key}[${index}]`,
-        message: validation.metadata.message || 'Validation failed',
-        attemptedValue: model[key],
-        severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
-      });
+      failures.push(failureForValidation<TModel, TItem>(model, `${key}[${index}]`, item, validation));
       if (failures.length > 0 && keyCascadeMode === 'Stop') {
         break;
       }

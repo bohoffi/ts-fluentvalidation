@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { maxLength } from './max-length';
 
 describe(maxLength.name, () => {
@@ -17,5 +17,11 @@ describe(maxLength.name, () => {
   it('should return defined message', () => {
     const validation = maxLength(3, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = maxLength(42);
+    expectValidationMessageToBe(validation, 'Value must have a maximum length of 42.');
+    expectValidationErrorCodeToBe(validation, maxLength.name);
   });
 });

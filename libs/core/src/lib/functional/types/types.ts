@@ -141,6 +141,10 @@ export type ValidationMetadata<TAsync extends boolean, TModel> = {
    */
   message?: string;
   /**
+   * The error code to use when the validation fails.
+   */
+  errorCode?: string;
+  /**
    * A function that determines if the validation should be applied based on the model.
    *
    * @param model The model to validate.
@@ -233,6 +237,12 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
    * @param message The message to use when the validation fails.
    */
   withMessage(message: string): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Sets the errorCode to use when the validation fails.
+   *
+   * @param errorCode The errorCode to use when the validation fails.
+   */
+  withErrorCode(errorCode: string): ValidationBase<TValue, TValidationFunction, TModel>;
   /**
    * Sets the severity of the validation failure.
    *

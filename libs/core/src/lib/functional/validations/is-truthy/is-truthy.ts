@@ -12,5 +12,8 @@ export function isTruthy<TValue, TModel>(): SyncValidation<TValue, TModel>;
  */
 export function isTruthy<TValue, TModel>(message: string): SyncValidation<TValue, TModel>;
 export function isTruthy<TValue, TModel>(message?: string): SyncValidation<TValue, TModel> {
-  return createValidation(value => Boolean(value), message || 'Value must be truthy.');
+  return createValidation(value => Boolean(value), {
+    message: message || 'Value must be truthy.',
+    errorCode: isTruthy.name
+  });
 }

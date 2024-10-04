@@ -21,5 +21,8 @@ export function must<TValue = unknown, TModel = unknown>(
   predicate: (value: TValue) => boolean,
   message?: string
 ): SyncValidation<TValue, TModel> {
-  return createValidation(predicate, message || 'Value must meet the specified criteria.');
+  return createValidation(predicate, {
+    message: message || 'Value must meet the specified criteria.',
+    errorCode: must.name
+  });
 }

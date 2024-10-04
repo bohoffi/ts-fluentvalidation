@@ -9,7 +9,7 @@ import {
   ValidationMetadata
 } from '../types/types';
 
-type ValidationOptions<TModel> = Pick<ValidationMetadata<boolean, TModel>, 'message'>;
+type ValidationOptions<TModel> = Pick<ValidationMetadata<boolean, TModel>, 'message' | 'errorCode'>;
 
 /**
  * Creates a validation function.
@@ -105,7 +105,10 @@ function createValidationBase<
   const { message, ...otherOptions } = typeof messageOrOptions === 'string' ? { message: messageOrOptions } : messageOrOptions || {};
 
   const validation = (value: TValue) => fn(value);
-  validation.metadata = { isAsync, message } as ValidationMetadata<IsAsyncCallable<TValidationFunction>, TModel>;
+  validation.metadata = { isAsync, message, errorCode: otherOptions.errorCode } as ValidationMetadata<
+    IsAsyncCallable<TValidationFunction>,
+    TModel
+  >;
   validation.when = (
     when: (model: TModel) => boolean,
     whenApplyTo: ApplyConditionTo = 'AllValidators'
@@ -160,6 +163,14 @@ function createValidationBase<
       message
     });
     withMessageValidation.metadata = { ...validation.metadata, message };
+    return withMessageValidation;
+  };
+  validation.withErrorCode = (errorCode: string): ValidationBase<TValue, TValidationFunction, TModel> => {
+    const withMessageValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
+      ...otherOptions,
+      message
+    });
+    withMessageValidation.metadata = { ...validation.metadata, errorCode };
     return withMessageValidation;
   };
   validation.withSeverity = (

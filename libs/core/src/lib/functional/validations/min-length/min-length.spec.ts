@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { minLength } from './min-length';
 
 describe(minLength.name, () => {
@@ -31,5 +31,11 @@ describe(minLength.name, () => {
   it('should return defined message', () => {
     const validation = minLength(3, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = minLength(42);
+    expectValidationMessageToBe(validation, 'Value must have a minimum length of 42.');
+    expectValidationErrorCodeToBe(validation, minLength.name);
   });
 });

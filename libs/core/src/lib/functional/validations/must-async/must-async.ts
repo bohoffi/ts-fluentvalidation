@@ -23,5 +23,8 @@ export function mustAsync<TValue = unknown, TModel = unknown>(
   predicate: (value: TValue) => Promise<boolean>,
   message?: string
 ): AsyncValidation<TValue, TModel> {
-  return createAsyncValidation(predicate, message || 'Value must meet the specified criteria.');
+  return createAsyncValidation(predicate, {
+    message: message || 'Value must meet the specified criteria.',
+    errorCode: mustAsync.name
+  });
 }

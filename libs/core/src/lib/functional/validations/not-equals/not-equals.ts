@@ -16,5 +16,5 @@ export function notEquals<TValue, TModel>(comparisonValue: TValue): SyncValidati
  */
 export function notEquals<TValue, TModel>(comparisonValue: TValue, message: string): SyncValidation<TValue, TModel>;
 export function notEquals<TValue, TModel>(comparisonValue: TValue, message?: string): SyncValidation<TValue, TModel> {
-  return not(equals(comparisonValue, message || `Value must not equal ${comparisonValue}.`));
+  return not(equals(comparisonValue, message || `Value must not equal ${comparisonValue}.`)).withErrorCode(notEquals.name);
 }

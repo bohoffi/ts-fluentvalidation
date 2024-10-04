@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { equals } from './equals';
 
 describe(equals.name, () => {
@@ -15,5 +15,11 @@ describe(equals.name, () => {
   it('should return custom message', () => {
     const validation = equals(42, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = equals(42);
+    expectValidationMessageToBe(validation, 'Value must equal 42.');
+    expectValidationErrorCodeToBe(validation, equals.name);
   });
 });

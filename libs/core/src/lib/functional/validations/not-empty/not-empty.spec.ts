@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { notEmpty } from './not-empty';
 
 describe(notEmpty.name, () => {
@@ -29,5 +29,11 @@ describe(notEmpty.name, () => {
   it('should return defined message', () => {
     const validation = notEmpty('Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = notEmpty();
+    expectValidationMessageToBe(validation, 'Value must not be empty.');
+    expectValidationErrorCodeToBe(validation, notEmpty.name);
   });
 });

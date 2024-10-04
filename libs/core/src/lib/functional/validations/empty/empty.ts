@@ -13,5 +13,8 @@ export function empty<TValue extends LengthProperty, TModel>(): SyncValidation<T
  */
 export function empty<TValue extends LengthProperty, TModel>(message: string): SyncValidation<TValue, TModel>;
 export function empty<TValue extends LengthProperty, TModel>(message?: string): SyncValidation<TValue, TModel> {
-  return createValidation(value => (value?.length || 0) === 0, message || 'Value must be empty.');
+  return createValidation(value => (value?.length || 0) === 0, {
+    message: message || 'Value must be empty.',
+    errorCode: empty.name
+  });
 }

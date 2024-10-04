@@ -26,8 +26,8 @@ export function length<TValue extends LengthProperty, TModel>(
   maxLength: number,
   message?: string
 ): SyncValidation<TValue, TModel> {
-  return createValidation(
-    value => (value?.length || 0) >= minLength && (value?.length || 0) <= maxLength,
-    message || `Value must have a length between (inclusive) ${minLength} and ${maxLength}.`
-  );
+  return createValidation(value => (value?.length || 0) >= minLength && (value?.length || 0) <= maxLength, {
+    message: message || `Value must have a length between (inclusive) ${minLength} and ${maxLength}.`,
+    errorCode: length.name
+  });
 }

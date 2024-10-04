@@ -10,5 +10,8 @@ import { createValidation } from '../create-validation-fn';
 export function matches<TValue extends StringProperty, TModel>(pattern: RegExp): SyncValidation<TValue, TModel>;
 export function matches<TValue extends StringProperty, TModel>(pattern: RegExp, message: string): SyncValidation<TValue, TModel>;
 export function matches<TValue extends StringProperty, TModel>(pattern: RegExp, message?: string): SyncValidation<TValue, TModel> {
-  return createValidation(value => pattern.test(value || ''), message || 'Value must match pattern.');
+  return createValidation(value => pattern.test(value || ''), {
+    message: message || 'Value must match pattern.',
+    errorCode: matches.name
+  });
 }

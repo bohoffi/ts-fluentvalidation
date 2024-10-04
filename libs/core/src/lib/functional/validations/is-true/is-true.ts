@@ -13,5 +13,8 @@ export function isTrue<TValue extends BooleanProperty, TModel>(): SyncValidation
  */
 export function isTrue<TValue extends BooleanProperty, TModel>(message: string): SyncValidation<TValue, TModel>;
 export function isTrue<TValue extends BooleanProperty, TModel>(message?: string): SyncValidation<TValue, TModel> {
-  return createValidation(value => value === true, message || 'Value must be true.');
+  return createValidation(value => value === true, {
+    message: message || 'Value must be true.',
+    errorCode: isTrue.name
+  });
 }

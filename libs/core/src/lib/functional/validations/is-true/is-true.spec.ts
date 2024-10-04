@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { isTrue } from './is-true';
 
 describe(isTrue.name, () => {
@@ -15,5 +15,11 @@ describe(isTrue.name, () => {
   it('should return custom message', () => {
     const validation = isTrue('Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = isTrue();
+    expectValidationMessageToBe(validation, 'Value must be true.');
+    expectValidationErrorCodeToBe(validation, isTrue.name);
   });
 });

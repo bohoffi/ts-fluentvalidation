@@ -15,5 +15,8 @@ export function equals<TValue, TModel>(comparisonValue: TValue): SyncValidation<
  */
 export function equals<TValue, TModel>(comparisonValue: TValue, message: string): SyncValidation<TValue, TModel>;
 export function equals<TValue, TModel>(comparisonValue: TValue, message?: string): SyncValidation<TValue, TModel> {
-  return createValidation(value => value === comparisonValue, message || `Value must equal ${comparisonValue}.`);
+  return createValidation(value => value === comparisonValue, {
+    message: message || `Value must equal ${comparisonValue}.`,
+    errorCode: equals.name
+  });
 }

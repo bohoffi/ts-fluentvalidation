@@ -17,6 +17,16 @@ export class TestValidationFailures extends Array<ValidationFailure> {
   }
 
   /**
+   * Checks the expected error code and throws an error if the actual error code does not match.
+   * @param errorCode The expected error code.
+   * @returns The current TestValidationFailures instance.
+   * @throws An error if the actual error code does not match the expected error code.
+   */
+  public withErrorCode(errorCode: string): this {
+    return this.with(failure => failure.errorCode === errorCode, `Expected error code to be "${errorCode}"`);
+  }
+
+  /**
    * Checks the expected error severity and throws an error if the actual severity does not match.
    * @param severity The expected error severity.
    * @returns The current TestValidationFailures instance.

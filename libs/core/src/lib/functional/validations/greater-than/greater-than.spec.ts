@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { greaterThan } from './greater-than';
 
 describe(greaterThan.name, () => {
@@ -20,5 +20,11 @@ describe(greaterThan.name, () => {
   it('should return custom message', () => {
     const validation = greaterThan(42, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = greaterThan(42);
+    expectValidationMessageToBe(validation, 'Value must be greater than 42.');
+    expectValidationErrorCodeToBe(validation, greaterThan.name);
   });
 });

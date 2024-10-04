@@ -22,5 +22,8 @@ export function lessThanOrEquals<TValue extends NumberProperty, TModel>(
   comparisonValue: number,
   message?: string
 ): SyncValidation<TValue, TModel> {
-  return createValidation(value => (value || 0) <= comparisonValue, message || `Value must be less than or equal to ${comparisonValue}.`);
+  return createValidation(value => (value || 0) <= comparisonValue, {
+    message: message || `Value must be less than or equal to ${comparisonValue}.`,
+    errorCode: lessThanOrEquals.name
+  });
 }

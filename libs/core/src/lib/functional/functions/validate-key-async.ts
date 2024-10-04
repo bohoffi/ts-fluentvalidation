@@ -2,6 +2,7 @@ import { ValidationError } from '../errors/validation-error';
 import { ValidationFailure } from '../result/validation-failure';
 import { ArrayKeyOf, KeyOf } from '../types/ts-helpers';
 import { CascadeMode, Validation } from '../types/types';
+import { failureForValidation } from './utils';
 
 /**
  * Validates the given key synchronously.
@@ -46,7 +47,7 @@ export async function validateKeyAsync<
     }
 
     const propertyValue = model[key];
-    const failuresForProperty = Array.isArray(model[key])
+    const failuresForProperty = Array.isArray(propertyValue)
       ? await validateCollectionPropertyAsync(
           model,
           key as ArrayKeyOf<TModel>,
@@ -74,12 +75,7 @@ async function validatePropertyAsync<
   KeyValidation extends Validation<TModel[Key], TModel>
 >(model: TModel, key: Key, propertyValue: TModel[Key], validation: KeyValidation): Promise<ValidationFailure | undefined> {
   if (!(await validation(propertyValue))) {
-    return {
-      propertyName: key,
-      message: validation.metadata.message || 'Validation failed',
-      attemptedValue: model[key],
-      severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
-    };
+    return failureForValidation(model, key, propertyValue, validation);
   }
   return undefined;
 }
@@ -94,12 +90,7 @@ async function validateCollectionPropertyAsync<
   const failures: ValidationFailure[] = [];
   for (const [index, item] of propertyValue.entries()) {
     if (!(await validation(item))) {
-      failures.push({
-        propertyName: `${key}[${index}]`,
-        message: validation.metadata.message || 'Validation failed',
-        attemptedValue: model[key],
-        severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, model[key]) : 'Error'
-      });
+      failures.push(failureForValidation<TModel, TItem>(model, `${key}[${index}]`, item, validation));
       if (failures.length > 0 && keyCascadeMode === 'Stop') {
         break;
       }

@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { lessThan } from './less-than';
 
 describe(lessThan.name, () => {
@@ -20,5 +20,11 @@ describe(lessThan.name, () => {
   it('should return custom message', () => {
     const validation = lessThan(42, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = lessThan(42);
+    expectValidationMessageToBe(validation, 'Value must be less than 42.');
+    expectValidationErrorCodeToBe(validation, lessThan.name);
   });
 });

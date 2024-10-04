@@ -4,7 +4,10 @@ import { createAsyncValidation, createValidation } from '../lib/functional/valid
 import {
   expectFailureLength,
   expectResultInvalid,
+  expectValidationErrorCodeToBe,
+  expectValidationErrorCodeToBeUndefined,
   expectValidationMessageToBe,
+  expectValidationMessageToBeUndefined,
   expectValidationMetadataToBeDefined,
   expectValidationToFail,
   expectValidationToFailAsync,
@@ -32,6 +35,12 @@ describe(createValidation.name, () => {
 
       expectValidationMessageToBe(isNonEmptyString, 'Value must not be empty');
     });
+
+    it('should create validation with default metadata', () => {
+      const validation = createValidation<string>(value => value.length > 0);
+      expectValidationMessageToBeUndefined(validation);
+      expectValidationErrorCodeToBeUndefined(validation);
+    });
   });
 
   describe('withMessage', () => {
@@ -41,6 +50,16 @@ describe(createValidation.name, () => {
 
       expectValidationMessageToBe(isNonEmptyString, 'FOO BAR');
       expectValidationMessageToBe(validationWithMessage, 'Value must not be empty');
+    });
+  });
+
+  describe('withErrorCode', () => {
+    it('should create a validation function with an errorCode', () => {
+      const isNonEmptyString = createValidation<string>(value => value.length > 0);
+      const validationWithMessage = isNonEmptyString.withErrorCode('ERR123');
+
+      expectValidationErrorCodeToBeUndefined(isNonEmptyString);
+      expectValidationErrorCodeToBe(validationWithMessage, 'ERR123');
     });
   });
 
@@ -102,6 +121,12 @@ describe(createAsyncValidation.name, () => {
 
       expectValidationMessageToBe(isNonEmptyString, 'Value must not be empty');
     });
+
+    it('should create validation with default metadata', () => {
+      const validation = createAsyncValidation<string>(value => Promise.resolve(value.length > 0));
+      expectValidationMessageToBeUndefined(validation);
+      expectValidationErrorCodeToBeUndefined(validation);
+    });
   });
 
   describe('withMessage', () => {
@@ -111,6 +136,16 @@ describe(createAsyncValidation.name, () => {
 
       expectValidationMessageToBe(isNonEmptyString, 'FOO BAR');
       expectValidationMessageToBe(validationWithMessage, 'Value must not be empty');
+    });
+  });
+
+  describe('withErrorCode', () => {
+    it('should create a validation function with an errorCode', () => {
+      const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0));
+      const validationWithMessage = isNonEmptyString.withErrorCode('ERR123');
+
+      expectValidationErrorCodeToBeUndefined(isNonEmptyString);
+      expectValidationErrorCodeToBe(validationWithMessage, 'ERR123');
     });
   });
 

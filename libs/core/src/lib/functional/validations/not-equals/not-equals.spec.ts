@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { notEquals } from './not-equals';
 
 describe(notEquals.name, () => {
@@ -15,5 +15,11 @@ describe(notEquals.name, () => {
   it('should return custom message', () => {
     const validation = notEquals(42, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = notEquals(42);
+    expectValidationMessageToBe(validation, 'Value must not equal 42.');
+    expectValidationErrorCodeToBe(validation, notEquals.name);
   });
 });

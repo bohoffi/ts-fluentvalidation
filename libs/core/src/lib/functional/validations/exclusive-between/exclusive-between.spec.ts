@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { exclusiveBetween } from './exclusive-between';
 
 describe(exclusiveBetween.name, () => {
@@ -27,5 +27,11 @@ describe(exclusiveBetween.name, () => {
   it('should return custom message', () => {
     const validation = exclusiveBetween(4, 2, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = exclusiveBetween(4, 2);
+    expectValidationMessageToBe(validation, 'Value must be between 4 and 2 exclusively.');
+    expectValidationErrorCodeToBe(validation, exclusiveBetween.name);
   });
 });

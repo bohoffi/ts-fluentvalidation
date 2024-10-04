@@ -16,5 +16,8 @@ export function greaterThan<TValue extends NumberProperty, TModel>(
   comparisonValue: number,
   message?: string
 ): SyncValidation<TValue, TModel> {
-  return createValidation(value => (value || 0) > comparisonValue, message || `Value must be greater than ${comparisonValue}.`);
+  return createValidation(value => (value || 0) > comparisonValue, {
+    message: message || `Value must be greater than ${comparisonValue}.`,
+    errorCode: greaterThan.name
+  });
 }

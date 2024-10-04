@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { required } from './required';
 
 describe(required.name, () => {
@@ -23,5 +23,11 @@ describe(required.name, () => {
   it('should return a custom error message when provided', () => {
     const validation = required('Custom error message.');
     expectValidationMessageToBe(validation, 'Custom error message.');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = required();
+    expectValidationMessageToBe(validation, 'Value is required.');
+    expectValidationErrorCodeToBe(validation, required.name);
   });
 });

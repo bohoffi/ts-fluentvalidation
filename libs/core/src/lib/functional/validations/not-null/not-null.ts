@@ -13,5 +13,5 @@ export function notNull<TValue, TModel>(): SyncValidation<TValue, TModel>;
  */
 export function notNull<TValue, TModel>(message: string): SyncValidation<TValue, TModel>;
 export function notNull<TValue, TModel>(message?: string): SyncValidation<TValue, TModel> {
-  return not(isNull(message || 'Value must not be null.'));
+  return not(isNull(message || 'Value must not be null.')).withErrorCode(notNull.name);
 }

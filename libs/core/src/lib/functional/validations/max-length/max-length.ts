@@ -16,8 +16,8 @@ export function maxLength<TValue extends LengthProperty, TModel>(maxLength: numb
  */
 export function maxLength<TValue extends LengthProperty, TModel>(maxLength: number, message: string): SyncValidation<TValue, TModel>;
 export function maxLength<TValue extends LengthProperty, TModel>(maxLength: number, message?: string): SyncValidation<TValue, TModel> {
-  return createValidation<TValue, TModel>(
-    value => (value?.length || 0) <= maxLength,
-    message || `Value must have a maximum length of ${maxLength}.`
-  );
+  return createValidation<TValue, TModel>(value => (value?.length || 0) <= maxLength, {
+    message: message || `Value must have a maximum length of ${maxLength}.`,
+    errorCode: 'maxLength'
+  });
 }

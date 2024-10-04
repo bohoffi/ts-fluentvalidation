@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { matches } from './matches';
 
 describe(matches.name, () => {
@@ -23,5 +23,11 @@ describe(matches.name, () => {
   it('should return defined message', () => {
     const validation = matches(/hello/, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = matches(/hello/);
+    expectValidationMessageToBe(validation, 'Value must match pattern.');
+    expectValidationErrorCodeToBe(validation, matches.name);
   });
 });

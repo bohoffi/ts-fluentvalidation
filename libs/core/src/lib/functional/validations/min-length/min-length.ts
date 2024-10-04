@@ -16,8 +16,8 @@ export function minLength<TValue extends LengthProperty, TModel>(minLength: numb
  */
 export function minLength<TValue extends LengthProperty, TModel>(minLength: number, message: string): SyncValidation<TValue, TModel>;
 export function minLength<TValue extends LengthProperty, TModel>(minLength: number, message?: string): SyncValidation<TValue, TModel> {
-  return createValidation<TValue, TModel>(
-    value => (value?.length || 0) >= minLength,
-    message || `Value must have a minimum length of ${minLength}.`
-  );
+  return createValidation<TValue, TModel>(value => (value?.length || 0) >= minLength, {
+    message: message || `Value must have a minimum length of ${minLength}.`,
+    errorCode: 'minLength'
+  });
 }

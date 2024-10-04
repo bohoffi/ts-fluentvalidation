@@ -30,6 +30,7 @@ describe(validateKeySync.name, () => {
         {
           propertyName: 'name',
           message: 'Name must be longer than 10 characters',
+          errorCode: 'minLength',
           attemptedValue: 'John Doe',
           severity: 'Error'
         }
@@ -50,6 +51,7 @@ describe(validateKeySync.name, () => {
         {
           propertyName: 'name',
           message: 'Name must be longer than 10 characters',
+          errorCode: 'minLength',
           attemptedValue: 'John Doe',
           severity: 'Error'
         }
@@ -62,12 +64,14 @@ describe(validateKeySync.name, () => {
         {
           propertyName: 'name',
           message: 'Name must be longer than 10 characters',
+          errorCode: 'minLength',
           attemptedValue: 'John Doe',
           severity: 'Error'
         },
         {
           propertyName: 'name',
           message: 'Name must include Jane',
+          errorCode: 'must',
           attemptedValue: 'John Doe',
           severity: 'Error'
         }

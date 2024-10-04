@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { inclusiveBetween } from './inclusive-between';
 
 describe(inclusiveBetween.name, () => {
@@ -45,5 +45,11 @@ describe(inclusiveBetween.name, () => {
   it('should return custom message', () => {
     const validation = inclusiveBetween(4, 2, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = inclusiveBetween(4, 2);
+    expectValidationMessageToBe(validation, 'Value must be between 4 and 2 inclusively.');
+    expectValidationErrorCodeToBe(validation, inclusiveBetween.name);
   });
 });

@@ -1,4 +1,4 @@
-import { expectValidationMessageToBe } from '../../../../__tests__/assertions';
+import { expectValidationErrorCodeToBe, expectValidationMessageToBe } from '../../../../__tests__/assertions';
 import { mustAsync } from './must-async';
 
 describe(mustAsync.name, () => {
@@ -21,5 +21,11 @@ describe(mustAsync.name, () => {
   it('should return custom message', () => {
     const validation = mustAsync<number>(value => Promise.resolve((value || 0) > 0), 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
+  });
+
+  it('should return with default metadata', () => {
+    const validation = mustAsync<number>(value => Promise.resolve((value || 0) > 0));
+    expectValidationMessageToBe(validation, 'Value must meet the specified criteria.');
+    expectValidationErrorCodeToBe(validation, mustAsync.name);
   });
 });

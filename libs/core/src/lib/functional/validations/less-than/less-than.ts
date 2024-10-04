@@ -16,5 +16,8 @@ export function lessThan<TValue extends NumberProperty, TModel>(comparisonValue:
  */
 export function lessThan<TValue extends NumberProperty, TModel>(comparisonValue: number, message: string): SyncValidation<TValue, TModel>;
 export function lessThan<TValue extends NumberProperty, TModel>(comparisonValue: number, message?: string): SyncValidation<TValue, TModel> {
-  return createValidation(value => (value || 0) < comparisonValue, message || `Value must be less than ${comparisonValue}.`);
+  return createValidation(value => (value || 0) < comparisonValue, {
+    message: message || `Value must be less than ${comparisonValue}.`,
+    errorCode: lessThan.name
+  });
 }

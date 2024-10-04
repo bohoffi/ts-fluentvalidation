@@ -56,6 +56,21 @@ export function expectValidationMessageToBe<TValue, TModel extends object>(valid
   expect(validation.metadata.message).toBe(message);
 }
 
+export function expectValidationMessageToBeUndefined<TValue, TModel extends object>(validation: Validation<TValue, TModel>): void {
+  expect(validation.metadata.message).toBeUndefined();
+}
+
+export function expectValidationErrorCodeToBe<TValue, TModel extends object>(
+  validation: Validation<TValue, TModel>,
+  errorCode: string
+): void {
+  expect(validation.metadata.errorCode).toBe(errorCode);
+}
+
+export function expectValidationErrorCodeToBeUndefined<TValue, TModel extends object>(validation: Validation<TValue, TModel>): void {
+  expect(validation.metadata.errorCode).toBeUndefined();
+}
+
 export function expectValidationMetadataToBeDefined<TValue, TModel>(
   validation: Validation<TValue, TModel>,
   metadataKey: KeyOf<ValidationMetadata<boolean, TModel>>
