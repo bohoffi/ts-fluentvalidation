@@ -6,7 +6,6 @@ export {
   AsyncValidation,
   BooleanProperty,
   CascadeMode,
-  DateProperty,
   LengthProperty,
   NumberProperty,
   Severity,

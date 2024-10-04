@@ -1,4 +1,4 @@
-export { BooleanProperty, DateProperty, LengthProperty, NumberProperty, StringProperty } from './properties';
+export { BooleanProperty, LengthProperty, NumberProperty, StringProperty } from './properties';
 export {
   ApplyConditionTo,
   AsyncValidation,
