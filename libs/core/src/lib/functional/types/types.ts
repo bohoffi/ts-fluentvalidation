@@ -12,8 +12,11 @@ export type InferValidations<T> = T extends Validator<infer TModel, infer Valida
 
 /**
  * Represents a validator.
+ *
+ * @template TModel - The type of the model to validate.
+ * @template ModelValidations - The type of the validations for the model.
  */
-export type Validator<TModel extends object, ModelValidations extends object = EmptyObject> = {
+export interface Validator<TModel extends object, ModelValidations extends object = EmptyObject> {
   /**
    * The validations for the validator.
    */
@@ -66,7 +69,7 @@ export type Validator<TModel extends object, ModelValidations extends object = E
   /**
    * Includes the validations from the given validator.
    *
-   * **Note** neither the `cascadeMode` will be included nor the conditions applied to preceding validations.
+   * @remarks Neither the `cascadeMode` will be included nor the conditions applied to preceding validations.
    *
    * @param validator - The validator to include.
    */
@@ -163,12 +166,12 @@ export type Validator<TModel extends object, ModelValidations extends object = E
    * @throws {ValidationError} if any failures occur.
    */
   validateAndThrowAsync(model: TModel): Promise<ValidationResult>;
-};
+}
 
 /**
  * Represents the metadata for validation.
  */
-export type ValidationMetadata<TAsync extends boolean, TModel> = {
+export interface ValidationMetadata<TAsync extends boolean, TModel> {
   /**
    * Indicates if the validation is asynchronous.
    */
@@ -233,10 +236,13 @@ export type ValidationMetadata<TAsync extends boolean, TModel> = {
    * @returns The severity of the validation failure.
    */
   severityProvider?: (model: TModel, value: unknown) => Severity;
-};
+}
 
 export type ValidationFunction<TValue> = ((value: TValue) => boolean) | ((value: TValue) => Promise<boolean>);
 
+/**
+ * Represents the base for a validation.
+ */
 export type ValidationBase<TValue, TValidationFunction extends ValidationFunction<TValue>, TModel> = {
   /**
    * Metadata containing additional information about the validation.
@@ -323,13 +329,28 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
   ): ValidationBase<TValue, TValidationFunction, TModel>;
 } & TValidationFunction;
 
+/**
+ * @internal
+ */
 export type Validation<TValue, TModel> =
   | SyncValidation<TValue, TModel>
   | SyncValidatorValidation<TValue, TModel>
   | AsyncValidation<TValue, TModel>
   | AsyncValidatorValidation<TValue, TModel>;
 
+/**
+ * Represents a synchronous validation.
+ *
+ * @template TValue - The type of the value to validate.
+ * @template TModel - The type of the model being validated.
+ */
 export type SyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => boolean, TModel>;
+/**
+ * Represents an asynchronous validation.
+ *
+ * @template TValue - The type of the value to validate.
+ * @template TModel - The type of the model being validated.
+ */
 export type AsyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>;
 
 export type SyncValidatorValidation<TValue, TModel> = Omit<
@@ -379,7 +400,7 @@ export type Severity = 'Error' | 'Warning' | 'Info';
 /**
  * Configuration for the validator.
  */
-export type ValidatorConfig<TModel extends object> = {
+export interface ValidatorConfig<TModel extends object> {
   /**
    * If true, the validator will throw a ValidationError if any failures occur.
    */
@@ -396,9 +417,11 @@ export type ValidatorConfig<TModel extends object> = {
    * The cascade mode on property level.
    */
   propertyCascadeMode?: CascadeMode;
-};
+}
 
 /**
  * Represents the configuration for validation with `cascadeMode` being required.
+ *
+ * @internal
  */
 export type ValidateConfig<TModel extends object> = RequiredByKeys<ValidatorConfig<TModel>, 'cascadeMode'>;

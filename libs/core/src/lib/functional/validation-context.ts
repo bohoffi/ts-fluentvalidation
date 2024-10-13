@@ -5,7 +5,7 @@ import { ValidationFailure } from './result/validation-failure';
  *
  * @template T - The type of the model being validated.
  */
-export type ValidationContext<T> = {
+export interface ValidationContext<T> {
   /**
    * The validation failures that have occurred.
    */
@@ -24,7 +24,7 @@ export type ValidationContext<T> = {
    * @param failures - The failures to add to the context.
    */
   addFailures(...failures: ValidationFailure[]): void;
-};
+}
 
 /**
  * Creates a validation context for a given model.

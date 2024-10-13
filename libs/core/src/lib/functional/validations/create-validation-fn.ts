@@ -12,7 +12,7 @@ import {
 type ValidationOptions<TModel> = Pick<ValidationMetadata<boolean, TModel>, 'message' | 'errorCode'>;
 
 /**
- * Creates a validation function.
+ * Creates a synchronous validation function.
  *
  * @template TValue The type of the value to be validated.
  * @template TModel The type of the model being validated.
@@ -21,7 +21,7 @@ type ValidationOptions<TModel> = Pick<ValidationMetadata<boolean, TModel>, 'mess
  */
 export function createValidation<TValue, TModel = unknown>(fn: (value: TValue) => boolean): SyncValidation<TValue, TModel>;
 /**
- * Creates a validation function with a message.
+ * Creates a synchronous validation function with a message.
  *
  * @template TValue The type of the value to be validated.
  * @template TModel The type of the model being validated.
@@ -31,7 +31,7 @@ export function createValidation<TValue, TModel = unknown>(fn: (value: TValue) =
  */
 export function createValidation<TValue, TModel = unknown>(fn: (value: TValue) => boolean, message: string): SyncValidation<TValue, TModel>;
 /**
- * Creates a validation function with options.
+ * Creates a synchronous validation function with options.
  *
  * @template TValue The type of the value to be validated.
  * @template TModel The type of the model being validated.
@@ -60,7 +60,7 @@ export function createValidation<TValue, TModel = unknown>(
  */
 export function createAsyncValidation<TValue, TModel = unknown>(fn: (value: TValue) => Promise<boolean>): AsyncValidation<TValue, TModel>;
 /**
- * Creates an asynchronous validation function.
+ * Creates an asynchronous validation function with a mesage.
  *
  * @template TValue The type of the value to be validated.
  * @template TModel The type of the model being validated.
@@ -73,7 +73,7 @@ export function createAsyncValidation<TValue, TModel = unknown>(
   message: string
 ): AsyncValidation<TValue, TModel>;
 /**
- * Creates an asynchronous validation function.
+ * Creates an asynchronous validation function with options.
  *
  * @template TValue The type of the value to be validated.
  * @template TModel The type of the model being validated.
