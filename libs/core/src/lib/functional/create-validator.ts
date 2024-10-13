@@ -3,6 +3,7 @@ import { validateSync } from './functions/validate-sync';
 import { createValidationResult, ValidationResult } from './result/validation-result';
 import { ArrayKeyOf, EmptyObject, getLastElement, KeyOf } from './types/ts-helpers';
 import { CascadeMode, InferValidations, ValidateConfig, Validation, Validator, ValidatorConfig } from './types/types';
+import { createValidationContext, isValidationContext, ValidationContext } from './validation-context';
 
 /**
  * Creates a new validator.
@@ -65,42 +66,49 @@ export function createValidator<TModel extends object, ModelValidations extends 
       return this as unknown as Validator<TModel & TIncludeModel, ModelValidations & IncludeValidations>;
     },
 
-    validate(model: TModel, config?: (config: ValidatorConfig<TModel>) => void): ValidationResult {
+    validate(modelOrContext: TModel | ValidationContext<TModel>, config?: (config: ValidatorConfig<TModel>) => void): ValidationResult {
       config?.(validatorConfig);
-      return createValidationResult(validateSync(model, _validations, validatorConfig, _keyCascadeModes));
+      const context = getValidationContext(modelOrContext);
+      validateSync(context, _validations, validatorConfig, _keyCascadeModes);
+      return createValidationResult(context.failures);
     },
 
-    async validateAsync(model: TModel, config?: (config: ValidatorConfig<TModel>) => void): Promise<ValidationResult> {
+    async validateAsync(
+      modelOrContext: TModel | ValidationContext<TModel>,
+      config?: (config: ValidatorConfig<TModel>) => void
+    ): Promise<ValidationResult> {
       config?.(validatorConfig);
-      return createValidationResult(await validateAsync(model, _validations, validatorConfig, _keyCascadeModes));
+      const context = getValidationContext(modelOrContext);
+      await validateAsync(context, _validations, validatorConfig, _keyCascadeModes);
+      return createValidationResult(context.failures);
     },
 
     validateAndThrow(model: TModel): ValidationResult {
-      return createValidationResult(
-        validateSync(
-          model,
-          _validations,
-          {
-            ...validatorConfig,
-            throwOnFailures: true
-          },
-          _keyCascadeModes
-        )
+      const context = createValidationContext(model);
+      validateSync(
+        context,
+        _validations,
+        {
+          ...validatorConfig,
+          throwOnFailures: true
+        },
+        _keyCascadeModes
       );
+      return createValidationResult(context.failures);
     },
 
     async validateAndThrowAsync(model: TModel): Promise<ValidationResult> {
-      return createValidationResult(
-        await validateAsync(
-          model,
-          _validations,
-          {
-            ...validatorConfig,
-            throwOnFailures: true
-          },
-          _keyCascadeModes
-        )
+      const context = createValidationContext(model);
+      await validateAsync(
+        context,
+        _validations,
+        {
+          ...validatorConfig,
+          throwOnFailures: true
+        },
+        _keyCascadeModes
       );
+      return createValidationResult(context.failures);
     }
   };
 }
@@ -190,4 +198,8 @@ function mergeValidations<TModel extends object, Key extends KeyOf<TModel> | Arr
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (validator.validations as any)[key] = existingValidations.concat(validations);
   return validator as Validator<TModel, ModelValidations & { [P in Key]: Validation<TValue, TModel>[] }>;
+}
+
+function getValidationContext<TModel>(modelOrContext: TModel | ValidationContext<TModel>): ValidationContext<TModel> {
+  return isValidationContext(modelOrContext) ? modelOrContext : createValidationContext(modelOrContext);
 }

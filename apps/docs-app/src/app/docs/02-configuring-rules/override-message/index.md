@@ -8,26 +8,29 @@ As a validations parameter - all built-in validations support a message as the l
 
 ```typescript
 const validator = createValidator<Person>()
-  .ruleFor('name', notEmpty(`Please ensure that you have entered your 'name'.`))
+  .ruleFor('lastName', notEmpty(`Please ensure that you have entered your 'lastName'.`))
   .ruleFor('age', greaterThanOrEquals(18, 'The persons age must be at least 18.'));
 ```
 
 Using the `withMessage()` function of a validation.
 
 ```typescript
-const validator = createValidator<Person>().ruleFor('name', notEmpty().withMessage(`Please ensure that you have entered your 'name'.`));
+const validator = createValidator<Person>().ruleFor(
+  'lastName',
+  notEmpty().withMessage(`Please ensure that you have entered your 'lastName'.`)
+);
 ```
 
 Note that custom error messages can contain placeholders for special values such as `{propertyName}` - which will be replaced in this example with the name of the property being validated. This means the above error message could be rewritten as:
 
 ```typescript
 const validator = createValidator<Person>().ruleFor(
-  'name',
+  'lastName',
   notEmpty().withMessage(`Please ensure that you have entered your '{propertyName}'.`)
 );
 ```
 
-...and the value `name` will be inserted.
+...and the value `lastName` will be inserted.
 
 ## Placeholders
 
@@ -58,7 +61,7 @@ It is also possible to use your own custom placeholders in the validation messag
 
 ```typescript
 const validator = createValidator<Person>().ruleFor(
-  'name',
+  'lastName',
   notEmpty().withMessage('This message references some constant values: {arg_1} {arg_2}').withPlaceholder('arg_1', 'hello').withPlaceholder('arg_2', 5);
 );
 //Result would be "This message references some constant values: hello 5"

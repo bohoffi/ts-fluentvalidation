@@ -1,6 +1,6 @@
 import { ValidationFailure } from '../../result/validation-failure';
 import { ValidationResult } from '../../result/validation-result';
-import { ArrayKeyOfWithIndex, KeyOf } from '../../types/ts-helpers';
+import { IndexedArrayKeyOf, IndexedNestedArrayKeyOf, KeyOf, NestedKeyOf } from '../../types/ts-helpers';
 import { TestValidationError } from './test-validation-error';
 import { TestValidationFailures } from './test-validation-failure';
 
@@ -32,11 +32,13 @@ export class TestValidationResult<T extends object> implements ValidationResult 
   /**
    * Validates that a validation error should exist for the specified property.
    *
-   * @param propertyName - The property name to validate.
+   * @param propertyName - The property name to check.
    * @throws {@link TestValidationError} if there is no validation error for the specified property.
    * @returns The TestValidationFailures for the specified property.
    */
-  public shouldHaveValidationErrorFor(propertyName: KeyOf<T> | ArrayKeyOfWithIndex<T>): TestValidationFailures {
+  public shouldHaveValidationErrorFor(
+    propertyName: KeyOf<T> | IndexedArrayKeyOf<T> | NestedKeyOf<T> | IndexedNestedArrayKeyOf<T>
+  ): TestValidationFailures {
     const validationFailures = this.failures.filter(failure => failure.propertyName === propertyName);
     if (validationFailures.length) {
       return new TestValidationFailures(...validationFailures);
@@ -52,7 +54,7 @@ export class TestValidationResult<T extends object> implements ValidationResult 
    * @throws {@link TestValidationError} if there is a validation error for the specified property.
    * @returns The current TestValidationResult instance.
    */
-  public shouldNotHaveValidationErrorFor(propertyName: KeyOf<T> | ArrayKeyOfWithIndex<T>): this {
+  public shouldNotHaveValidationErrorFor(propertyName: KeyOf<T> | IndexedArrayKeyOf<T>): this {
     if (this.failures.some(failure => failure.propertyName === propertyName)) {
       throw new TestValidationError(`Expected no validation error for property ${propertyName}`);
     }

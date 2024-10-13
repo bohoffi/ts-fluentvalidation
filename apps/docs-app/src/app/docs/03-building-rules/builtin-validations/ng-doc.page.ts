@@ -30,7 +30,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'equals',
         description: 'Checks if a value equals a specified comparison value.',
-        example: "validator.ruleFor('name', equals<string, Person>('John'))",
+        example: "validator.ruleFor('lastName', equals<string, Person>('John'))",
         exampleErrorMessage: `*'name' must equal John.*`,
         parameters: [
           {
@@ -52,7 +52,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'isFalsy',
         description: 'Checks if a value is falsy.',
-        example: "validator.ruleFor('name', isFalsy())",
+        example: "validator.ruleFor('lastName', isFalsy())",
         exampleErrorMessage: `*'name' must be falsy.*`,
         placeholders: [
           {
@@ -64,7 +64,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'isNull',
         description: 'Checks if a value is null.',
-        example: "validator.ruleFor('name', isNull())",
+        example: "validator.ruleFor('lastName', isNull())",
         exampleErrorMessage: `*'name' must be null.*`,
         placeholders: [
           {
@@ -76,7 +76,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'isTruthy',
         description: 'Checks if a value is truthy.',
-        example: "validator.ruleFor('name', isTruthy())",
+        example: "validator.ruleFor('lastName', isTruthy())",
         exampleErrorMessage: `*'name' must be truthy.*`,
         placeholders: [
           {
@@ -88,7 +88,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'must',
         description: 'Checks the value against a given predicate.',
-        example: "validator.ruleFor('name', must(name => name.startsWith('J')))",
+        example: "validator.ruleFor('lastName', must(name => name.startsWith('J')))",
         exampleErrorMessage: `*'name' must meet the specified criteria.*`,
         parameters: [
           {
@@ -106,7 +106,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'notEquals',
         description: 'Checks if a value is not equal to a specified comparison value.',
-        example: "validator.ruleFor('name', notEquals<string, Person>('John'))",
+        example: "validator.ruleFor('lastName', notEquals<string, Person>('John'))",
         exampleErrorMessage: `*'name' must not equal John.*`,
         parameters: [
           {
@@ -128,7 +128,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'notNull',
         description: 'Checks if a value is not null.',
-        example: "validator.ruleFor('name', notNull())",
+        example: "validator.ruleFor('lastName', notNull())",
         exampleErrorMessage: `*'name' must not be null.*`,
         placeholders: [
           {
@@ -140,7 +140,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'required',
         description: 'Checks if a value is neither nullish nor empty.',
-        example: "validator.ruleFor('name', required())",
+        example: "validator.ruleFor('lastName', required())",
         exampleErrorMessage: `*'name' is required.*`,
         placeholders: [
           {
@@ -158,7 +158,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'empty',
         description: 'Checks if a values length is 0.',
-        example: "validator.ruleFor('name', empty())",
+        example: "validator.ruleFor('lastName', empty())",
         exampleErrorMessage: `*'name' must be empty.*`,
         placeholders: [
           {
@@ -170,7 +170,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'length',
         description: 'Checks if a values length is between (inclusive) the specified minimum and maximum.',
-        example: "validator.ruleFor('name', length(3, 5))",
+        example: "validator.ruleFor('lastName', length(3, 5))",
         exampleErrorMessage: `*'name' must have a length between (inclusive) 3 and 5..*`,
         parameters: [
           {
@@ -200,7 +200,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'maxLength',
         description: 'Checksif the values length is less than or equal to the specified maximum.',
-        example: "validator.ruleFor('name', maxLength(5))",
+        example: "validator.ruleFor('lastName', maxLength(5))",
         exampleErrorMessage: `*'name' must have a maximum length of 5.*`,
         parameters: [
           {
@@ -222,7 +222,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'minLength',
         description: 'Checks  if the values length is greater than or equal to the specified minimum.',
-        example: "validator.ruleFor('name', minLength(5))",
+        example: "validator.ruleFor('lastName', minLength(5))",
         exampleErrorMessage: `*'name' must have a minimum length of 5.*`,
         parameters: [
           {
@@ -244,7 +244,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'notEmpty',
         description: 'Checks if a value is not empty.',
-        example: "validator.ruleFor('name', notEmpty())",
+        example: "validator.ruleFor('lastName', notEmpty())",
         exampleErrorMessage: `*'name' must not be empty.*`,
         placeholders: [
           {
@@ -446,7 +446,7 @@ const validationCategories: ValidationCategory[] = [
       {
         name: 'matches',
         description: 'Checks if the value matches the specified pattern.',
-        example: "validator.ruleFor('name', matches(/^[A-Z][a-z]+$/))",
+        example: "validator.ruleFor('lastName', matches(/^[A-Z][a-z]+$/))",
         exampleErrorMessage: `*'name' must match pattern.*`,
         parameters: [
           {

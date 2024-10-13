@@ -3,13 +3,13 @@ You can include validations from other validators provided they validate the sam
 ```typescript
 export const personAgeValidator = createValidator<Person>().ruleFor('age', greaterThanOrEquals(18));
 
-export const personNameValidator = createValidator<Person>().ruleFor('name', notNull());
+export const personLastNameValidator = createValidator<Person>().ruleFor('lastName', notNull());
 ```
 
 Because both of these validators are targetting the same model type `Person`, you can combine them using the `include()` function:
 
 ```typescript
-export const personValidator = createValidator<Person>().include(personAgeValidator).include(personNameValidator);
+export const personValidator = createValidator<Person>().include(personAgeValidator).include(personLastNameValidator);
 ```
 
 > **Note**

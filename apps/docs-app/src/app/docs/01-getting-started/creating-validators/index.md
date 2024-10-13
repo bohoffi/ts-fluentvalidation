@@ -2,7 +2,7 @@ To define a validator for a model you can use the `createValidator` function:
 
 ```typescript
 interface Person {
-  name: string;
+  lastName: string;
   age: number;
 }
 
@@ -11,18 +11,17 @@ const personValidator = createValidator<Person>();
 
 ## Define validations
 
-While creating the validator you can start to define validations for the models properties by passing a property name to the
-`ruleFor` function. The following example shows how to validate that the persons name should not be an empty string:
+While creating the validator you can start to define validations for the models properties by passing a property name to the `ruleFor` function. The following example shows how to validate that the persons lastName should not be an empty string:
 
 ```typescript
-createValidator<Person>().ruleFor('name', notEmpty());
+createValidator<Person>().ruleFor('lastName', notEmpty());
 ```
 
 > **Warning**
 > Each call of `ruleFor` updates the validators set of validations and failed validations will result in expected output **but** you won't get the full type support due to the functional approach chosen if you are **not chaining** these calls:
 
 ```typescript
-const validator = createValidator<Person>().ruleFor('name', notEmpty());
+const validator = createValidator<Person>().ruleFor('lastName', notEmpty());
 // this will add validation for the age property to the validator
 validator.ruleFor('age', greaterThanOrEquals(18));
 ```
@@ -33,7 +32,7 @@ validator.ruleFor('age', greaterThanOrEquals(18));
 const validator: Validator<
   Person,
   {
-    readonly name: ValidationFnArray<Person, 'name'>;
+    readonly lastName: Validation<string, Person>[];
   }
 >;
 ```
@@ -41,17 +40,17 @@ const validator: Validator<
 While chaining the `ruleFor` calls like:
 
 ```typescript
-const validatorOne = createValidator<Person>().ruleFor('name', notEmpty()).ruleFor('age', greaterThanOrEquals(18));
+const validator = createValidator<Person>().ruleFor('lastName', notEmpty()).ruleFor('age', greaterThanOrEquals(18));
 ```
 
 ...will result in the following type:
 
 ```typescript
-const validatorOne: Validator<
+const validator: Validator<
   Person,
   {
-    readonly name: ValidationFnArray<Person, 'name'>;
-    readonly age: ValidationFnArray<Person, 'age'>;
+    readonly lastName: Validation<string, Person>[];
+    readonly age: Validation<number, Person>[];
   }
 >;
 ```
@@ -62,7 +61,7 @@ To validate an object using a validator call the validators `validate` function 
 
 ```typescript
 const person: Person = {
-  name: '',
+  lastName: '',
   age: 0
 };
 
@@ -78,7 +77,7 @@ The following code would log all errors to the console:
 
 ```typescript
 const person: Person = {
-  name: '',
+  lastName: '',
   age: 0
 };
 
@@ -101,18 +100,18 @@ const allMessages: string = result.toString('~');
 It's possible to assign multiple validations to an objects property using chaining:
 
 ```typescript
-personValidator.ruleFor('name', notEmpty(), notEquals<string, Person>('foo'));
+personValidator.ruleFor('lastName', notEmpty(), notEquals<string, Person>('foo'));
 ```
 
-This would ensure that the name is neither empty nor equals the string 'foo'.
+This would ensure that the lastName is neither empty nor equals the string 'foo'.
 
 ## Throwing errors
 
-Instead of returning a `ValidationResult` you can alternatively tell `@ts-fluentvalidation/core` to throw an error if validation fails by using the `validateAndThrow()` / `throwAndValidateAsync()` function:
+Instead of returning a `ValidationResult` you can alternatively tell `@ts-fluentvalidation/core` to throw an error if validation fails by using the `validateAndThrow()` / `validateAndThrowAsync()` function:
 
 ```typescript
-const personValidator = createValidator<Person>().ruleFor('name', notEmpty());
-personValidator.validateAndThrow({ name: '' });
+const personValidator = createValidator<Person>().ruleFor('lastName', notEmpty());
+personValidator.validateAndThrow({ lastName: '' });
 ```
 
 This throws a `ValidationError` which contains the validation failures in the `failures` property.
@@ -125,7 +124,7 @@ The `validateAndThrow()` function is a helpful wrapper around `@ts-fluentvalidat
 createValidator<Person>({ throwOnFailures: true });
 
 // will set the behaviour for the specific validate call
-personValidator.validate({ name: '' }, config => {
+personValidator.validate({ lastName: '' }, config => {
   config.throwOnFailures = true;
 });
 ```
@@ -133,9 +132,9 @@ personValidator.validate({ name: '' }, config => {
 If you need to combine throwing an error with validating individual properties you can combine both config values using this syntax:
 
 ```typescript
-personValidator.validate({ name: '' }, config => {
+personValidator.validate({ lastName: '' }, config => {
   config.throwOnFailures = true;
-  config.includeProperties = ['name'];
+  config.includeProperties = ['lastName'];
 });
 ```
 
@@ -182,3 +181,28 @@ const result = personValidator.validate({
   severity: 'Error'
 }
 ```
+
+### Using `setValidator`
+
+Reusing the models from above:
+
+```typescript
+export interface Person {
+  address: Address;
+}
+
+export interface Address {
+  city: string;
+}
+```
+
+You can create a dedicated validator for the Address type and assign it using the `setValidator()` function like:
+
+```typescript
+const addressValidator = createValidator<Address>().ruleFor('city', notEmpty());
+
+const validator = createValidator<Person>().ruleFor('address', setValidator(addressValidator));
+```
+
+> **Warning**
+> If your child validator contains asynchronous validations or asynchronous conditions, it's important that you _always_ call `setValidatorAsync()` function on your validator and never `setValidator()`. If you call `setValidator()`, then a `AsyncValidatorSetSynchronouslyError` will be thrown.

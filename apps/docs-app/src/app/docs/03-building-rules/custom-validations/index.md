@@ -10,16 +10,16 @@ Imagine we have the following model:
 
 ```typescript
 export interface Person {
-  name: string;
+  lastName: string;
 }
 ```
 
-To ensure our name property does not start with `John`, we could do this:
+To ensure our last name property does not start with `John`, we could do this:
 
 ```typescript
 const validator = createValidator<Person>().ruleFor(
-  'name',
-  must(name => !name.startsWith('John'), 'The name shall not start with John.')
+  'lastName',
+  must(lastName => !lastName.startsWith('John'), 'The last name shall not start with John.')
 );
 ```
 
@@ -34,7 +34,7 @@ export function shouldNotStartWithJohn(value: string): boolean {
 We created a simple predicate function which can be used as the first parameter of `must()`:
 
 ```typescript
-const validator = createValidator<Person>().ruleFor('name', must(shouldNotStartWithJohn, 'The name shall not start with John.'));
+const validator = createValidator<Person>().ruleFor('lastName', must(shouldNotStartWithJohn, 'The last name shall not start with John.'));
 ```
 
 So far so easy but even though the logic itself is reusable we are limited to a reference value of `John` and still have to repeat the validation message everytime we use the function.
@@ -45,9 +45,9 @@ If you want to increase reusability of validations you can wrap existing validat
 
 ```typescript
 // Create a reusable validation by wrapping the `must()` function
-export function shouldNotStartWith<TModel>(referenceValue: string): ValidationFn<string, TModel> {
+export function shouldNotStartWith<TModel>(referenceValue: string): SyncValidation<string, TModel> {
   return must((value: string) => !value.startsWith(referenceValue), `The value shall not start with ${referenceValue}.`);
 }
 
-const validator = createValidator<Person>().ruleFor('name', shouldNotStartWith('John'));
+const validator = createValidator<Person>().ruleFor('lastName', shouldNotStartWith('John'));
 ```

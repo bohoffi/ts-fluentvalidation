@@ -1,5 +1,6 @@
 import { ValidationFailure } from '../result/validation-failure';
 import { Validation } from '../types';
+import { ValidationContext } from '../validation-context';
 import { DEFAULT_PLACEHOLDERS, formatMessage } from '../validations/message-formatter';
 
 /**
@@ -22,20 +23,25 @@ export function wrapAsArray<T>(value: T | T[]): T[] {
  * @returns The created validation failure.
  */
 export function failureForValidation<TModel, TValue>(
-  model: TModel,
+  validationContext: ValidationContext<TModel>,
   propertyName: string,
   propertyValue: TValue,
   validation: Validation<TValue, TModel>
 ): ValidationFailure {
+  const computedPropertyName = validationContext.parentPropertyName
+    ? `${validationContext.parentPropertyName}.${propertyName}`
+    : propertyName;
   return {
-    propertyName: propertyName,
+    propertyName: computedPropertyName,
     message: formatMessage(validation.metadata.message || 'Validation failed', {
       ...validation.metadata.placeholders,
-      [DEFAULT_PLACEHOLDERS.propertyName]: validation.metadata.propertyName || propertyName,
+      [DEFAULT_PLACEHOLDERS.propertyName]: validation.metadata.propertyName || computedPropertyName,
       [DEFAULT_PLACEHOLDERS.propertyValue]: propertyValue
     }),
     errorCode: validation.metadata.errorCode,
     attemptedValue: propertyValue,
-    severity: validation.metadata.severityProvider ? validation.metadata.severityProvider(model, propertyValue) : 'Error'
+    severity: validation.metadata.severityProvider
+      ? validation.metadata.severityProvider(validationContext.modelToValidate, propertyValue)
+      : 'Error'
   };
 }

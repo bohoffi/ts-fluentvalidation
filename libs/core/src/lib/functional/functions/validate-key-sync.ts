@@ -1,76 +1,78 @@
 import { ValidationError } from '../errors/validation-error';
-import { ValidationFailure } from '../result/validation-failure';
 import { ArrayKeyOf, KeyOf } from '../types/ts-helpers';
-import { CascadeMode, Validation } from '../types/types';
+import { CascadeMode, isValidatorValidation, Validation } from '../types/types';
+import { createValidationContext, ValidationContext } from '../validation-context';
 import { failureForValidation } from './utils';
 
 /**
  * Validates the given key synchronously.
  *
- * @param model - The model to validate.
+ * @param validationContext - The validation context to validate.
  * @param key - The key to validate.
  * @param keyValidations - The validations to apply.
  * @param keyCascadeMode - The cascade mode for the key.
  * @param throwOnFailures - If true, the function will throw a ValidationError if any failures occur.
- * @returns The validation failures.
  */
 export function validateKeySync<
   TModel extends object,
   Key extends KeyOf<TModel> | ArrayKeyOf<TModel>,
   KeyValidation extends Validation<TModel[Key], TModel>
 >(
-  model: TModel,
+  validationContext: ValidationContext<TModel>,
   key: Key,
   keyValidations: ReadonlyArray<KeyValidation>,
   keyCascadeMode: CascadeMode,
   throwOnFailures?: boolean
-): ValidationFailure[] {
-  const failures: ValidationFailure[] = [];
+): void {
   for (const validation of keyValidations) {
     // check conditions - when
     const when = validation.metadata.when;
-    if (when && !when(model)) {
+    if (when && !when(validationContext.modelToValidate)) {
       continue;
     }
     // check conditions - unless
     const unless = validation.metadata.unless;
-    if (unless && unless(model)) {
+    if (unless && unless(validationContext.modelToValidate)) {
       continue;
     }
 
-    const propertyValue = model[key];
-    const failuresForProperty = Array.isArray(propertyValue)
-      ? validateCollectionPropertySync(
-          model,
-          key as ArrayKeyOf<TModel>,
-          propertyValue as TModel[ArrayKeyOf<TModel>] & any[],
-          validation,
-          keyCascadeMode
-        )
-      : [validatePropertySync(model, key, propertyValue, validation)];
-    const filteredFailures = failuresForProperty.filter<ValidationFailure>(f => f !== undefined);
-
-    if (filteredFailures.length > 0 && throwOnFailures) {
-      throw new ValidationError(filteredFailures);
+    const propertyValue = validationContext.modelToValidate[key];
+    if (Array.isArray(propertyValue)) {
+      validateCollectionPropertySync(
+        validationContext,
+        key as ArrayKeyOf<TModel>,
+        propertyValue as TModel[ArrayKeyOf<TModel>] & any[],
+        validation,
+        keyCascadeMode
+      );
+    } else {
+      validatePropertySync(validationContext, key, propertyValue, validation);
     }
-    failures.push(...filteredFailures);
-    if (failures.length > 0 && keyCascadeMode === 'Stop') {
+
+    if (validationContext.failures.length > 0 && throwOnFailures) {
+      throw new ValidationError(validationContext.failures);
+    }
+    if (validationContext.failures.length > 0 && keyCascadeMode === 'Stop') {
       break;
     }
   }
-  return failures;
 }
 
 function validatePropertySync<TModel extends object, Key extends KeyOf<TModel>, KeyValidation extends Validation<TModel[Key], TModel>>(
-  model: TModel,
+  validationContext: ValidationContext<TModel>,
   key: Key,
   propertyValue: TModel[Key],
   validation: KeyValidation
-): ValidationFailure | undefined {
-  if (!validation(propertyValue)) {
-    return failureForValidation(model, key, propertyValue, validation);
+): void {
+  if (isValidatorValidation(validation) && propertyValue != null && typeof propertyValue === 'object') {
+    const result = validation.validator.validate(createValidationContext(propertyValue, key));
+    validationContext.addFailures(...result.failures);
   }
-  return undefined;
+
+  if (!validation(propertyValue)) {
+    const failure = failureForValidation(validationContext, key, propertyValue, validation);
+    validationContext.addFailures(failure);
+  }
 }
 
 function validateCollectionPropertySync<
@@ -79,15 +81,26 @@ function validateCollectionPropertySync<
   TProperty extends TModel[Key] & Array<any>,
   TItem extends TProperty[0],
   KeyValidation extends Validation<TItem, TModel>
->(model: TModel, key: Key, propertyValue: TProperty, validation: KeyValidation, keyCascadeMode: CascadeMode): ValidationFailure[] {
-  const failures: ValidationFailure[] = [];
+>(
+  validationContext: ValidationContext<TModel>,
+  key: Key,
+  propertyValue: TProperty,
+  validation: KeyValidation,
+  keyCascadeMode: CascadeMode
+): void {
   for (const [index, item] of propertyValue.entries()) {
+    if (isValidatorValidation(validation) && item != null && typeof item === 'object') {
+      const result = validation.validator.validate(createValidationContext(item, `${key}[${index}]`));
+      validationContext.addFailures(...result.failures);
+      continue;
+    }
+
     if (!validation(item)) {
-      failures.push(failureForValidation<TModel, TItem>(model, `${key}[${index}]`, item, validation));
-      if (failures.length > 0 && keyCascadeMode === 'Stop') {
-        break;
-      }
+      const failure = failureForValidation<TModel, TItem>(validationContext, `${key}[${index}]`, item, validation);
+      validationContext.addFailures(failure);
+    }
+    if (validationContext.failures.length > 0 && keyCascadeMode === 'Stop') {
+      break;
     }
   }
-  return failures;
 }

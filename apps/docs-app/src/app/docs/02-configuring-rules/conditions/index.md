@@ -1,8 +1,8 @@
-The `when` and `unless` functions can be used to specify conditions that control when the validation should be executed. For example, this validation on the `name` property will only get executed when `age` is greater then or equal to `18`:
+The `when` and `unless` functions can be used to specify conditions that control when the validation should be executed. For example, this validation on the `lastName` property will only get executed when `age` is greater then or equal to `18`:
 
 ```typescript
 validator.ruleFor(
-  'name',
+  'lastName',
   notNull().when(person => person.age >= 18)
 );
 ```
@@ -13,7 +13,7 @@ By default `@ts-fluentvalidation/core` will apply conditions to all preceding va
 
 ```typescript
 validator.ruleFor(
-  'name',
+  'lastName',
   notNull(),
   notEmpty().when(person => person.age >= 18)
 );
@@ -25,7 +25,7 @@ If you want to specify a condition to one specific validation you can do so by p
 
 ```typescript
 validator.ruleFor(
-  'name',
+  'lastName',
   notNull(),
   notEmpty().when(person => person.age >= 18, 'CurrentValidator')
 );

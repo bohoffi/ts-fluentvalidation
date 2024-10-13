@@ -1,4 +1,5 @@
 import { ValidationResult } from '../result/validation-result';
+import { ValidationContext } from '../validation-context';
 import { ArrayKeyOf, EmptyObject, IsAsyncCallable, KeyOf, RequiredByKeys } from './ts-helpers';
 
 /**
@@ -82,6 +83,14 @@ export type Validator<TModel extends object, ModelValidations extends object = E
   validate(model: TModel): ValidationResult;
 
   /**
+   * Validates the given validation context against the validations.
+   *
+   * @param validationContext - The validation context to validate.
+   * @returns The validation result.
+   */
+  validate(validationContext: ValidationContext<TModel>): ValidationResult;
+
+  /**
    * Validates the given model against the validations respecting the passed configuration.
    *
    * @param model - The model to validate.
@@ -92,12 +101,30 @@ export type Validator<TModel extends object, ModelValidations extends object = E
   validate(model: TModel, config: (config: ValidatorConfig<TModel>) => void): ValidationResult;
 
   /**
+   * Validates the given validation context against the validations respecting the passed configuration.
+   *
+   * @param validationContext - The validation context to validate.
+   * @param config - The configuration to apply.
+   * @returns The validation result.
+   * @throws {ValidationError} if the validator is configured to throw and any failures occur.
+   */
+  validate(validationContext: ValidationContext<TModel>, config: (config: ValidatorConfig<TModel>) => void): ValidationResult;
+
+  /**
    * Validates the given model asynchonously against the validations.
    *
    * @param model - The model to validate.
    * @returns The validation result.
    */
   validateAsync(model: TModel): Promise<ValidationResult>;
+
+  /**
+   * Validates the given validation context asynchonously against the validations.
+   *
+   * @param validationContext - The validation context to validate.
+   * @returns The validation result.
+   */
+  validateAsync(validationContext: ValidationContext<TModel>): Promise<ValidationResult>;
 
   /**
    * Validates the given model asynchonously against the validations respecting the passed configuration.
@@ -108,6 +135,16 @@ export type Validator<TModel extends object, ModelValidations extends object = E
    * @throws {ValidationError} if the validator is configured to throw and any failures occur.
    */
   validateAsync(model: TModel, config: (config: ValidatorConfig<TModel>) => void): Promise<ValidationResult>;
+
+  /**
+   * Validates the given validation context asynchonously against the validations respecting the passed configuration.
+   *
+   * @param validationContext - The validation context to validate.
+   * @param config - The configuration to apply.
+   * @returns The validation result.
+   * @throws {ValidationError} if the validator is configured to throw and any failures occur.
+   */
+  validateAsync(validationContext: ValidationContext<TModel>, config: (config: ValidatorConfig<TModel>) => void): Promise<ValidationResult>;
 
   /**
    * Validates the given model against the validations and throws a ValidationError if any failures occur.
@@ -286,9 +323,35 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
   ): ValidationBase<TValue, TValidationFunction, TModel>;
 } & TValidationFunction;
 
-export type Validation<TValue, TModel> = SyncValidation<TValue, TModel> | AsyncValidation<TValue, TModel>;
+export type Validation<TValue, TModel> =
+  | SyncValidation<TValue, TModel>
+  | SyncValidatorValidation<TValue, TModel>
+  | AsyncValidation<TValue, TModel>
+  | AsyncValidatorValidation<TValue, TModel>;
+
 export type SyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => boolean, TModel>;
 export type AsyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>;
+
+export type SyncValidatorValidation<TValue, TModel> = Omit<
+  ValidationBase<TValue, (value: TValue) => boolean, TModel>,
+  'withErrorCode' | 'withMessage' | 'withName' | 'withPlaceholder' | 'withSeverity'
+> &
+  ((value: TValue) => boolean) & {
+    validator: Validator<TValue & object>;
+  };
+export type AsyncValidatorValidation<TValue, TModel> = Omit<
+  ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>,
+  'withErrorCode' | 'withMessage' | 'withName' | 'withPlaceholder' | 'withSeverity'
+> &
+  ((value: TValue) => Promise<boolean>) & {
+    validator: Validator<TValue & object>;
+  };
+
+export function isValidatorValidation<TValue, TModel>(
+  validation: Validation<TValue, TModel>
+): validation is SyncValidatorValidation<TValue, TModel> | AsyncValidatorValidation<TValue, TModel> {
+  return 'validator' in validation;
+}
 
 /**
  * Represents the cascade mode for validation.

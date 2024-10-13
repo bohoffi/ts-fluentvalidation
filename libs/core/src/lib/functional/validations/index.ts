@@ -22,6 +22,8 @@ export { notEquals } from './not-equals/not-equals';
 export { notNull } from './not-null/not-null';
 export { not } from './not/not';
 export { required } from './required/required';
+export { setValidatorAsync } from './set-validator-async/set-validator-async';
+export { setValidator } from './set-valildator/set-validator';
 
 export { createAsyncValidation, createValidation } from './create-validation-fn';
 export { DEFAULT_PLACEHOLDERS } from './message-formatter';

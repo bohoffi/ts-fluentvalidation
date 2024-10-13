@@ -66,3 +66,25 @@ const result = personValidator.validate({
   severity: 'Error'
 }
 ```
+
+### Using `setValidator`
+
+Reusing the models from above:
+
+```typescript
+export interface Person {
+  orders: Order[];
+}
+
+export interface Order {
+  amount: number;
+}
+```
+
+You can create a dedicated validator for the Address type and assign it using the `setValidator()` function like:
+
+```typescript
+const orderValidator = createValidator<Order>().ruleFor('amount', greaterThan(0));
+
+const validator = createValidator<Person>().ruleForEach('orders', setValidator(orderValidator));
+```

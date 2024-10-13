@@ -1,6 +1,14 @@
 import { createValidator } from '../lib/functional/create-validator';
 import { testValidate, testValidateAsync } from '../lib/functional/testing/src/test-validate';
-import { greaterThanOrEquals, lessThanOrEquals, matches, notEmpty } from '../lib/functional/validations';
+import {
+  greaterThanOrEquals,
+  lessThanOrEquals,
+  matches,
+  mustAsync,
+  notEmpty,
+  setValidator,
+  setValidatorAsync
+} from '../lib/functional/validations';
 import {
   expectFailureLength,
   expectResultInvalid,
@@ -8,7 +16,7 @@ import {
   expectValidationsFor,
   expectValidationsForWithLength
 } from './assertions';
-import { createPersonWith, Person } from './fixtures';
+import { Address, createAddressWith, createOrderWith, createPersonWith, Order, Person } from './fixtures';
 
 describe('Validator', () => {
   describe('include', () => {
@@ -102,6 +110,40 @@ describe('Validator', () => {
       result.shouldHaveValidationErrorFor('lastName');
       result.shouldHaveValidationErrorFor('age');
     });
+
+    it('should pass validation for valid nested object with child validator', () => {
+      const addressValidator = createValidator<Address>().ruleFor('city', notEmpty());
+      const validator = createValidator<Person>().ruleFor('address', setValidator(addressValidator));
+      const result = validator.validate(createPersonWith());
+
+      expectResultValid(result);
+    });
+
+    it('should fail validation for invalid nested object with child validator', () => {
+      const addressValidator = createValidator<Address>().ruleFor('city', notEmpty());
+      const validator = createValidator<Person>().ruleFor('address', setValidator(addressValidator));
+      const result = testValidate(validator, createPersonWith({ address: createAddressWith({ city: '' }) }));
+
+      expectResultInvalid(result);
+      result.shouldHaveValidationErrorFor('address.city');
+    });
+
+    it('should pass validation for valid nested array with child validator', () => {
+      const orderValidator = createValidator<Order>().ruleFor('productName', notEmpty());
+      const validator = createValidator<Person>().ruleForEach('orders', setValidator(orderValidator));
+      const result = validator.validate(createPersonWith());
+
+      expectResultValid(result);
+    });
+
+    it('should fail validation for invalid nested array with child validator', () => {
+      const orderValidator = createValidator<Order>().ruleFor('productName', notEmpty());
+      const validator = createValidator<Person>().ruleForEach('orders', setValidator(orderValidator));
+      const result = testValidate(validator, createPersonWith({ orders: [createOrderWith({ productName: '' })] }));
+
+      expectResultInvalid(result);
+      result.shouldHaveValidationErrorFor('orders[0].productName');
+    });
   });
 
   describe('validateAsync', () => {
@@ -173,6 +215,52 @@ describe('Validator', () => {
       expectFailureLength(result, 2);
       result.shouldHaveValidationErrorFor('lastName');
       result.shouldHaveValidationErrorFor('age');
+    });
+
+    it('should pass validation for valid nested object with child validator', async () => {
+      const addressValidator = createValidator<Address>().ruleFor(
+        'city',
+        mustAsync(city => Promise.resolve(city !== ''))
+      );
+      const validator = createValidator<Person>().ruleFor('address', setValidatorAsync(addressValidator));
+      const result = await validator.validateAsync(createPersonWith());
+
+      expectResultValid(result);
+    });
+
+    it('should fail validation for invalid nested object with child validator', async () => {
+      const addressValidator = createValidator<Address>().ruleFor(
+        'city',
+        mustAsync(city => Promise.resolve(city !== ''))
+      );
+      const validator = createValidator<Person>().ruleFor('address', setValidatorAsync(addressValidator));
+      const result = await testValidateAsync(validator, createPersonWith({ address: createAddressWith({ city: '' }) }));
+
+      expectResultInvalid(result);
+      result.shouldHaveValidationErrorFor('address.city');
+    });
+
+    it('should pass validation for valid nested array with child validator', async () => {
+      const orderValidator = createValidator<Order>().ruleFor(
+        'productName',
+        mustAsync(city => Promise.resolve(city !== ''))
+      );
+      const validator = createValidator<Person>().ruleForEach('orders', setValidatorAsync(orderValidator));
+      const result = await validator.validateAsync(createPersonWith());
+
+      expectResultValid(result);
+    });
+
+    it('should fail validation for invalid nested array with child validator', async () => {
+      const orderValidator = createValidator<Order>().ruleFor(
+        'productName',
+        mustAsync(city => Promise.resolve(city !== ''))
+      );
+      const validator = createValidator<Person>().ruleForEach('orders', setValidatorAsync(orderValidator));
+      const result = await testValidateAsync(validator, createPersonWith({ orders: [createOrderWith({ productName: '' })] }));
+
+      expectResultInvalid(result);
+      result.shouldHaveValidationErrorFor('orders[0].productName');
     });
   });
 });

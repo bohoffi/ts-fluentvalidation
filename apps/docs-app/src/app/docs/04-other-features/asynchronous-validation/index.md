@@ -8,9 +8,9 @@ A simplistic solution that checks if a user ID is already in use using an extern
 
 ```typescript
 const personValidator = createValidator<Person>().ruleFor(
-  'name',
-  mustAsync(async (name: string) => {
-    const isValid = await fetch('<API_ENDPOINT>/check-name/' + name);
+  'lastName',
+  mustAsync(async (lastName: string) => {
+    const isValid = await fetch('<API_ENDPOINT>/check-name/' + lastName);
     return isValid;
   })
 );
@@ -26,4 +26,4 @@ const validationResult = await personValidator.validateAsync(person);
 > Calling `validateAsync()` will run both synchronous and asynchronous validations.
 
 > **Warning**
-> If your validator contains asynchronous validations or asynchronous conditions, it's important that you _always_ call `validateAsync()` on your validator and never `validate()`. If you call `validate()`, then a `AsyncValidatorInvokedSynchronouslyError` will be thrown.
+> If your validator contains asynchronous validations or asynchronous conditions, it's important that you _always_ call `validateAsync()` function on your validator and never `validate()`. If you call `validate()`, then a `AsyncValidatorInvokedSynchronouslyError` will be thrown.
