@@ -1,7 +1,7 @@
 import { validateAsync } from './functions/validate-async';
 import { validateSync } from './functions/validate-sync';
 import { createValidationResult, ValidationResult } from './result/validation-result';
-import { ArrayKeyOf, EmptyObject, getLastElement, KeyOf } from './types/ts-helpers';
+import { ArrayKeyOf, EmptyObject, getLastElement, InferArrayElement, KeyOf } from './types/ts-helpers';
 import { CascadeMode, InferValidations, ValidateConfig, Validation, Validator, ValidatorConfig } from './types/types';
 import { createValidationContext, isValidationContext, ValidationContext } from './validation-context';
 
@@ -46,7 +46,7 @@ export function createValidator<TModel extends object, ModelValidations extends 
       return mergeValidations(this, key, true, ...(validations as Validation<TModel[Key], TModel>[]));
     },
 
-    ruleForEach<Key extends ArrayKeyOf<TModel>, TItem extends TModel[Key] extends Array<infer Item> ? Item : never>(
+    ruleForEach<Key extends ArrayKeyOf<TModel>, TItem = InferArrayElement<TModel[Key]>>(
       key: Key,
       ...cascadeModeAndValidations: [CascadeMode, ...Validation<TItem, TModel>[]] | Validation<TItem, TModel>[]
     ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }> {

@@ -100,7 +100,7 @@ const allMessages: string = result.toString('~');
 It's possible to assign multiple validations to an objects property using chaining:
 
 ```typescript
-personValidator.ruleFor('lastName', notEmpty(), notEquals<string, Person>('foo'));
+personValidator.ruleFor('lastName', notEmpty(), notEquals('foo'));
 ```
 
 This would ensure that the lastName is neither empty nor equals the string 'foo'.
@@ -157,7 +157,7 @@ export interface Address {
 ```typescript
 const personValidator = createValidator<Person>().ruleFor(
   'address',
-  must<Address, Person>(address => address.city !== '', 'City must not be empty.')
+  must(address => address.city !== '', 'City must not be empty.')
 );
 ```
 

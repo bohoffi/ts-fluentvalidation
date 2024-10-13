@@ -1,6 +1,6 @@
 import { ValidationResult } from '../result/validation-result';
 import { ValidationContext } from '../validation-context';
-import { ArrayKeyOf, EmptyObject, IsAsyncCallable, KeyOf, RequiredByKeys } from './ts-helpers';
+import { ArrayKeyOf, EmptyObject, InferArrayElement, IsAsyncCallable, KeyOf, RequiredByKeys } from './ts-helpers';
 
 /**
  * Utility type for extracting the validations from a validator.
@@ -50,10 +50,10 @@ export interface Validator<TModel extends object, ModelValidations extends objec
    * @param key - The key to validate.
    * @param validations - Validations to add.
    */
-  ruleForEach<Key extends ArrayKeyOf<TModel>, TItem extends TModel[Key] extends Array<infer Item> ? Item : never>(
+  ruleForEach<Key extends ArrayKeyOf<TModel>>(
     key: Key,
-    ...validations: Validation<TItem, TModel>[]
-  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }>;
+    ...validations: Validation<InferArrayElement<TModel[Key]>, TModel>[]
+  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<InferArrayElement<TModel[Key]>, TModel>[] }>;
 
   /**
    * Adds one or more array validations for the given key optionally preceded with the specified cascade mode.
@@ -61,10 +61,10 @@ export interface Validator<TModel extends object, ModelValidations extends objec
    * @param key - The key to validate.
    * @param cascadeModeAndValidations - Validations to add optionally preceded by the cascade mode for the given key.
    */
-  ruleForEach<Key extends ArrayKeyOf<TModel>, TItem extends TModel[Key] extends Array<infer Item> ? Item : never>(
+  ruleForEach<Key extends ArrayKeyOf<TModel>>(
     key: Key,
-    ...cascadeModeAndValidations: [CascadeMode, ...Validation<TItem, TModel>[]]
-  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }>;
+    ...cascadeModeAndValidations: [CascadeMode, ...Validation<InferArrayElement<TModel[Key]>, TModel>[]]
+  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<InferArrayElement<TModel[Key]>, TModel>[] }>;
 
   /**
    * Includes the validations from the given validator.

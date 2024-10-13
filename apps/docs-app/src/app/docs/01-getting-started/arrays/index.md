@@ -37,7 +37,7 @@ export interface Order {
 ```typescript
 const personValidator = createValidator<Person>().ruleForEach(
   'orders',
-  must<Order, Person>(order => order.amount > 0, 'Amount must be positive.')
+  must(order => order.amount > 0, 'Amount must be positive.')
 );
 ```
 
