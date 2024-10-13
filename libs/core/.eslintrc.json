@@ -24,7 +24,7 @@
         "@nx/dependency-checks": [
           "error",
           {
-            "ignoredDependencies": ["tslib"]
+            "ignoredDependencies": ["tslib", "@faker-js/faker"]
           }
         ]
       }
