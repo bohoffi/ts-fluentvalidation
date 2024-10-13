@@ -1,7 +1,7 @@
-import { createValidator } from '../lib/functional/create-validator';
-import { AsyncValidatorInvokedSynchronouslyError } from '../lib/functional/errors/async-validator-invoked-synchronously-error';
-import { ValidationError } from '../lib/functional/errors/validation-error';
-import { mustAsync, notEmpty } from '../lib/functional/validations';
+import { createValidator } from '../lib/create-validator';
+import { AsyncValidatorInvokedSynchronouslyError } from '../lib/errors/async-validator-invoked-synchronously-error';
+import { ValidationError } from '../lib/errors/validation-error';
+import { mustAsync, notEmpty } from '../lib/validations';
 import { createPersonWith, Person } from './fixtures';
 
 describe('errors', () => {

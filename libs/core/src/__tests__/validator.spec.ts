@@ -1,14 +1,6 @@
-import { createValidator } from '../lib/functional/create-validator';
-import { testValidate, testValidateAsync } from '../lib/functional/testing/src/test-validate';
-import {
-  greaterThanOrEquals,
-  lessThanOrEquals,
-  matches,
-  mustAsync,
-  notEmpty,
-  setValidator,
-  setValidatorAsync
-} from '../lib/functional/validations';
+import { createValidator } from '../lib/create-validator';
+import { greaterThanOrEquals, lessThanOrEquals, matches, mustAsync, notEmpty, setValidator, setValidatorAsync } from '../lib/validations';
+import { testValidate, testValidateAsync } from '../testing/src/test-validate';
 import {
   expectFailureLength,
   expectResultInvalid,

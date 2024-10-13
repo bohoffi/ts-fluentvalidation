@@ -1,7 +1,7 @@
-import { ValidationResult } from '../lib/functional/result';
-import { Validator } from '../lib/functional/types';
-import { KeyOf } from '../lib/functional/types/ts-helpers';
-import { AsyncValidation, InferValidations, SyncValidation, Validation, ValidationMetadata } from '../lib/functional/types/types';
+import { ValidationResult } from '../lib/result';
+import { Validator } from '../lib/types';
+import { KeyOf } from '../lib/types/ts-helpers';
+import { AsyncValidation, InferValidations, SyncValidation, Validation, ValidationMetadata } from '../lib/types/types';
 
 export function expectResultValid(result: ValidationResult): void {
   expect(result.isValid).toBe(true);

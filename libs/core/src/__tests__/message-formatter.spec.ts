@@ -1,4 +1,4 @@
-import { formatMessage } from '../lib/functional/validations/message-formatter';
+import { formatMessage } from '../lib/validations/message-formatter';
 
 describe(formatMessage.name, () => {
   it('should format a message with placeholders', () => {

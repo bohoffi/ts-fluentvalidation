@@ -1,4 +1,4 @@
-import { createValidationResult } from '../lib/functional/result/validation-result';
+import { createValidationResult } from '../lib/result/validation-result';
 import { expectFailureLength, expectResultInvalid, expectResultValid } from './assertions';
 
 describe('ValidationResult', () => {

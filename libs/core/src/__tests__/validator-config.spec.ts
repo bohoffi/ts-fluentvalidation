@@ -1,6 +1,6 @@
-import { createValidator } from '../lib/functional/create-validator';
-import { testValidate, testValidateAsync } from '../lib/functional/testing/src/test-validate';
-import { greaterThanOrEquals, minLength, notEmpty } from '../lib/functional/validations';
+import { createValidator } from '../lib/create-validator';
+import { greaterThanOrEquals, minLength, notEmpty } from '../lib/validations';
+import { testValidate, testValidateAsync } from '../testing/src/test-validate';
 import { expectFailureLength, expectResultInvalid } from './assertions';
 import { createPersonWith, Person } from './fixtures';
 

@@ -1,6 +1,6 @@
-export { createValidator } from './lib/functional/create-validator';
-export { AsyncValidatorInvokedSynchronouslyError, AsyncValidatorSetSynchronouslyError, ValidationError } from './lib/functional/errors';
-export { ValidationFailure, ValidationResult } from './lib/functional/result';
+export { createValidator } from './lib/create-validator';
+export { AsyncValidatorInvokedSynchronouslyError, AsyncValidatorSetSynchronouslyError, ValidationError } from './lib/errors';
+export { ValidationFailure, ValidationResult } from './lib/result';
 export {
   ApplyConditionTo,
   AsyncValidation,
@@ -17,8 +17,8 @@ export {
   ValidationMetadata,
   Validator,
   ValidatorConfig
-} from './lib/functional/types';
-export { ValidationContext, createValidationContext } from './lib/functional/validation-context';
+} from './lib/types';
+export { ValidationContext, createValidationContext } from './lib/validation-context';
 export {
   DEFAULT_PLACEHOLDERS,
   createAsyncValidation,
@@ -49,6 +49,6 @@ export {
   required,
   setValidator,
   setValidatorAsync
-} from './lib/functional/validations';
+} from './lib/validations';
 
 export { VERSION } from './lib/version';

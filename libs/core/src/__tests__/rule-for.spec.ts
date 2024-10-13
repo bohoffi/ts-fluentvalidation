@@ -1,7 +1,7 @@
-import { createValidator } from '../lib/functional/create-validator';
-import { testValidate, testValidateAsync } from '../lib/functional/testing/src/test-validate';
-import { AsyncValidation, SyncValidation } from '../lib/functional/types/types';
-import { minLength, must, mustAsync, notEmpty } from '../lib/functional/validations';
+import { createValidator } from '../lib/create-validator';
+import { AsyncValidation, SyncValidation } from '../lib/types/types';
+import { minLength, must, mustAsync, notEmpty } from '../lib/validations';
+import { testValidate, testValidateAsync } from '../testing/src/test-validate';
 import { expectFailureLength, expectResultInvalid, expectValidationsFor, expectValidationsForWithLength } from './assertions';
 import { createPersonWith, Person } from './fixtures';
 
