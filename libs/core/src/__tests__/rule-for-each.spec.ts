@@ -10,7 +10,7 @@ describe('ruleForEach', () => {
     it('should add rule for each item', () => {
       const validator = createValidator<Person>().ruleForEach(
         'orders',
-        must<Order, Person>(order => order.productName !== '')
+        must(order => order.productName !== '')
       );
 
       expectValidationsFor(validator, 'orders');
@@ -20,8 +20,8 @@ describe('ruleForEach', () => {
     it('should add multiple rules for each item', () => {
       const validator = createValidator<Person>().ruleForEach(
         'orders',
-        must<Order, Person>(order => order.productName !== ''),
-        must<Order, Person>(order => order.amount > 0)
+        must(order => order.productName !== ''),
+        must(order => order.amount > 0)
       );
 
       expectValidationsFor(validator, 'orders');
@@ -32,11 +32,11 @@ describe('ruleForEach', () => {
       const validator = createValidator<Person>()
         .ruleForEach(
           'orders',
-          must<Order, Person>(order => order.productName !== '')
+          must(order => order.productName !== '')
         )
         .ruleForEach(
           'orders',
-          must<Order, Person>(order => order.amount > 0)
+          must(order => order.amount > 0)
         );
 
       expectValidationsFor(validator, 'orders');
@@ -80,7 +80,7 @@ describe('ruleForEach', () => {
       const validator = createValidator<Person>().ruleForEach(
         'orders',
         'Stop',
-        must<Order, Person>(order => order.productName !== '')
+        must(order => order.productName !== '')
       );
 
       const result = testValidate(validator, ruleForEachPerson);
@@ -93,7 +93,7 @@ describe('ruleForEach', () => {
       const validator = createValidator<Person>().ruleForEach(
         'orders',
         'Continue',
-        must<Order, Person>(order => order.productName !== '')
+        must(order => order.productName !== '')
       );
 
       const result = testValidate(validator, ruleForEachPerson);
@@ -107,7 +107,7 @@ describe('ruleForEach', () => {
       const validator = createValidator<Person>().ruleForEach(
         'orders',
         'Stop',
-        must<Order, Person>(order => order.productName !== '')
+        must(order => order.productName !== '')
       );
 
       const result = await testValidateAsync(validator, ruleForEachPerson);
@@ -120,7 +120,7 @@ describe('ruleForEach', () => {
       const validator = createValidator<Person>().ruleForEach(
         'orders',
         'Continue',
-        must<Order, Person>(order => order.productName !== '')
+        must(order => order.productName !== '')
       );
 
       const result = await testValidateAsync(validator, ruleForEachPerson);
@@ -135,12 +135,12 @@ describe('ruleForEach', () => {
         .ruleForEach(
           'orders',
           'Stop',
-          must<Order, Person>(order => order.productName !== '')
+          must(order => order.productName !== '')
         )
         .ruleForEach(
           'orders',
           'Continue',
-          must<Order, Person>(order => order.amount > 0, 'Amount must be positive.')
+          must(order => order.amount > 0, 'Amount must be positive.')
         );
 
       const result = testValidate(validator, ruleForEachPerson);

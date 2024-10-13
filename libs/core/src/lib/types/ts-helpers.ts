@@ -68,6 +68,8 @@ export type Prettify<T> = { [K in keyof T]: T[K] } & EmptyObject;
  */
 export type RequiredByKeys<T, K extends keyof T> = Prettify<Omit<T, K> & { [P in K]-?: T[P] }>;
 
+export type InferArrayElement<T> = T extends (infer U)[] ? U : never;
+
 export function getLastElement<T>(array: T[], condition: (element: T) => boolean): T | undefined {
   const filteredArray = [...array].filter(condition);
   return filteredArray.pop();
