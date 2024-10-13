@@ -1,109 +1,51 @@
-import { MessageFormatter } from './message-formatter';
-import { PropertyChain } from './property-chain';
-import { ValidationFailure } from './result';
-import { DefaultValidatorSelector } from './selectors/default-validator-selector';
-import { ValidatorSelector } from './selectors/validator-selector';
-import { ValidationStrategy } from './validation-strategy';
+import { ValidationFailure } from './result/validation-failure';
 
 /**
- * Represents a validation context for validating an instance of type T.
+ * Represents the context for validation operations.
  *
- * @typeParam T - The type of the instance to validate.
+ * @template T - The type of the model being validated.
  */
-export class ValidationContext<T> {
-  private readonly _failures: ValidationFailure[] = [];
-  private _propertyChain: PropertyChain;
-  private _selector: ValidatorSelector;
-  private _propertyPath?: string;
-  private _rawPropertyName?: string;
-  private _isChildContext = false;
-
+export interface ValidationContext<T> {
   /**
-   * Creates a new `ValidationContext` instance with the given options.
+   * The validation failures that have occurred.
+   */
+  failures: ValidationFailure[];
+  /**
+   * The model to validate.
+   */
+  modelToValidate: T;
+  /**
+   * The name of the parent property, if any.
+   */
+  parentPropertyName?: string;
+  /**
+   * Adds the given failures to the context.
    *
-   * @typeParam T - The type of the object being validated.
-   * @param instance - The instance of the object being validated.
-   * @param options - A function that takes a `ValidationStrategy` and configures it with the desired options.
-   * @returns A new `ValidationContext` instance.
+   * @param failures - The failures to add to the context.
    */
-  public static createWithOptions<T>(instance: T, options: (strategy: ValidationStrategy<T>) => void): ValidationContext<T> {
-    const strategy = new ValidationStrategy<T>();
-    options(strategy);
-    return this.fromStrategy(instance, strategy);
-  }
+  addFailures(...failures: ValidationFailure[]): void;
+}
 
-  private static fromStrategy<T>(instance: T, strategy: ValidationStrategy<T>): ValidationContext<T> {
-    // TODO consume throw behavior from strategy
-    return new ValidationContext(instance, undefined, strategy.getSelector());
-  }
-
-  public get failues(): ValidationFailure[] {
-    return this._failures;
-  }
-
-  public get propertyChain(): PropertyChain {
-    return this._propertyChain;
-  }
-
-  public get selector(): ValidatorSelector {
-    return this._selector;
-  }
-
-  public get propertyPath(): string {
-    return this._propertyPath || '';
-  }
-
-  public get isChildContext(): boolean {
-    return this._isChildContext;
-  }
-
-  public readonly messageFormatter = new MessageFormatter();
-
-  constructor(public readonly instanceToValidate: T, propertyChain?: PropertyChain, validatorSelector?: ValidatorSelector) {
-    this._propertyChain = new PropertyChain(propertyChain);
-    this._selector = validatorSelector || new DefaultValidatorSelector();
-  }
-
-  /**
-   * Adds a validation failure to the context.
-   * @param failure Failure to add.
-   */
-  public addFailure(failure: ValidationFailure): void;
-  /**
-   * Adds a validation failure to the context with the property name infered from the current property chain.
-   * @param errorMessage Error message to add.
-   */
-  public addFailure(errorMessage: string): void;
-  /**
-   * Adds a validation failure to the context with the given property name.
-   * @param propertyName Name of the property that failed validation.
-   * @param errorMessage Error message to add.
-   */
-  public addFailure(propertyName: string, errorMessage: string): void;
-  public addFailure(failureMessageOrPropertyName: ValidationFailure | string, errorMessage?: string): void {
-    if (failureMessageOrPropertyName instanceof ValidationFailure) {
-      this._failures.push(failureMessageOrPropertyName);
-    } else if (errorMessage) {
-      this._failures.push(
-        new ValidationFailure(
-          this._propertyChain.buildPropertyPath(failureMessageOrPropertyName),
-          this.messageFormatter.formatWithPlaceholders(errorMessage)
-        )
-      );
-    } else {
-      this._failures.push(
-        new ValidationFailure(this._propertyPath || '', this.messageFormatter.formatWithPlaceholders(failureMessageOrPropertyName))
-      );
+/**
+ * Creates a validation context for a given model.
+ *
+ * @template T - The type of the model to validate.
+ * @param model - The model to validate.
+ * @param parentPropertyName - The name of the parent property, if any.
+ * @returns The validation context containing the model and any validation failures.
+ */
+export function createValidationContext<T>(model: T, parentPropertyName?: string): ValidationContext<T> {
+  return {
+    failures: [] as ValidationFailure[],
+    modelToValidate: model,
+    parentPropertyName,
+    addFailures(...failures: ValidationFailure[]): void {
+      this.failures.push(...failures);
     }
-  }
+  };
+}
 
-  public initializeForPropertyValidator(propertyPath: string, rawPropertyName: string): void {
-    this._propertyPath = propertyPath;
-    this._rawPropertyName = rawPropertyName;
-  }
-
-  public prepareForChildCollectionRule(): void {
-    this._isChildContext = true;
-    this._propertyChain = new PropertyChain();
-  }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isValidationContext<T>(value: any): value is ValidationContext<T> {
+  return value != null && 'failures' in value && 'modelToValidate' in value;
 }

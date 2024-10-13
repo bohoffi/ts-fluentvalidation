@@ -1,6 +1,8 @@
 <ng-doc-root [footerContent]="footerContent">
   <ng-doc-navbar [glassEffect]="true" [search]="true">
-    <h3 ngDocNavbarLeft class="brand" style="margin: 0">{{ libName }}</h3>
+    <a ngDocNavbarLeft [routerLink]="['/']" class="brand">
+      <h3 style="margin: 0">{{ libName }}</h3>
+    </a>
 
     <div ngDocNavbarRight>
       <ng-doc-theme-toggle></ng-doc-theme-toggle>

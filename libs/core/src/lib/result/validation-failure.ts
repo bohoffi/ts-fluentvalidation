@@ -1,35 +1,27 @@
-import { Severity } from '../models';
+import { Severity } from '../types/types';
 
 /**
  * Represents a validation failure.
  */
-export class ValidationFailure {
+export interface ValidationFailure {
   /**
-   * The name of the property that was being validated.
+   * Gets the name of the property that failed validation.
    */
-  public propertyName: string;
+  propertyName: string;
   /**
-   * The error message.
+   * Gets the error message.
    */
-  public message: string;
+  message: string;
   /**
-   * The property value that was being validated.
+   * Gets the error code.
    */
-  public attemptedValue: unknown;
-
+  errorCode?: string;
   /**
-   * The severity of the validation failure.
+   * Gets the value that was being validated.
    */
-  public severity: Severity = 'Error';
-
+  attemptedValue?: unknown;
   /**
-   * The error code associated with the validation failure.
+   * Gets the severity of the failure.
    */
-  public errorCode?: string;
-
-  constructor(propertyName: string, message: string, attemptedValue?: unknown) {
-    this.propertyName = propertyName;
-    this.message = message;
-    this.attemptedValue = attemptedValue;
-  }
+  severity: Severity;
 }

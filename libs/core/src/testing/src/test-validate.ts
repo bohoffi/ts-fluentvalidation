@@ -1,6 +1,4 @@
-import { AbstractValidator } from '../../lib/abstract-validator';
-import { ValidationContext } from '../../lib/validation-context';
-import { ValidationStrategy } from '../../lib/validation-strategy';
+import { Validator, ValidatorConfig } from '../../lib/types';
 import { TestValidationResult } from './test-validation-result';
 
 /**
@@ -8,41 +6,29 @@ import { TestValidationResult } from './test-validation-result';
  *
  * @typeParam T - The type of the object being validated.
  * @param validator - The validator to use for validation.
- * @param instance - The instance of the object to validate.
+ * @param model - The model to validate.
  * @returns The result of the validation.
  */
-export function testValidate<T extends object>(validator: AbstractValidator<T>, instance: T): TestValidationResult<T>;
+export function testValidate<T extends object>(validator: Validator<T>, model: T): TestValidationResult<T>;
 /**
  * Validates an instance of an object using the specified validator and strategy.
  *
- * @param validator - The validator to use for validation.
- * @param instance - The instance of the object to validate.
- * @param options - A function that takes a `ValidationStrategy` and configures it with the desired options.
- */
-export function testValidate<T extends object>(
-  validator: AbstractValidator<T>,
-  instance: T,
-  options: (strategy: ValidationStrategy<T>) => void
-): TestValidationResult<T>;
-/**
- * Validates an object using the specified validator and validation context.
  * @typeParam T - The type of the object being validated.
  * @param validator - The validator to use for validation.
- * @param validationContext - The validation context containing the object to validate.
- * @returns The result of the validation.
+ * @param model - The model to validate.
+ * @param config - The configuration to apply.
  */
 export function testValidate<T extends object>(
-  validator: AbstractValidator<T>,
-  validationContext: ValidationContext<T>
+  validator: Validator<T>,
+  model: T,
+  config: (config: ValidatorConfig<T>) => void
 ): TestValidationResult<T>;
 export function testValidate<T extends object>(
-  validator: AbstractValidator<T>,
-  instanceOrValidationContext: T,
-  options?: (strategy: ValidationStrategy<T>) => void
+  validator: Validator<T>,
+  model: T,
+  config?: (config: ValidatorConfig<T>) => void
 ): TestValidationResult<T> {
-  const validationResult = options
-    ? validator.validate(instanceOrValidationContext, options)
-    : validator.validate(instanceOrValidationContext);
+  const validationResult = config ? validator.validate(model, config) : validator.validate(model);
   return new TestValidationResult<T>(validationResult);
 }
 
@@ -51,40 +37,28 @@ export function testValidate<T extends object>(
  *
  * @typeParam T - The type of the object being validated.
  * @param validator - The validator to use for validation.
- * @param instance - The instance of the object to validate.
+ * @param model - The model to validate.
  * @returns The result of the validation.
  */
-export async function testValidateAsync<T extends object>(validator: AbstractValidator<T>, instance: T): Promise<TestValidationResult<T>>;
+export async function testValidateAsync<T extends object>(validator: Validator<T>, model: T): Promise<TestValidationResult<T>>;
 /**
  * Validates an instance of an object using the specified validator and strategy.
  *
- * @param validator - The validator to use for validation.
- * @param instance - The instance of the object to validate.
- * @param options - A function that takes a `ValidationStrategy` and configures it with the desired options.
- */
-export async function testValidateAsync<T extends object>(
-  validator: AbstractValidator<T>,
-  instance: T,
-  options: (strategy: ValidationStrategy<T>) => void
-): Promise<TestValidationResult<T>>;
-/**
- * Validates an object using the specified validator and validation context.
  * @typeParam T - The type of the object being validated.
  * @param validator - The validator to use for validation.
- * @param validationContext - The validation context containing the object to validate.
- * @returns The result of the validation.
+ * @param model - The model to validate.
+ * @param config - The configuration to apply.
  */
 export async function testValidateAsync<T extends object>(
-  validator: AbstractValidator<T>,
-  validationContext: ValidationContext<T>
+  validator: Validator<T>,
+  model: T,
+  config: (config: ValidatorConfig<T>) => void
 ): Promise<TestValidationResult<T>>;
 export async function testValidateAsync<T extends object>(
-  validator: AbstractValidator<T>,
-  instanceOrValidationContext: T,
-  options?: (strategy: ValidationStrategy<T>) => void
+  validator: Validator<T>,
+  model: T,
+  config?: (config: ValidatorConfig<T>) => void
 ): Promise<TestValidationResult<T>> {
-  const validationResult = options
-    ? await validator.validateAsync(instanceOrValidationContext, options)
-    : await validator.validateAsync(instanceOrValidationContext);
+  const validationResult = config ? await validator.validateAsync(model, config) : await validator.validateAsync(model);
   return new TestValidationResult<T>(validationResult);
 }

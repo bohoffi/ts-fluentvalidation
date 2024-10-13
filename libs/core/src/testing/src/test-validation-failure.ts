@@ -1,5 +1,5 @@
-import { Severity } from '../../lib/models';
-import { ValidationFailure } from '../../lib/result';
+import { ValidationFailure } from '../../lib/result/validation-failure';
+import { Severity } from '../../lib/types/types';
 import { TestValidationError } from './test-validation-error';
 
 /**
@@ -7,26 +7,23 @@ import { TestValidationError } from './test-validation-error';
  */
 export class TestValidationFailures extends Array<ValidationFailure> {
   /**
-   * Creates a TestValidationFailures instance from an array of ValidationFailure objects.
-   *
-   * @param validationFailures - An array of ValidationFailure objects.
-   * @returns A TestValidationFailures instance.
-   */
-  public static fromValidationFailures(validationFailures: ValidationFailure[]): TestValidationFailures {
-    return new TestValidationFailures(...validationFailures);
-  }
-
-  /**
    * Checks the expected error message and throws an error if the actual message does not match.
    * @param message The expected error message.
    * @returns The current TestValidationFailures instance.
    * @throws An error if the actual message does not match the expected message.
    */
   public withMessage(message: string): this {
-    if (this.some(failure => failure.message !== message)) {
-      throw new TestValidationError(`Expected error message to be "${message}"`);
-    }
-    return this;
+    return this.with(failure => failure.message === message, `Expected error message to be "${message}"`);
+  }
+
+  /**
+   * Checks the expected error code and throws an error if the actual error code does not match.
+   * @param errorCode The expected error code.
+   * @returns The current TestValidationFailures instance.
+   * @throws An error if the actual error code does not match the expected error code.
+   */
+  public withErrorCode(errorCode: string): this {
+    return this.with(failure => failure.errorCode === errorCode, `Expected error code to be "${errorCode}"`);
   }
 
   /**
@@ -36,21 +33,12 @@ export class TestValidationFailures extends Array<ValidationFailure> {
    * @throws An error if the actual severity does not match the expected severity.
    */
   public withSeverity(severity: Severity): this {
-    if (this.some(failure => failure.severity !== severity)) {
-      throw new TestValidationError(`Expected error severity to be "${severity}"`);
-    }
-    return this;
+    return this.with(failure => failure.severity === severity, `Expected error severity to be "${severity}"`);
   }
 
-  /**
-   * Checks the expected error code and throws an error if the actual code does not match.
-   * @param errorCode The expected error code.
-   * @returns The current TestValidationFailures instance.
-   * @throws An error if the actual code does not match the expected code.
-   */
-  public withErrorCode(errorCode: string): this {
-    if (this.some(failure => failure.errorCode !== errorCode)) {
-      throw new TestValidationError(`Expected error code to be "${errorCode}"`);
+  private with(predicate: (failure: ValidationFailure) => boolean, message: string): this {
+    if (this.some(failure => predicate(failure)) === false) {
+      throw new TestValidationError(message);
     }
     return this;
   }

@@ -6,7 +6,7 @@ const Cascading: NgDocPage = {
   mdFile: './index.md',
   route: `cascading`,
   category: OtherFeatures,
-  order: 2
+  order: 4
 };
 
 export default Cascading;

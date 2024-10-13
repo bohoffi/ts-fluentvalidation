@@ -1,40 +1,58 @@
-
-
-To define a validator for a model you can use either the `createValidator` function to create an inline validator:
-
-```typescript group="createValidator" name="validator"
-export const personValidator = createValidator<Person>();
-```
-
-```typescript group="createValidator" name="model"
-export interface Person {
-  name: string;
-  age: number;
-}
-```
-
-...or create a class inheriting from ` AbstractValidator` (`AbstractValidator<T>`) where `T` is the type of object you want to validate:
-
-```typescript group="abstractValidator" name="validator"
-export class PersonValidator extends AbstractValidator<Person> {}
-```
-
-```typescript group="abstractValidator" name="model"
-export interface Person {
-  name: string;
-  age: number;
-}
-```
-
-## Define rules
-
-With the validator created you can start to define rules for the models properties. You can use either a member expression or a property name. The following example shows how to validate that the persons name should not be an empty string:
+To define a validator for a model you can use the `createValidator` function:
 
 ```typescript
-// using a member expression
-personValidator.ruleFor(p => p.name).notEmpty();
-// results in the same as using the property name
-personValidator.ruleFor('name').notEmpty();
+interface Person {
+  lastName: string;
+  age: number;
+}
+
+const personValidator = createValidator<Person>();
+```
+
+## Define validations
+
+While creating the validator you can start to define validations for the models properties by passing a property name to the `ruleFor` function. The following example shows how to validate that the persons lastName should not be an empty string:
+
+```typescript
+createValidator<Person>().ruleFor('lastName', notEmpty());
+```
+
+> **Warning**
+> Each call of `ruleFor` updates the validators set of validations and failed validations will result in expected output **but** you won't get the full type support due to the functional approach chosen if you are **not chaining** these calls:
+
+```typescript
+const validator = createValidator<Person>().ruleFor('lastName', notEmpty());
+// this will add validation for the age property to the validator
+validator.ruleFor('age', greaterThanOrEquals(18));
+```
+
+...which will result in the following type:
+
+```typescript
+const validator: Validator<
+  Person,
+  {
+    readonly lastName: Validation<string, Person>[];
+  }
+>;
+```
+
+While chaining the `ruleFor` calls like:
+
+```typescript
+const validator = createValidator<Person>().ruleFor('lastName', notEmpty()).ruleFor('age', greaterThanOrEquals(18));
+```
+
+...will result in the following type:
+
+```typescript
+const validator: Validator<
+  Person,
+  {
+    readonly lastName: Validation<string, Person>[];
+    readonly age: Validation<number, Person>[];
+  }
+>;
 ```
 
 ## Validation
@@ -43,7 +61,7 @@ To validate an object using a validator call the validators `validate` function 
 
 ```typescript
 const person: Person = {
-  name: '',
+  lastName: '',
   age: 0
 };
 
@@ -53,160 +71,138 @@ const result: ValidationResult = personValidator.validate(person);
 `ValidationResult` returned by the `validate` function exposes the following properties:
 
 - `isValid` - a flag indicating the validation succeeded
-- `errors` - an array of `ValidationFailure` containing details about failed rule validations
+- `failures` - an array of `ValidationFailure` containing details about failed validations
 
 The following code would log all errors to the console:
 
 ```typescript
 const person: Person = {
-  name: '',
+  lastName: '',
   age: 0
 };
 
 const result: ValidationResult = personValidator.validate(person);
 
 if (!result.isValid) {
-  result.errors.forEach(error => console.error(`${error.propertyName} failed validation. Error was:`, error.message));
+  result.failures.forEach(error => console.error(`${error.propertyName} failed validation. Error was:`, error.message));
 }
 ```
 
-## Chaining rules
-
-It's possible to assign multiple rules to an objects property using chaining:
+You can also call `toString()` on the `ValidationResult` to combine all error messages into a single string. By default, the messages will be separated with new lines, but if you want to customize this behaviour you can pass a different separator character to `toString()`.
 
 ```typescript
-personValidator
-  .ruleFor(p => p.name)
-  .notEmpty()
-  .notEqual('foo');
+const result = personValidator.validate(person);
+const allMessages: string = result.toString('~');
 ```
 
-This would ensure that the name is not empty and is not equal to the string 'foo'.
+## Chaining validations
 
-## Complex properties
+It's possible to assign multiple validations to an objects property using chaining:
 
-Validators can be re-used for complex properties. For example, imagine you have two models: Person and Address
+```typescript
+personValidator.ruleFor('lastName', notEmpty(), notEquals<string, Person>('foo'));
+```
+
+This would ensure that the lastName is neither empty nor equals the string 'foo'.
+
+## Throwing errors
+
+Instead of returning a `ValidationResult` you can alternatively tell `@ts-fluentvalidation/core` to throw an error if validation fails by using the `validateAndThrow()` / `validateAndThrowAsync()` function:
+
+```typescript
+const personValidator = createValidator<Person>().ruleFor('lastName', notEmpty());
+personValidator.validateAndThrow({ lastName: '' });
+```
+
+This throws a `ValidationError` which contains the validation failures in the `failures` property.
+
+The `validateAndThrow()` function is a helpful wrapper around `@ts-fluentvalidation/core`'s config API and is the equivalent of doing the following:
+
+```typescript
+// will set the behaviour validator wide --> each subsequent `validate()` call will throw on failure
+// except when explicitly overwritten by the validate call itself
+createValidator<Person>({ throwOnFailures: true });
+
+// will set the behaviour for the specific validate call
+personValidator.validate({ lastName: '' }, config => {
+  config.throwOnFailures = true;
+});
+```
+
+If you need to combine throwing an error with validating individual properties you can combine both config values using this syntax:
+
+```typescript
+personValidator.validate({ lastName: '' }, config => {
+  config.throwOnFailures = true;
+  config.includeProperties = ['lastName'];
+});
+```
+
+## Complex Properties
+
+### Using `must()` / `mustAsync()`
+
+You can combine `ruleFor()` with `must()` / `mustAsync()` when you want to create a validation for a complex property:
 
 ```typescript
 export interface Person {
-  name: string;
-  age: number;
   address: Address;
 }
 
 export interface Address {
   city: string;
-  state: string;
-  zip: string;
 }
 ```
 
-...and you define an AddressValidator:
+```typescript
+const personValidator = createValidator<Person>().ruleFor(
+  'address',
+  must<Address, Person>(address => address.city !== '', 'City must not be empty.')
+);
+```
+
+Given the above validator and running the following validation:
 
 ```typescript
-export class AddressValidator extends AbstractValidator<Address> {
-  constructor() {
-    super();
-    this.ruleFor(a => a.city).notEmpty();
+const result = personValidator.validate({
+  address: {
+    city: ''
   }
-}
+});
 ```
 
-...you can then re-use the AddressValidator in the PersonValidator definition:
+...will result with 1 failure for the address:
 
 ```typescript
-export class PersonValidator extends AbstractValidator<Person> {
-  constructor() {
-    super();
-    this.ruleFor(p => p.name).notEmpty();
-    this.ruleFor(p => p.address).setValidator(new AddressValidator());
-  }
+{
+  propertyName: 'address',
+  message: 'City must not be empty.',
+  attemptedValue: '',
+  severity: 'Error'
 }
 ```
 
-...so when you call `validate` on the PersonValidator it will run through the validator defined in both the PersonValidator and the AddressValidator and combine the results into a single ValidationResult.
+### Using `setValidator`
 
-If the child property is null or undefined, then the child validator will not be executed.
-
-Instead of using a child validator, you can define child rules inline, e.g.:
+Reusing the models from above:
 
 ```typescript
-this.ruleFor(p => p.address.city).notEmpty();
+export interface Person {
+  address: Address;
+}
+
+export interface Address {
+  city: string;
+}
 ```
 
-In this case, a null check will _not_ be performed automatically on `Address`, so you should explicitly add a condition:
+You can create a dedicated validator for the Address type and assign it using the `setValidator()` function like:
 
 ```typescript
-this.ruleFor(p => p.address.city)
-  .notEmpty()
-  .when(p => !!p.address);
+const addressValidator = createValidator<Address>().ruleFor('city', notEmpty());
+
+const validator = createValidator<Person>().ruleFor('address', setValidator(addressValidator));
 ```
 
-> **Note**
-> Inline child rules will become available with the implementation of [#18 - Add support for inline child rules](https://github.com/bohoffi/ts-fluentvalidation/issues/18)
-
-## Array properties
-
-### Arrays of Simple Types
-
-You can use the `ruleForEach` function to apply the same rule to multiple items in a collection:
-
-```typescript
-interface Person {
-  addressLines: string[];
-}
-```
-
-```typescript
-class PersonValidator extends AbstractValidator<Person> {
-  constructor() {
-    super();
-    this.ruleForEach(p => p.addressLines).notEmpty();
-  }
-}
-```
-
-The above validation will run a `notEmpty` check against each item in the `addressLines` array.
-
-If you want to access the index of the collection element that caused the validation failure, you can use the special `{collectionIndex}` placeholder:
-
-```typescript
-class PersonValidator extends AbstractValidator<Person> {
-  constructor() {
-    super();
-    this.ruleForEach(p => p.addressLines)
-      .notEmpty()
-      .withMessage('Address {collectionIndex} is required.');
-  }
-}
-```
-
-### Arrays of Complex Types
-
-You can also combine `ruleForEach` with `setValidator` when the collection is of another complex objects. For example:
-
-```typescript
-interface Customer {
-  orders: Orders[];
-}
-
-interface Order {
-  total: number;
-}
-```
-
-```typescript
-class OrderValidator extends AbstractValidator<Order> {
-  constructor() {
-    super();
-    this.ruleFor(x => x.total).greaterThan(0);
-  }
-}
-
-class CustomerValidator extends AbstractValidator<Customer> {
-  constructor() {
-    super();
-    this.ruleForEach(x => x.orders).setValidator(new OrderValidator());
-  }
-}
-```
+> **Warning**
+> If your child validator contains asynchronous validations or asynchronous conditions, it's important that you _always_ call `setValidatorAsync()` function on your validator and never `setValidator()`. If you call `setValidator()`, then a `AsyncValidatorSetSynchronouslyError` will be thrown.

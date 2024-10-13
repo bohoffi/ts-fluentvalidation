@@ -17,7 +17,6 @@ import { DocsComponent } from './docs.component';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideNgDocContext(),
-    // provideNgDocApp({ defaultThemeId: 'auto' }),
     provideNgDocApp(),
     provideSearchEngine(NgDocDefaultSearchEngine),
     providePageSkeleton(NG_DOC_DEFAULT_PAGE_SKELETON),

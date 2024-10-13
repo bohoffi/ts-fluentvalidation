@@ -3,51 +3,46 @@ import { ValidationFailure } from './validation-failure';
 /**
  * Represents the result of a validation operation.
  */
-export class ValidationResult {
+export interface ValidationResult {
   /**
-   * Gets a value indicating whether the validation result is valid.
+   * Gets the validation failures.
    */
-  public get isValid(): boolean {
-    return this.errors.length === 0;
-  }
-
+  readonly failures: ValidationFailure[];
   /**
-   * Gets the list of validation failures.
+   * Gets a value indicating whether the validation operation succeeded.
    */
-  public get errors(): ValidationFailure[] {
-    return [...this.failures];
-  }
-
+  readonly isValid: boolean;
   /**
-   * Initializes a new instance of the ValidationResult class.
-   * @param failures The list of validation failures.
-   */
-  constructor(private readonly failures: ValidationFailure[] = []) {}
-
-  /**
-   * Returns a string representation of the error messages.
+   * Joins all failure messages into a single string.
    *
-   * @param separator - The separator to use between error messages. Defaults to '\n'.
-   * @returns A string containing all the error messages joined by the separator.
+   * @param separator The separator to use when joining the failure messages.
    */
-  public toString(separator = '\n'): string {
-    return this.errors.map(e => e.message).join(separator);
-  }
-
+  toString(separator?: string): string;
   /**
-   * Converts the validation errors into a dictionary where the property names are the keys
-   * and the error messages are the values.
-   * @returns A dictionary object where the keys are property names and the values are arrays of error messages.
+   * Converts the validation failures to a dictionary.
    */
-  public toDictionary(): Record<string, string[]> {
-    return this.errors.reduce((acc, { propertyName, message }) => {
-      if (!acc[propertyName]) {
-        acc[propertyName] = [];
-      }
+  toDictionary(): Record<string, string[]>;
+}
 
-      acc[propertyName].push(message);
+export function createValidationResult(failures: ValidationFailure[] = []): ValidationResult {
+  return {
+    failures,
+    get isValid() {
+      return failures.length === 0;
+    },
+    toString(separator = '\n') {
+      return failures.map(e => e.message).join(separator);
+    },
+    toDictionary() {
+      return failures.reduce((acc, { propertyName, message }) => {
+        if (!acc[propertyName]) {
+          acc[propertyName] = [];
+        }
 
-      return acc;
-    }, {} as Record<string, string[]>);
-  }
+        acc[propertyName].push(message);
+
+        return acc;
+      }, {} as Record<string, string[]>);
+    }
+  };
 }
