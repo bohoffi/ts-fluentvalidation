@@ -1,6 +1,6 @@
 import { StringProperty } from '../../types/properties';
 import { SyncValidation } from '../../types/types';
-import { createValidation } from '../create-validation-fn';
+import { createValidation } from '../create-validation';
 
 /**
  * Creates a validation function that checks if the value matches the specified pattern.

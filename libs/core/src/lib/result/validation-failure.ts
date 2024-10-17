@@ -24,4 +24,8 @@ export interface ValidationFailure {
    * Gets the severity of the failure.
    */
   severity: Severity;
+  /**
+   * Gets the custom state of the failure.
+   */
+  customState?: unknown;
 }

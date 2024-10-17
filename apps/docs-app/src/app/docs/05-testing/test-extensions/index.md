@@ -56,7 +56,7 @@ result.shouldHaveValidationErrorFor('orders[0]');
 result.shouldHaveValidationErrorFor('orders[0].amount');
 ```
 
-You can also chain additional function calls to the result of `shouldHaveValidationErrorFor` that test individual components of the validation failure including the error message, error code and severity:
+You can also chain additional function calls to the result of `shouldHaveValidationErrorFor` that test individual components of the validation failure including the error message, error code, severity and custom state:
 
 ```typescript
 const result = testValidate(personValidator, { lastName: '' });

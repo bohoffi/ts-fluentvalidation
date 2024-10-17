@@ -1,5 +1,5 @@
 import { AsyncValidation } from '../../types/types';
-import { createAsyncValidation } from '../create-validation-fn';
+import { createAsyncValidation } from '../create-validation';
 
 /**
  * Creates an asynchronous validation function that checks if the value meets the specified criteria.

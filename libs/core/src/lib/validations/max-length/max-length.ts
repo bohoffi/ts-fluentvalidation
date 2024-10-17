@@ -1,6 +1,6 @@
 import { LengthProperty } from '../../types/properties';
 import { SyncValidation } from '../../types/types';
-import { createValidation } from '../create-validation-fn';
+import { createValidation } from '../create-validation';
 import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 
 /**

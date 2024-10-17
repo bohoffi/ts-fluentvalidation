@@ -218,5 +218,22 @@ function createValidationBase<
     return withSeverityValidation;
   };
 
+  validation.withState = (
+    stateProvider: unknown | ((model: TModel, value: TValue) => unknown)
+  ): ValidationBase<TValue, TValidationFunction, TModel> => {
+    const withStateValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
+      ...otherOptions,
+      message
+    });
+    withStateValidation.metadata = {
+      ...validation.metadata,
+      customStateProvider: (typeof stateProvider === 'function' ? stateProvider : () => stateProvider) as (
+        model: TModel,
+        value: unknown
+      ) => unknown
+    };
+    return withStateValidation;
+  };
+
   return validation as unknown as ValidationBase<TValue, TValidationFunction, TModel>;
 }
