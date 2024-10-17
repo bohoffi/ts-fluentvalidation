@@ -1,7 +1,7 @@
 import { ComplexProperty } from '../../types/properties';
 import { Nullish } from '../../types/ts-helpers';
 import { AsyncValidatorValidation, Validator } from '../../types/types';
-import { createAsyncValidation } from '../create-validation-fn';
+import { createAsyncValidation } from '../create-validation';
 
 /**
  * Creates an asynchronous validation function that checks if the value is valid according to the given validator.

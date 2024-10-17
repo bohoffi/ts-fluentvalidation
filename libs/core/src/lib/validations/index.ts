@@ -25,5 +25,5 @@ export { required } from './required/required';
 export { setValidatorAsync } from './set-validator-async/set-validator-async';
 export { setValidator } from './set-valildator/set-validator';
 
-export { createAsyncValidation, createValidation } from './create-validation-fn';
+export { createAsyncValidation, createValidation } from './create-validation';
 export { DEFAULT_PLACEHOLDERS } from './message-formatter';

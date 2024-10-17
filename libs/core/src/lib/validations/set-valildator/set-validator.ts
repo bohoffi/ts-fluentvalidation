@@ -2,7 +2,7 @@ import { AsyncValidatorSetSynchronouslyError } from '../../errors';
 import { ComplexProperty } from '../../types/properties';
 import { KeyOf, Nullish } from '../../types/ts-helpers';
 import { SyncValidatorValidation, Validation, Validator } from '../../types/types';
-import { createValidation } from '../create-validation-fn';
+import { createValidation } from '../create-validation';
 
 /**
  * Creates a validation function that checks if the value is valid according to the given validator.
