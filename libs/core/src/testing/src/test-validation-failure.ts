@@ -1,4 +1,5 @@
 import { ValidationFailure } from '../../lib/result/validation-failure';
+import { defaultEqualityFn, ValueEqualityFn } from '../../lib/types/ts-helpers';
 import { Severity } from '../../lib/types/types';
 import { TestValidationError } from './test-validation-error';
 
@@ -8,6 +9,7 @@ import { TestValidationError } from './test-validation-error';
 export class TestValidationFailures extends Array<ValidationFailure> {
   /**
    * Checks the expected error message and throws an error if the actual message does not match.
+   *
    * @param message The expected error message.
    * @returns The current TestValidationFailures instance.
    * @throws An error if the actual message does not match the expected message.
@@ -18,6 +20,7 @@ export class TestValidationFailures extends Array<ValidationFailure> {
 
   /**
    * Checks the expected error code and throws an error if the actual error code does not match.
+   *
    * @param errorCode The expected error code.
    * @returns The current TestValidationFailures instance.
    * @throws An error if the actual error code does not match the expected error code.
@@ -28,12 +31,24 @@ export class TestValidationFailures extends Array<ValidationFailure> {
 
   /**
    * Checks the expected error severity and throws an error if the actual severity does not match.
+   *
    * @param severity The expected error severity.
    * @returns The current TestValidationFailures instance.
    * @throws An error if the actual severity does not match the expected severity.
    */
   public withSeverity(severity: Severity): this {
     return this.with(failure => failure.severity === severity, `Expected error severity to be "${severity}"`);
+  }
+
+  /**
+   * Checks the expected error custom state and throws an error if the actual custom state does not match.
+   *
+   * @param customState The expected custom state.
+   * @param equalityFn *optional* The function used to compare the custom state.
+   * @returns An error if the actual custom state does not match the expected custom state.
+   */
+  public withCustomState(customState: unknown, equalityFn: ValueEqualityFn<unknown> = defaultEqualityFn): this {
+    return this.with(failure => equalityFn(failure.customState, customState), `Expected custom state to be "${customState}"`);
   }
 
   private with(predicate: (failure: ValidationFailure) => boolean, message: string): this {

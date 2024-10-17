@@ -42,6 +42,9 @@ export function failureForValidation<TModel, TValue>(
     attemptedValue: propertyValue,
     severity: validation.metadata.severityProvider
       ? validation.metadata.severityProvider(validationContext.modelToValidate, propertyValue)
-      : 'Error'
+      : 'Error',
+    customState: validation.metadata.customStateProvider
+      ? validation.metadata.customStateProvider(validationContext.modelToValidate, propertyValue)
+      : undefined
   };
 }

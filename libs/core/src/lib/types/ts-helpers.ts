@@ -70,6 +70,20 @@ export type RequiredByKeys<T, K extends keyof T> = Prettify<Omit<T, K> & { [P in
 
 export type InferArrayElement<T> = T extends (infer U)[] ? U : never;
 
+/**
+ * Represents a function that compares two values for equality.
+ *
+ * @template T - The type of the values to compare.
+ */
+export type ValueEqualityFn<T> = (a: T, b: T) => boolean;
+
+/**
+ * Represents a function that compares two values for equality.
+ */
+export function defaultEqualityFn<T>(a: T, b: T): boolean {
+  return a === b;
+}
+
 export function getLastElement<T>(array: T[], condition: (element: T) => boolean): T | undefined {
   const filteredArray = [...array].filter(condition);
   return filteredArray.pop();

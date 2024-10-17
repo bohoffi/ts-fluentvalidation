@@ -236,6 +236,15 @@ export interface ValidationMetadata<TAsync extends boolean, TModel> {
    * @returns The severity of the validation failure.
    */
   severityProvider?: (model: TModel, value: unknown) => Severity;
+
+  /**
+   * A function that provides the custom state of the validation.
+   *
+   * @param model The model to validate.
+   * @param value The value to validate.
+   * @returns The state of the validation.
+   */
+  customStateProvider?: (model: TModel, value: unknown) => unknown;
 }
 
 export type ValidationFunction<TValue> = ((value: TValue) => boolean) | ((value: TValue) => Promise<boolean>);
@@ -318,14 +327,39 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
    *
    * @param severityProvider A function that provides the severity of the validation failure based on the model.
    */
-  withSeverity<TModel>(severityProvider: (model: TModel) => Severity): ValidationBase<TValue, TValidationFunction, TModel>;
+  withSeverity<TSeverityModel extends TModel>(
+    severityProvider: (model: TSeverityModel) => Severity
+  ): ValidationBase<TValue, TValidationFunction, TModel>;
   /**
    * Sets the severity of the validation failure based on the model and value.
    *
    * @param severityProvider A function that provides the severity of the validation failure based on the model and value.
    */
-  withSeverity<TModel, TSeverityValue>(
-    severityProvider: (model: TModel, value: TSeverityValue) => Severity
+  withSeverity<TSeverityModel extends TModel, TSeverityValue extends TValue>(
+    severityProvider: (model: TSeverityModel, value: TSeverityValue) => Severity
+  ): ValidationBase<TValue, TValidationFunction, TModel>;
+
+  /**
+   * Sets the custom state of the validation.
+   *
+   * @param customState The custom state of the validation.
+   */
+  withState<TState>(customState: TState): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Sets the custom state of the validation.
+   *
+   * @param customStateProvider A function that provides the custom state of the validation.
+   */
+  withState<TStateModel extends TModel>(
+    customStateProvider: (model: TStateModel) => unknown
+  ): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
+   * Sets the custom state of the validation.
+   *
+   * @param customStateProvider A function that provides the custom state of the validation.
+   */
+  withState<TStateModel extends TModel, TStateValue extends TValue>(
+    customStateProvider: (model: TStateModel, value: TStateValue) => unknown
   ): ValidationBase<TValue, TValidationFunction, TModel>;
 } & TValidationFunction;
 
@@ -353,20 +387,28 @@ export type SyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TVal
  */
 export type AsyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>;
 
-export type SyncValidatorValidation<TValue, TModel> = Omit<
-  ValidationBase<TValue, (value: TValue) => boolean, TModel>,
-  'withErrorCode' | 'withMessage' | 'withName' | 'withPlaceholder' | 'withSeverity'
+type ValidatorValidation<TValue, TValidationFunction extends ValidationFunction<TValue>, TModel> = Omit<
+  ValidationBase<TValue, TValidationFunction, TModel>,
+  'withErrorCode' | 'withMessage' | 'withName' | 'withPlaceholder' | 'withSeverity' | 'withState'
 > &
-  ((value: TValue) => boolean) & {
+  TValidationFunction & {
     validator: Validator<TValue & object>;
   };
-export type AsyncValidatorValidation<TValue, TModel> = Omit<
-  ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>,
-  'withErrorCode' | 'withMessage' | 'withName' | 'withPlaceholder' | 'withSeverity'
-> &
-  ((value: TValue) => Promise<boolean>) & {
-    validator: Validator<TValue & object>;
-  };
+
+/**
+ * Represents a synchronous validation processed by a synchronous validator.
+ *
+ * @template TValue - The type of the value to validate.
+ * @template TModel - The type of the model being validated.
+ */
+export type SyncValidatorValidation<TValue, TModel> = ValidatorValidation<TValue, (value: TValue) => boolean, TModel>;
+/**
+ * Represents an asynchronous validation processed by an ssynchronous validator.
+ *
+ * @template TValue - The type of the value to validate.
+ * @template TModel - The type of the model being validated.
+ */
+export type AsyncValidatorValidation<TValue, TModel> = ValidatorValidation<TValue, (value: TValue) => Promise<boolean>, TModel>;
 
 export function isValidatorValidation<TValue, TModel>(
   validation: Validation<TValue, TModel>
