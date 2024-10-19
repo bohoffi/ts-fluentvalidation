@@ -1,0 +1,17 @@
+name: Coverage Report Test
+
+on: workflow_dispatch
+
+jobs:
+  coverage-report:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Jest Coverage Report
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          test-script: npx nx run @ts-fluentvalidation/core:test:ci

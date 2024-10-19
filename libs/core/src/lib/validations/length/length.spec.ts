@@ -19,6 +19,12 @@ describe(length.name, () => {
     expect(val('hello')).toBe(false);
   });
 
+  it('should not validate length', () => {
+    const val = length(1, 3);
+
+    expect(val(undefined)).toBe(false);
+  });
+
   it('should return defined message', () => {
     const validation = length(1, 3, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');

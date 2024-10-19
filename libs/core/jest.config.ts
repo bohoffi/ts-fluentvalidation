@@ -8,5 +8,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/libs/core',
-  coveragePathIgnorePatterns: ['<rootDir>/src/lib/testing']
+  collectCoverageFrom: ['src/lib/**/{!(version),}.ts', '!src/__tests__/**/*.ts']
 };

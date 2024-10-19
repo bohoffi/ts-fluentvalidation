@@ -1,8 +1,7 @@
 import { createValidator } from '../lib/create-validator';
-import { AsyncValidatorInvokedSynchronouslyError } from '../lib/errors/async-validator-invoked-synchronously-error';
-import { ValidationError } from '../lib/errors/validation-error';
-import { mustAsync, notEmpty } from '../lib/validations';
-import { createPersonWith, Person } from './fixtures';
+import { AsyncValidatorInvokedSynchronouslyError, AsyncValidatorSetSynchronouslyError, ValidationError } from '../lib/errors';
+import { mustAsync, notEmpty, setValidator } from '../lib/validations';
+import { Address, createPersonWith, Person } from './fixtures';
 
 describe('errors', () => {
   describe(ValidationError.name, () => {
@@ -95,6 +94,38 @@ describe('errors', () => {
       );
 
       expect(() => validator.validate(createPersonWith())).toThrow(AsyncValidatorInvokedSynchronouslyError);
+    });
+  });
+
+  describe(AsyncValidatorSetSynchronouslyError.name, () => {
+    const addressValidator = createValidator<Address>();
+
+    it('should throw error when validator with async when condition is set synchronously', () => {
+      expect(() =>
+        createValidator<Person>().ruleFor(
+          'address',
+          setValidator(
+            addressValidator.ruleFor(
+              'city',
+              notEmpty().whenAsync(a => Promise.resolve(a.state === 'CA'))
+            )
+          )
+        )
+      ).toThrow(AsyncValidatorSetSynchronouslyError);
+    });
+
+    it('should throw error when validator with async unless condition is set synchronously', () => {
+      expect(() =>
+        createValidator<Person>().ruleFor(
+          'address',
+          setValidator(
+            addressValidator.ruleFor(
+              'city',
+              notEmpty().unlessAsync(a => Promise.resolve(a.state === 'CA'))
+            )
+          )
+        )
+      ).toThrow(AsyncValidatorSetSynchronouslyError);
     });
   });
 });

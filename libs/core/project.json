@@ -25,6 +25,13 @@
         "generateExportsField": true
       }
     },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/core"],
+      "options": {
+        "jestConfig": "libs/core/jest.config.ts"
+      }
+    },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"
