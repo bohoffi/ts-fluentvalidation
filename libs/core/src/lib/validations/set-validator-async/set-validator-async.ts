@@ -1,6 +1,7 @@
 import { ComplexProperty } from '../../types/properties';
 import { Nullish } from '../../types/ts-helpers';
-import { AsyncValidatorValidation, Validator } from '../../types/types';
+import { AsyncValidatorValidation } from '../../types/validations';
+import { Validator } from '../../types/validator';
 import { createAsyncValidation } from '../create-validation';
 
 /**

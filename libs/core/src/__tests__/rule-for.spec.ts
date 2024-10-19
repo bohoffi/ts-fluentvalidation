@@ -1,5 +1,5 @@
 import { createValidator } from '../lib/create-validator';
-import { AsyncValidation, SyncValidation } from '../lib/types/types';
+import { AsyncValidation, SyncValidation } from '../lib/types';
 import { minLength, must, mustAsync, notEmpty } from '../lib/validations';
 import { testValidate, testValidateAsync } from '../testing/src/test-validate';
 import { expectFailureLength, expectResultInvalid, expectValidationsFor, expectValidationsForWithLength } from './assertions';

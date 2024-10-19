@@ -1,8 +1,10 @@
 import { validateAsync } from './functions/validate-async';
 import { validateSync } from './functions/validate-sync';
-import { createValidationResult, ValidationResult } from './result/validation-result';
+import { createValidationResult, ValidationResult } from './result';
 import { ArrayKeyOf, EmptyObject, getLastElement, InferArrayElement, KeyOf } from './types/ts-helpers';
-import { CascadeMode, InferValidations, ValidateConfig, Validation, Validator, ValidatorConfig } from './types/types';
+import { CascadeMode, ValidatorConfig } from './types/types';
+import { Validation } from './types/validations';
+import { InferValidations, Validator } from './types/validator';
 import { createValidationContext, isValidationContext, ValidationContext } from './validation-context';
 
 /**
@@ -25,7 +27,7 @@ export function createValidator<TModel extends object, ModelValidations extends 
 ): Validator<TModel, ModelValidations> {
   const _validations = {} as ModelValidations;
   const _keyCascadeModes = {} as Record<KeyOf<TModel>, CascadeMode>;
-  const _defaultConfig: ValidateConfig<TModel> = {
+  const _defaultConfig: ValidatorConfig<TModel> = {
     cascadeMode: 'Continue'
   };
   const validatorConfig = {

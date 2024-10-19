@@ -1,6 +1,7 @@
 import { AsyncValidatorInvokedSynchronouslyError } from '../errors/async-validator-invoked-synchronously-error';
 import { KeyOf } from '../types/ts-helpers';
-import { CascadeMode, ValidateConfig, Validation } from '../types/types';
+import { CascadeMode, ValidatorConfig } from '../types/types';
+import { Validation } from '../types/validations';
 import { ValidationContext } from '../validation-context';
 import { wrapAsArray } from './utils';
 import { validateKeySync } from './validate-key-sync';
@@ -17,7 +18,7 @@ import { validateKeySync } from './validate-key-sync';
 export function validateSync<TModel extends object, Validations extends object>(
   validationContext: ValidationContext<TModel>,
   validations: Validations,
-  validatorConfig: ValidateConfig<TModel>,
+  validatorConfig: ValidatorConfig<TModel>,
   keyCascadeModes: Record<KeyOf<TModel>, CascadeMode>
 ): void {
   const includedProperties = validatorConfig.includeProperties ? wrapAsArray(validatorConfig.includeProperties) : undefined;

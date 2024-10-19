@@ -1,7 +1,8 @@
 import { AsyncValidatorSetSynchronouslyError } from '../../errors';
 import { ComplexProperty } from '../../types/properties';
 import { KeyOf, Nullish } from '../../types/ts-helpers';
-import { SyncValidatorValidation, Validation, Validator } from '../../types/types';
+import { SyncValidatorValidation, Validation } from '../../types/validations';
+import { Validator } from '../../types/validator';
 import { createValidation } from '../create-validation';
 
 /**

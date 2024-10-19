@@ -1,2 +1,2 @@
 export { ValidationFailure } from './validation-failure';
-export { ValidationResult } from './validation-result';
+export { ValidationResult, createValidationResult } from './validation-result';

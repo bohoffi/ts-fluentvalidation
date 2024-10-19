@@ -1,14 +1,30 @@
 export { BooleanProperty, LengthProperty, NumberProperty, StringProperty } from './properties';
 export {
-  ApplyConditionTo,
+  ArrayKeyOf,
+  Callable,
+  EmptyObject,
+  IndexedArrayKeyOf,
+  IndexedNestedArrayKeyOf,
+  InferArrayElement,
+  IsAsyncCallable,
+  KeyOf,
+  NestedKeyOf,
+  Nullish,
+  Prettify,
+  ValueEqualityFn,
+  defaultEqualityFn,
+  getLastElement
+} from './ts-helpers';
+export { ApplyConditionTo, CascadeMode, Severity, ValidatorConfig } from './types';
+export {
   AsyncValidation,
-  CascadeMode,
-  Severity,
+  AsyncValidatorValidation,
   SyncValidation,
-  ValidateConfig,
+  SyncValidatorValidation,
   Validation,
   ValidationBase,
+  ValidationFunction,
   ValidationMetadata,
-  Validator,
-  ValidatorConfig
-} from './types';
+  isValidatorValidation
+} from './validations';
+export { InferValidations, Validator } from './validator';

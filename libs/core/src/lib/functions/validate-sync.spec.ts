@@ -1,6 +1,6 @@
 import { ValidationFailure } from '../result/validation-failure';
 import { KeyOf } from '../types/ts-helpers';
-import { CascadeMode, ValidateConfig } from '../types/types';
+import { CascadeMode, ValidatorConfig } from '../types/types';
 import { createValidationContext, ValidationContext } from '../validation-context';
 import { validateKeySync } from './validate-key-sync';
 import { validateSync } from './validate-sync';
@@ -29,7 +29,7 @@ describe(validateSync.name, () => {
     prop2: []
   };
 
-  const validatorConfig: ValidateConfig<TestModel> = {
+  const validatorConfig: ValidatorConfig<TestModel> = {
     includeProperties: ['prop1', 'prop2'],
     cascadeMode: 'Continue',
     throwOnFailures: false

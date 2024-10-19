@@ -1,4 +1,4 @@
-import { SyncValidation } from '../../types/types';
+import { SyncValidation } from '../../types/validations';
 import { equals } from '../equals/equals';
 import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
 import { not } from '../not/not';

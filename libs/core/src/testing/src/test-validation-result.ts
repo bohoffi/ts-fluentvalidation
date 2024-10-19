@@ -1,6 +1,6 @@
 import { ValidationFailure } from '../../lib/result/validation-failure';
 import { ValidationResult } from '../../lib/result/validation-result';
-import { IndexedArrayKeyOf, IndexedNestedArrayKeyOf, KeyOf, NestedKeyOf } from '../../lib/types/ts-helpers';
+import { IndexedArrayKeyOf, IndexedNestedArrayKeyOf, KeyOf, NestedKeyOf } from '../../lib/types';
 import { TestValidationError } from './test-validation-error';
 import { TestValidationFailures } from './test-validation-failure';
 

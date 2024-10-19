@@ -1,6 +1,5 @@
 import { ValidationFailure } from '../../lib/result/validation-failure';
-import { defaultEqualityFn, ValueEqualityFn } from '../../lib/types/ts-helpers';
-import { Severity } from '../../lib/types/types';
+import { defaultEqualityFn, Severity, ValueEqualityFn } from '../../lib/types';
 import { TestValidationError } from './test-validation-error';
 
 /**

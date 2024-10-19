@@ -11,7 +11,6 @@ export {
   Severity,
   StringProperty,
   SyncValidation,
-  ValidateConfig,
   Validation,
   ValidationBase,
   ValidationMetadata,
