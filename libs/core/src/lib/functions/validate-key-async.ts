@@ -17,7 +17,7 @@ import { failureForValidation } from './utils';
 export async function validateKeyAsync<
   TModel extends object,
   Key extends KeyOf<TModel> | ArrayKeyOf<TModel>,
-  KeyValidation extends Validation<TModel[KeyOf<TModel>], TModel>
+  KeyValidation extends Validation<TModel[Key], TModel>
 >(
   validationContext: ValidationContext<TModel>,
   key: Key,

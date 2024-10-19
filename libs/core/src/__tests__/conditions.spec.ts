@@ -150,25 +150,96 @@ describe('conditions', () => {
   });
 
   describe('ApplyConditionTo', () => {
-    it('should apply to all preceeding validations', () => {
-      const validator = createValidator<Person>().ruleFor(
-        'lastName',
-        matches(/Doe/),
-        notEmpty().when(p => p.age >= 18)
-      );
+    describe('when', () => {
+      it('should apply to all preceeding validations', () => {
+        const validator = createValidator<Person>().ruleFor(
+          'lastName',
+          matches(/Doe/),
+          notEmpty().when(p => p.age >= 18)
+        );
 
-      expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'when');
-      expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'when');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'when');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'when');
+      });
+      it('should apply to current validation only', () => {
+        const validator = createValidator<Person>().ruleFor(
+          'lastName',
+          matches(/Doe/),
+          notEmpty().when(p => p.age >= 18, 'CurrentValidator')
+        );
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'when');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'when');
+      });
     });
-    it('should apply to current validation only', () => {
-      const validator = createValidator<Person>().ruleFor(
-        'lastName',
-        matches(/Doe/),
-        notEmpty().when(p => p.age >= 18, 'CurrentValidator')
-      );
 
-      expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'when');
-      expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'when');
+    describe('unless', () => {
+      it('should apply to all preceeding validations', () => {
+        const validator = createValidator<Person>().ruleFor(
+          'lastName',
+          matches(/Doe/),
+          notEmpty().unless(p => p.age >= 18)
+        );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'unless');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'unless');
+      });
+      it('should apply to current validation only', () => {
+        const validator = createValidator<Person>().ruleFor(
+          'lastName',
+          matches(/Doe/),
+          notEmpty().unless(p => p.age >= 18, 'CurrentValidator')
+        );
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'unless');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'unless');
+      });
+    });
+
+    describe('whenAsync', () => {
+      it('should apply to all preceeding validations', () => {
+        const validator = createValidator<Person>().ruleFor(
+          'lastName',
+          matches(/Doe/),
+          notEmpty().whenAsync(p => Promise.resolve(p.age >= 18))
+        );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'whenAsync');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'whenAsync');
+      });
+      it('should apply to current validation only', () => {
+        const validator = createValidator<Person>().ruleFor(
+          'lastName',
+          matches(/Doe/),
+          notEmpty().whenAsync(p => Promise.resolve(p.age >= 18), 'CurrentValidator')
+        );
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'whenAsync');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'whenAsync');
+      });
+    });
+
+    describe('unlessAsync', () => {
+      it('should apply to all preceeding validations', () => {
+        const validator = createValidator<Person>().ruleFor(
+          'lastName',
+          matches(/Doe/),
+          notEmpty().unlessAsync(p => Promise.resolve(p.age >= 18))
+        );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'unlessAsync');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'unlessAsync');
+      });
+      it('should apply to current validation only', () => {
+        const validator = createValidator<Person>().ruleFor(
+          'lastName',
+          matches(/Doe/),
+          notEmpty().unlessAsync(p => Promise.resolve(p.age >= 18), 'CurrentValidator')
+        );
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'unlessAsync');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'unlessAsync');
+      });
     });
   });
 });

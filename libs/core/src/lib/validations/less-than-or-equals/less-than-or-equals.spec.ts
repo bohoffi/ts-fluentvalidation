@@ -22,6 +22,11 @@ describe(lessThanOrEquals.name, () => {
     expect(validation(43)).toBe(false);
   });
 
+  it('should return false', () => {
+    const validation = lessThanOrEquals(-1);
+    expect(validation(undefined)).toBe(false);
+  });
+
   it('should return custom message', () => {
     const validation = lessThanOrEquals(42, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');

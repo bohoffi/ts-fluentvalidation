@@ -27,10 +27,16 @@ export function length<TValue extends LengthProperty, TModel>(
   maxLength: number,
   message?: string
 ): SyncValidation<TValue, TModel> {
-  return createValidation<TValue, TModel>(value => (value?.length || 0) >= minLength && (value?.length || 0) <= maxLength, {
-    message: message || `'{propertyName}' must have a length between (inclusive) {minLength} and {maxLength}.`,
-    errorCode: length.name
-  })
+  return createValidation<TValue, TModel>(
+    value => {
+      const valueLength = value?.length || 0;
+      return valueLength >= minLength && valueLength <= maxLength;
+    },
+    {
+      message: message || `'{propertyName}' must have a length between (inclusive) {minLength} and {maxLength}.`,
+      errorCode: length.name
+    }
+  )
     .withPlaceholder(DEFAULT_PLACEHOLDERS.minLength, minLength)
     .withPlaceholder(DEFAULT_PLACEHOLDERS.maxLength, maxLength);
 }

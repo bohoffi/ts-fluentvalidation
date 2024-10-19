@@ -1,5 +1,6 @@
 import { createValidator } from '../lib/create-validator';
-import { createAsyncValidation, createValidation } from '../lib/validations';
+import { EmptyObject } from '../lib/types';
+import { createAsyncValidation, createValidation, setValidator } from '../lib/validations';
 import { testValidate, testValidateAsync } from '../testing/src/test-validate';
 import {
   expectFailureLength,
@@ -74,15 +75,22 @@ describe(createValidation.name, () => {
       expectValidationPropertyNameToBeUndefined(isNonEmptyString);
       expectValidationPropertyNameToBe(validationWithMessage, 'FOO');
     });
+
+    it('should set property name on validator validation', () => {
+      const objectValidator = createValidator<EmptyObject>();
+      const parentValidator = createValidator<{ prop: object }>().ruleFor('prop', setValidator(objectValidator).withName('FOO'));
+
+      expectValidationPropertyNameToBe(parentValidator.validations.prop[0], 'FOO');
+    });
   });
 
   describe('overridePropertyName', () => {
     it('should create a validation function with an overriden property name', () => {
       const isNonEmptyString = createValidation<string>(value => value.length > 0);
-      const validationWithMessage = isNonEmptyString.overridePropertyName('FOO');
+      const validationOverridePropertyName = isNonEmptyString.overridePropertyName('FOO');
 
       expectValidationPropertyNameToBeUndefined(isNonEmptyString);
-      expectValidationPropertyNameOverrideToBe(validationWithMessage, 'FOO');
+      expectValidationPropertyNameOverrideToBe(validationOverridePropertyName, 'FOO');
     });
   });
 
@@ -224,10 +232,10 @@ describe(createAsyncValidation.name, () => {
   describe('overridePropertyName', () => {
     it('should create a validation function with an overriden property name', () => {
       const isNonEmptyString = createValidation<string>(value => value.length > 0);
-      const validationWithMessage = isNonEmptyString.overridePropertyName('FOO');
+      const validationOverridePropertyName = isNonEmptyString.overridePropertyName('FOO');
 
       expectValidationPropertyNameToBeUndefined(isNonEmptyString);
-      expectValidationPropertyNameOverrideToBe(validationWithMessage, 'FOO');
+      expectValidationPropertyNameOverrideToBe(validationOverridePropertyName, 'FOO');
     });
   });
 

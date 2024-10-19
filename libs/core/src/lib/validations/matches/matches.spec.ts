@@ -14,6 +14,12 @@ describe(matches.name, () => {
     expect(result('world')).toBe(false);
   });
 
+  it('should not validate if value does not match pattern', () => {
+    const result = matches(/hello/);
+
+    expect(result(undefined)).toBe(false);
+  });
+
   it('should return a function that returns false with a message', () => {
     const result = matches(/hello/, 'Value must match pattern');
 

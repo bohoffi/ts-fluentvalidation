@@ -22,6 +22,11 @@ describe(greaterThan.name, () => {
     expect(validation(41)).toBe(false);
   });
 
+  it('should return false', () => {
+    const validation = greaterThan(42);
+    expect(validation(undefined)).toBe(false);
+  });
+
   it('should return custom message', () => {
     const validation = greaterThan(42, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');

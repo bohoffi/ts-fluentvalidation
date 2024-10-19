@@ -19,6 +19,12 @@ describe(maxLength.name, () => {
     expect(val('hello')).toBe(false);
   });
 
+  it('should not validate max length', () => {
+    const val = maxLength(-1);
+
+    expect(val(undefined)).toBe(false);
+  });
+
   it('should return defined message', () => {
     const validation = maxLength(3, 'Custom message');
     expectValidationMessageToBe(validation, 'Custom message');
