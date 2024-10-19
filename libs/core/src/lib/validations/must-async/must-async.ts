@@ -1,4 +1,4 @@
-import { AsyncValidation } from '../../types/types';
+import { AsyncValidation } from '../../types/validations';
 import { createAsyncValidation } from '../create-validation';
 
 /**

@@ -1,5 +1,5 @@
 import { BooleanProperty } from '../../types/properties';
-import { SyncValidation } from '../../types/types';
+import { SyncValidation } from '../../types/validations';
 import { isTrue } from '../is-true/is-true';
 import { not } from '../not/not';
 

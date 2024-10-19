@@ -1,6 +1,7 @@
 import { ValidationError } from '../errors/validation-error';
 import { ArrayKeyOf, KeyOf } from '../types/ts-helpers';
-import { CascadeMode, isValidatorValidation, Validation } from '../types/types';
+import { CascadeMode } from '../types/types';
+import { isValidatorValidation, Validation } from '../types/validations';
 import { createValidationContext, ValidationContext } from '../validation-context';
 import { failureForValidation } from './utils';
 

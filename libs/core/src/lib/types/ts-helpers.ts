@@ -63,11 +63,6 @@ export type IsAsyncCallable<T extends Callable> = ReturnType<T> extends Promise<
  */
 export type Prettify<T> = { [K in keyof T]: T[K] } & EmptyObject;
 
-/**
- * Represents a type where given keys are required.
- */
-export type RequiredByKeys<T, K extends keyof T> = Prettify<Omit<T, K> & { [P in K]-?: T[P] }>;
-
 export type InferArrayElement<T> = T extends (infer U)[] ? U : never;
 
 /**

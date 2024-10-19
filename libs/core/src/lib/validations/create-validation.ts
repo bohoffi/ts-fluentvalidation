@@ -1,13 +1,6 @@
 import { IsAsyncCallable } from '../types/ts-helpers';
-import {
-  ApplyConditionTo,
-  AsyncValidation,
-  Severity,
-  SyncValidation,
-  ValidationBase,
-  ValidationFunction,
-  ValidationMetadata
-} from '../types/types';
+import { ApplyConditionTo, Severity } from '../types/types';
+import { AsyncValidation, SyncValidation, ValidationBase, ValidationFunction, ValidationMetadata } from '../types/validations';
 
 type ValidationOptions<TModel> = Pick<ValidationMetadata<boolean, TModel>, 'message' | 'errorCode'>;
 

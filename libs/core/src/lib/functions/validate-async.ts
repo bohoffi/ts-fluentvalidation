@@ -1,5 +1,6 @@
 import { KeyOf } from '../types/ts-helpers';
-import { CascadeMode, ValidateConfig, Validation } from '../types/types';
+import { CascadeMode, ValidatorConfig } from '../types/types';
+import { Validation } from '../types/validations';
 import { ValidationContext } from '../validation-context';
 import { wrapAsArray } from './utils';
 import { validateKeyAsync } from './validate-key-async';
@@ -15,7 +16,7 @@ import { validateKeyAsync } from './validate-key-async';
 export async function validateAsync<TModel extends object, Validations extends object>(
   validationContext: ValidationContext<TModel>,
   validations: Validations,
-  validatorConfig: ValidateConfig<TModel>,
+  validatorConfig: ValidatorConfig<TModel>,
   keyCascadeModes: Record<KeyOf<TModel>, CascadeMode>
 ): Promise<void> {
   const includedProperties = validatorConfig.includeProperties ? wrapAsArray(validatorConfig.includeProperties) : undefined;

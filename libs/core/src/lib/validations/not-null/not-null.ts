@@ -1,4 +1,4 @@
-import { SyncValidation } from '../../types/types';
+import { SyncValidation } from '../../types/validations';
 import { isNull } from '../is-null/is-null';
 import { not } from '../not/not';
 
