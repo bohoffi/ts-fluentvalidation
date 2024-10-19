@@ -21,6 +21,10 @@ export class TestValidationResult<T extends object> implements ValidationResult 
 
   constructor(private readonly validationResult: ValidationResult) {}
 
+  public addFailures(...validationFailures: ValidationFailure[]): void {
+    this.validationResult.addFailures(...validationFailures);
+  }
+
   public toString(separator = '\n') {
     return this.validationResult.toString(separator);
   }

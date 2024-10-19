@@ -1,4 +1,7 @@
 import { createValidator } from '../lib/create-validator';
+import { ValidationError } from '../lib/errors';
+import { ValidationResult } from '../lib/result';
+import { ValidationContext } from '../lib/validation-context';
 import { greaterThanOrEquals, lessThanOrEquals, matches, mustAsync, notEmpty, setValidator, setValidatorAsync } from '../lib/validations';
 import { testValidate, testValidateAsync } from '../testing/src/test-validate';
 import {
@@ -29,6 +32,81 @@ describe('Validator', () => {
 
       expectValidationsFor(personValidator, 'age');
       expectValidationsForWithLength(personValidator, 'age', 2);
+    });
+  });
+
+  describe('preValidate', () => {
+    describe('pre-validation fails', () => {
+      const failingPreValidation: Parameters<ReturnType<typeof createValidator<Person>>['preValidate']>[0] = (
+        validationContext: ValidationContext<Person>,
+        validationResult: ValidationResult
+      ) => false;
+
+      const failingPreValidationWithError: Parameters<ReturnType<typeof createValidator<Person>>['preValidate']>[0] = (
+        _: ValidationContext<Person>,
+        validationResult: ValidationResult
+      ) => {
+        validationResult.addFailures({
+          message: 'Pre-validation failed',
+          propertyName: 'age',
+          severity: 'Error'
+        });
+        return false;
+      };
+
+      it('should not run validations sync', () => {
+        const personValidator = createValidator<Person>().preValidate(failingPreValidation).ruleFor('age', greaterThanOrEquals(18));
+        const result = personValidator.validate(createPersonWith());
+
+        expectResultValid(result);
+      });
+
+      it('should not run validations async', async () => {
+        const personValidator = createValidator<Person>().preValidate(failingPreValidation).ruleFor('age', greaterThanOrEquals(18));
+        const result = await personValidator.validateAsync(createPersonWith());
+
+        expectResultValid(result);
+      });
+
+      it('should return invalid result sync', () => {
+        const personValidator = createValidator<Person>()
+          .preValidate(failingPreValidationWithError)
+          .ruleFor('age', greaterThanOrEquals(18));
+        const result = testValidate(personValidator, createPersonWith());
+
+        expectResultInvalid(result);
+        expectFailureLength(result, 1);
+        result.shouldHaveValidationErrorFor('age').withMessage('Pre-validation failed');
+      });
+
+      it('should return invalid result async', async () => {
+        const personValidator = createValidator<Person>()
+          .preValidate(failingPreValidationWithError)
+          .ruleFor('age', greaterThanOrEquals(18));
+        const result = await testValidateAsync(personValidator, createPersonWith());
+
+        expectResultInvalid(result);
+        expectFailureLength(result, 1);
+        result.shouldHaveValidationErrorFor('age').withMessage('Pre-validation failed');
+      });
+
+      it('should throw on invalid pre-validation result sync', () => {
+        const personValidator = createValidator<Person>()
+          .preValidate(failingPreValidationWithError)
+          .ruleFor('age', greaterThanOrEquals(18));
+
+        expect(() => personValidator.validate(createPersonWith(), config => (config.throwOnFailures = true))).toThrow(ValidationError);
+      });
+
+      it('should throw on invalid pre-validation result async', async () => {
+        const personValidator = createValidator<Person>()
+          .preValidate(failingPreValidationWithError)
+          .ruleFor('age', greaterThanOrEquals(18));
+
+        expect(
+          async () => await personValidator.validateAsync(createPersonWith(), config => (config.throwOnFailures = true))
+        ).rejects.toThrow(ValidationError);
+      });
     });
   });
 
