@@ -6,7 +6,7 @@ import { expectFailureLength, expectResultInvalid, expectValidationsFor, expectV
 import { createOrderWith, createPersonWith, Order, Person } from './fixtures';
 
 describe('ruleForEach', () => {
-  describe('add rules for items', () => {
+  describe('add validations for items', () => {
     it('should add rule for each item', () => {
       const validator = createValidator<Person>().ruleForEach(
         'orders',
@@ -17,7 +17,7 @@ describe('ruleForEach', () => {
       expectValidationsForWithLength(validator, 'orders', 1);
     });
 
-    it('should add multiple rules for each item', () => {
+    it('should add multiple validations for each item', () => {
       const validator = createValidator<Person>().ruleForEach(
         'orders',
         must(order => order.productName !== ''),
@@ -28,7 +28,7 @@ describe('ruleForEach', () => {
       expectValidationsForWithLength(validator, 'orders', 2);
     });
 
-    it('should add multiple rules for each item on subsequent calls', () => {
+    it('should add multiple validations for each item on subsequent calls', () => {
       const validator = createValidator<Person>()
         .ruleForEach(
           'orders',

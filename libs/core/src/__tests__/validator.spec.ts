@@ -36,7 +36,7 @@ describe('Validator', () => {
       expectValidationsForWithLength(personValidator, 'lastName', 1);
     });
 
-    it('should add included rules to existing keys', () => {
+    it('should add included validations to existing keys', () => {
       const personAgeValidator = createValidator<Person>().ruleFor('age', greaterThanOrEquals(18));
       const personValidator = createValidator<Person>().ruleFor('age', lessThanOrEquals(65)).include(personAgeValidator);
 
