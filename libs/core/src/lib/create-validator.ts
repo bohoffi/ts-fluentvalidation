@@ -1,3 +1,4 @@
+import { ValidationError } from './errors';
 import { validateAsync } from './functions/validate-async';
 import { validateSync } from './functions/validate-sync';
 import { createValidationResult, ValidationResult } from './result';
@@ -35,6 +36,8 @@ export function createValidator<TModel extends object, ModelValidations extends 
     ...(config || {})
   };
 
+  let preValidation: (validationContext: ValidationContext<TModel>, validationResult: ValidationResult) => boolean = () => true;
+
   return {
     validations: _validations,
 
@@ -68,9 +71,27 @@ export function createValidator<TModel extends object, ModelValidations extends 
       return this as unknown as Validator<TModel & TIncludeModel, ModelValidations & IncludeValidations>;
     },
 
+    preValidate(
+      preValidationFunc: (validationContext: ValidationContext<TModel>, validationResult: ValidationResult) => boolean
+    ): Validator<TModel, ModelValidations> {
+      preValidation = preValidationFunc;
+      return this;
+    },
+
     validate(modelOrContext: TModel | ValidationContext<TModel>, config?: (config: ValidatorConfig<TModel>) => void): ValidationResult {
       config?.(validatorConfig);
       const context = getValidationContext(modelOrContext);
+
+      const preValidationResult = createValidationResult(context.failures);
+      const shouldContinue = preValidation(context, preValidationResult);
+      if (!shouldContinue) {
+        if (preValidationResult.isValid === false && validatorConfig.throwOnFailures) {
+          throwValidationError(preValidationResult);
+        }
+
+        return createValidationResult(preValidationResult.failures);
+      }
+
       validateSync(context, _validations, validatorConfig, _keyCascadeModes);
       return createValidationResult(context.failures);
     },
@@ -81,12 +102,34 @@ export function createValidator<TModel extends object, ModelValidations extends 
     ): Promise<ValidationResult> {
       config?.(validatorConfig);
       const context = getValidationContext(modelOrContext);
+
+      const preValidationResult = createValidationResult(context.failures);
+      const shouldContinue = preValidation(context, preValidationResult);
+      if (!shouldContinue) {
+        if (preValidationResult.isValid === false && validatorConfig.throwOnFailures) {
+          throwValidationError(preValidationResult);
+        }
+
+        return createValidationResult(preValidationResult.failures);
+      }
+
       await validateAsync(context, _validations, validatorConfig, _keyCascadeModes);
       return createValidationResult(context.failures);
     },
 
     validateAndThrow(model: TModel): ValidationResult {
       const context = createValidationContext(model);
+
+      const preValidationResult = createValidationResult(context.failures);
+      const shouldContinue = preValidation(context, preValidationResult);
+      if (!shouldContinue) {
+        if (preValidationResult.isValid === false) {
+          throwValidationError(preValidationResult);
+        }
+
+        return createValidationResult(preValidationResult.failures);
+      }
+
       validateSync(
         context,
         _validations,
@@ -101,6 +144,17 @@ export function createValidator<TModel extends object, ModelValidations extends 
 
     async validateAndThrowAsync(model: TModel): Promise<ValidationResult> {
       const context = createValidationContext(model);
+
+      const preValidationResult = createValidationResult(context.failures);
+      const shouldContinue = preValidation(context, preValidationResult);
+      if (!shouldContinue) {
+        if (preValidationResult.isValid === false) {
+          throwValidationError(preValidationResult);
+        }
+
+        return createValidationResult(context.failures);
+      }
+
       await validateAsync(
         context,
         _validations,
@@ -204,4 +258,8 @@ function mergeValidations<TModel extends object, Key extends KeyOf<TModel> | Arr
 
 function getValidationContext<TModel>(modelOrContext: TModel | ValidationContext<TModel>): ValidationContext<TModel> {
   return isValidationContext(modelOrContext) ? modelOrContext : createValidationContext(modelOrContext);
+}
+
+function throwValidationError(validationResult: ValidationResult): never {
+  throw new ValidationError(validationResult.failures);
 }

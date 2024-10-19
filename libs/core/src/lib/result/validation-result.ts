@@ -13,6 +13,12 @@ export interface ValidationResult {
    */
   readonly isValid: boolean;
   /**
+   * Adds the specified validation failures to the result.
+   *
+   * @param validationFailures The validation failures to add.
+   */
+  addFailures(...validationFailures: ValidationFailure[]): void;
+  /**
    * Joins all failure messages into a single string.
    *
    * @param separator The separator to use when joining the failure messages.
@@ -29,6 +35,9 @@ export function createValidationResult(failures: ValidationFailure[] = []): Vali
     failures,
     get isValid() {
       return failures.length === 0;
+    },
+    addFailures(...validationFailures: ValidationFailure[]) {
+      failures.push(...validationFailures);
     },
     toString(separator = '\n') {
       return failures.map(e => e.message).join(separator);

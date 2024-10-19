@@ -1,3 +1,5 @@
+import { ValidationResult } from '../result';
+import { ValidationContext } from '../validation-context';
 import { ArrayKeyOf, EmptyObject, InferArrayElement, KeyOf } from './ts-helpers';
 import { CascadeMode } from './types';
 import { Validation } from './validations';
@@ -77,4 +79,15 @@ export interface Validator<TModel extends object, ModelValidations extends objec
   include<TIncludeModel extends TModel, IncludeValidations extends object = InferValidations<Validator<TIncludeModel>>>(
     validator: Validator<TIncludeModel, IncludeValidations>
   ): Validator<TModel & TIncludeModel, ModelValidations & IncludeValidations>;
+
+  /**
+   * Sets a function which is executed before the actual validation process.
+   * If this function returns `false`, the validation process will be skipped.
+   * It allows to add custom validation failures before the actual validation process.
+   *
+   * @param preValidation - The function to execute before the actual validation process.
+   */
+  preValidate(
+    preValidation: (validationContext: ValidationContext<TModel>, validationResult: ValidationResult) => boolean
+  ): Validator<TModel, ModelValidations>;
 }
