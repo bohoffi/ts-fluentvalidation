@@ -8,5 +8,12 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/libs/core',
-  collectCoverageFrom: ['src/lib/**/{!(version),}.ts', '!src/__tests__/**/*.ts']
+  collectCoverageFrom: ['src/lib/**/{!(version),}.ts', '!src/__tests__/**/*.ts'],
+  coverageThreshold: {
+    global: {
+      branches: 95,
+      functions: 80,
+      statements: 100
+    }
+  }
 };
