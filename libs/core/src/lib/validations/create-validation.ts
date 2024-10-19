@@ -129,13 +129,16 @@ function createValidationBase<
     whenAsync: (model: TModel) => Promise<boolean>,
     whenApplyTo: ApplyConditionTo = 'AllValidators'
   ): ValidationBase<TValue, TValidationFunction, TModel> => {
-    const whenValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, { ...otherOptions, message });
-    whenValidation.metadata = {
+    const whenAsyncValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
+      ...otherOptions,
+      message
+    });
+    whenAsyncValidation.metadata = {
       ...validation.metadata,
       whenAsync,
       whenApplyTo
     };
-    return whenValidation;
+    return whenAsyncValidation;
   };
 
   validation.unless = (
@@ -155,13 +158,16 @@ function createValidationBase<
     unlessAsync: (model: TModel) => Promise<boolean>,
     unlessApplyTo: ApplyConditionTo = 'AllValidators'
   ): ValidationBase<TValue, TValidationFunction, TModel> => {
-    const unlessValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, { ...otherOptions, message });
-    unlessValidation.metadata = {
+    const unlessAsyncValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
+      ...otherOptions,
+      message
+    });
+    unlessAsyncValidation.metadata = {
       ...validation.metadata,
       unlessAsync,
       unlessApplyTo
     };
-    return unlessValidation;
+    return unlessAsyncValidation;
   };
 
   validation.withMessage = (message: string): ValidationBase<TValue, TValidationFunction, TModel> => {
@@ -174,44 +180,44 @@ function createValidationBase<
   };
 
   validation.withErrorCode = (errorCode: string): ValidationBase<TValue, TValidationFunction, TModel> => {
-    const withMessageValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
+    const withErrorCodeValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
       ...otherOptions,
       message
     });
-    withMessageValidation.metadata = { ...validation.metadata, errorCode };
-    return withMessageValidation;
+    withErrorCodeValidation.metadata = { ...validation.metadata, errorCode };
+    return withErrorCodeValidation;
   };
 
   validation.withName = (propertyName: string): ValidationBase<TValue, TValidationFunction, TModel> => {
-    const withMessageValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
+    const withNameValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
       ...otherOptions,
       message
     });
-    withMessageValidation.metadata = { ...validation.metadata, propertyName };
+    withNameValidation.metadata = { ...validation.metadata, propertyName };
 
     if (isValidatorValidation(validation as Validation<TValue, TModel>)) {
-      (withMessageValidation as unknown as ValidatorValidation<TValue, TValidationFunction, TModel>).validator = (
+      (withNameValidation as unknown as ValidatorValidation<TValue, TValidationFunction, TModel>).validator = (
         validation as unknown as ValidatorValidation<TValue, TValidationFunction, TModel>
       ).validator;
     }
 
-    return withMessageValidation;
+    return withNameValidation;
   };
 
   validation.overridePropertyName = (propertyNameOverride: string): ValidationBase<TValue, TValidationFunction, TModel> => {
-    const withMessageValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
+    const overridePropertyNameValidation = createValidationBase<TValue, TValidationFunction, TModel, TAsync>(fn, isAsync, {
       ...otherOptions,
       message
     });
-    withMessageValidation.metadata = { ...validation.metadata, propertyNameOverride };
+    overridePropertyNameValidation.metadata = { ...validation.metadata, propertyNameOverride };
 
     if (isValidatorValidation(validation as Validation<TValue, TModel>)) {
-      (withMessageValidation as unknown as ValidatorValidation<TValue, TValidationFunction, TModel>).validator = (
+      (overridePropertyNameValidation as unknown as ValidatorValidation<TValue, TValidationFunction, TModel>).validator = (
         validation as unknown as ValidatorValidation<TValue, TValidationFunction, TModel>
       ).validator;
     }
 
-    return withMessageValidation;
+    return overridePropertyNameValidation;
   };
 
   validation.withPlaceholder = (key: string, value: unknown): ValidationBase<TValue, TValidationFunction, TModel> => {
