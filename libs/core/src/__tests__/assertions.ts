@@ -76,6 +76,13 @@ export function expectValidationPropertyNameToBe<TValue, TModel extends object>(
   expect(validation.metadata.propertyName).toBe(propertyName);
 }
 
+export function expectValidationPropertyNameOverrideToBe<TValue, TModel extends object>(
+  validation: Validation<TValue, TModel>,
+  propertyNameOverride: string
+): void {
+  expect(validation.metadata.propertyNameOverride).toBe(propertyNameOverride);
+}
+
 export function expectValidationPropertyNameToBeUndefined<TValue, TModel extends object>(validation: Validation<TValue, TModel>): void {
   expect(validation.metadata.propertyName).toBeUndefined();
 }

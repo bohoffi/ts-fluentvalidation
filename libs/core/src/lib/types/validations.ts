@@ -23,6 +23,10 @@ export interface ValidationMetadata<TAsync extends boolean, TModel> {
    */
   propertyName?: string;
   /**
+   * The existance of a value indicates that all property names should be overridden.
+   */
+  propertyNameOverride?: string;
+  /**
    * The placeholders to use in the message when the validation fails.
    */
   readonly placeholders: Record<string, unknown>;
@@ -144,6 +148,12 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
    */
   withName(propertyName: string): ValidationBase<TValue, TValidationFunction, TModel>;
   /**
+   * Overrides all property names to use when the validation fails.
+   *
+   * @param propertyName The property name to use when the validation fails.
+   */
+  overridePropertyName(propertyName: string): ValidationBase<TValue, TValidationFunction, TModel>;
+  /**
    * Adds a placeholder to use in the message when the validation fails.
    *
    * @param key - The key of the placeholder.
@@ -221,9 +231,9 @@ export type SyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TVal
  */
 export type AsyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>;
 
-type ValidatorValidation<TValue, TValidationFunction extends ValidationFunction<TValue>, TModel> = Omit<
+export type ValidatorValidation<TValue, TValidationFunction extends ValidationFunction<TValue>, TModel> = Omit<
   ValidationBase<TValue, TValidationFunction, TModel>,
-  'withErrorCode' | 'withMessage' | 'withName' | 'withPlaceholder' | 'withSeverity' | 'withState'
+  'withErrorCode' | 'withMessage' | 'withPlaceholder' | 'withSeverity' | 'withState'
 > &
   TValidationFunction & {
     validator: ValidatorCore<TValue & object>;
