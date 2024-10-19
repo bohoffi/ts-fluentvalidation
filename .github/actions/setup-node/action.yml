@@ -5,7 +5,7 @@ inputs:
   node-version:
     description: Node.js version
     required: false
-    default: 18
+    default: "20.x"
 
 runs:
   using: composite
@@ -15,6 +15,7 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: "npm"
+        check-latest: true
 
     - name: Install Dependencies
       shell: bash
