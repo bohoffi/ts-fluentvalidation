@@ -6,26 +6,26 @@ import { expectFailureLength, expectResultInvalid, expectValidationsFor, expectV
 import { createPersonWith, Person } from './fixtures';
 
 describe('ruleFor', () => {
-  describe('add rules', () => {
+  describe('add validations', () => {
     it('should add rule for key', () => {
       const validator = createValidator<Person>().ruleFor('firstName', notEmpty());
       expectValidationsFor(validator, 'firstName');
       expectValidationsForWithLength(validator, 'firstName', 1);
     });
 
-    it('should add multiple rules for the same key', () => {
+    it('should add multiple validations for the same key', () => {
       const validator = createValidator<Person>().ruleFor('firstName', notEmpty(), minLength(1));
       expectValidationsFor(validator, 'firstName');
       expectValidationsForWithLength(validator, 'firstName', 2);
     });
 
-    it('should add multiple rules for the same key on subsequent calls', () => {
+    it('should add multiple validations for the same key on subsequent calls', () => {
       const validator = createValidator<Person>().ruleFor('firstName', notEmpty()).ruleFor('firstName', minLength(1));
       expectValidationsFor(validator, 'firstName');
       expectValidationsForWithLength(validator, 'firstName', 2);
     });
 
-    it('should add multiple rules for different keys', () => {
+    it('should add multiple validations for different keys', () => {
       const validator = createValidator<Person>().ruleFor('firstName', notEmpty()).ruleFor('lastName', notEmpty());
       expectValidationsFor(validator, 'firstName');
       expectValidationsForWithLength(validator, 'firstName', 1);

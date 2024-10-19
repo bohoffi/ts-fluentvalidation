@@ -1,5 +1,5 @@
 ---
-keyword: 'BuildingRulesBuiltInRules'
+keyword: 'BuildingValidationsBuiltInValidations'
 ---
 
 {% import "../../templates/macros/validations.md" as validations %}

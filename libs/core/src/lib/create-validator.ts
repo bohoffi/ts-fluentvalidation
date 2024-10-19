@@ -47,6 +47,9 @@ export function createValidator<TModel extends object, ModelValidations extends 
     ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }> {
       const cascadeMode = typeof cascadeModeAndValidations[0] === 'string' ? (cascadeModeAndValidations.shift() as CascadeMode) : undefined;
       const validations = cascadeModeAndValidations as Validation<TModel[Key], TModel>[];
+
+      overridePropertyNames(validations);
+
       _keyCascadeModes[key] = cascadeMode || validatorConfig.propertyCascadeMode || 'Continue';
       return mergeValidations(this, key, true, ...(validations as Validation<TModel[Key], TModel>[]));
     },
@@ -57,6 +60,9 @@ export function createValidator<TModel extends object, ModelValidations extends 
     ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }> {
       const cascadeMode = typeof cascadeModeAndValidations[0] === 'string' ? (cascadeModeAndValidations.shift() as CascadeMode) : undefined;
       const validations = cascadeModeAndValidations as Validation<TItem, TModel>[];
+
+      overridePropertyNames(validations);
+
       _keyCascadeModes[key] = cascadeMode || validatorConfig.propertyCascadeMode || 'Continue';
       return mergeValidations(this, key, true, ...(validations as Validation<TItem, TModel>[]));
     },
@@ -118,53 +124,11 @@ export function createValidator<TModel extends object, ModelValidations extends 
     },
 
     validateAndThrow(model: TModel): ValidationResult {
-      const context = createValidationContext(model);
-
-      const preValidationResult = createValidationResult(context.failures);
-      const shouldContinue = preValidation(context, preValidationResult);
-      if (!shouldContinue) {
-        if (preValidationResult.isValid === false) {
-          throwValidationError(preValidationResult);
-        }
-
-        return createValidationResult(preValidationResult.failures);
-      }
-
-      validateSync(
-        context,
-        _validations,
-        {
-          ...validatorConfig,
-          throwOnFailures: true
-        },
-        _keyCascadeModes
-      );
-      return createValidationResult(context.failures);
+      return this.validate(model, c => (c.throwOnFailures = true));
     },
 
     async validateAndThrowAsync(model: TModel): Promise<ValidationResult> {
-      const context = createValidationContext(model);
-
-      const preValidationResult = createValidationResult(context.failures);
-      const shouldContinue = preValidation(context, preValidationResult);
-      if (!shouldContinue) {
-        if (preValidationResult.isValid === false) {
-          throwValidationError(preValidationResult);
-        }
-
-        return createValidationResult(context.failures);
-      }
-
-      await validateAsync(
-        context,
-        _validations,
-        {
-          ...validatorConfig,
-          throwOnFailures: true
-        },
-        _keyCascadeModes
-      );
-      return createValidationResult(context.failures);
+      return await this.validateAsync(model, c => (c.throwOnFailures = true));
     }
   };
 }
@@ -254,6 +218,18 @@ function mergeValidations<TModel extends object, Key extends KeyOf<TModel> | Arr
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (validator.validations as any)[key] = existingValidations.concat(validations);
   return validator as Validator<TModel, ModelValidations & { [P in Key]: Validation<TValue, TModel>[] }>;
+}
+
+function overridePropertyNames<TValue, TModel extends object>(keyValidations: Validation<TValue, TModel>[]): void {
+  const lastPropertyNameOverride = getLastElement(keyValidations, v => v.metadata.propertyNameOverride !== undefined);
+  if (lastPropertyNameOverride) {
+    const propertyNameOverride = lastPropertyNameOverride.metadata.propertyNameOverride as string;
+    keyValidations.forEach(v => {
+      if (v.metadata.propertyNameOverride === undefined) {
+        v.metadata.propertyNameOverride = propertyNameOverride;
+      }
+    });
+  }
 }
 
 function getValidationContext<TModel>(modelOrContext: TModel | ValidationContext<TModel>): ValidationContext<TModel> {

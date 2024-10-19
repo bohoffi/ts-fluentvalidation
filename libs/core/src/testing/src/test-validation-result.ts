@@ -40,8 +40,12 @@ export class TestValidationResult<T extends object> implements ValidationResult 
    * @throws {@link TestValidationError} if there is no validation error for the specified property.
    * @returns The TestValidationFailures for the specified property.
    */
+  public shouldHaveValidationErrorFor(propertyName: string): TestValidationFailures;
   public shouldHaveValidationErrorFor(
     propertyName: KeyOf<T> | IndexedArrayKeyOf<T> | NestedKeyOf<T> | IndexedNestedArrayKeyOf<T>
+  ): TestValidationFailures;
+  public shouldHaveValidationErrorFor(
+    propertyName: string | KeyOf<T> | IndexedArrayKeyOf<T> | NestedKeyOf<T> | IndexedNestedArrayKeyOf<T>
   ): TestValidationFailures {
     const validationFailures = this.failures.filter(failure => failure.propertyName === propertyName);
     if (validationFailures.length) {
@@ -58,7 +62,11 @@ export class TestValidationResult<T extends object> implements ValidationResult 
    * @throws {@link TestValidationError} if there is a validation error for the specified property.
    * @returns The current TestValidationResult instance.
    */
-  public shouldNotHaveValidationErrorFor(propertyName: KeyOf<T> | IndexedArrayKeyOf<T>): this {
+  public shouldNotHaveValidationErrorFor(propertyName: string): this;
+  public shouldNotHaveValidationErrorFor(propertyName: KeyOf<T> | IndexedArrayKeyOf<T> | NestedKeyOf<T> | IndexedNestedArrayKeyOf<T>): this;
+  public shouldNotHaveValidationErrorFor(
+    propertyName: string | KeyOf<T> | IndexedArrayKeyOf<T> | NestedKeyOf<T> | IndexedNestedArrayKeyOf<T>
+  ): this {
     if (this.failures.some(failure => failure.propertyName === propertyName)) {
       throw new TestValidationError(`Expected no validation error for property ${propertyName}`);
     }

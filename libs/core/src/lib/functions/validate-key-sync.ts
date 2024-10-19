@@ -66,8 +66,9 @@ function validatePropertySync<TModel extends object, Key extends KeyOf<TModel>, 
   validation: KeyValidation
 ): void {
   if (isValidatorValidation(validation) && propertyValue != null && typeof propertyValue === 'object') {
-    const result = validation.validator.validate(createValidationContext(propertyValue, key));
+    const result = validation.validator.validate(createValidationContext(propertyValue, validation.metadata.propertyNameOverride || key));
     validationContext.addFailures(...result.failures);
+    return;
   }
 
   if (!validation(propertyValue)) {
@@ -97,7 +98,7 @@ function validateCollectionPropertySync<
     }
 
     if (!validation(item)) {
-      const failure = failureForValidation<TModel, TItem>(validationContext, `${key}[${index}]`, item, validation);
+      const failure = failureForValidation<TModel, TItem>(validationContext, key, item, validation, index);
       validationContext.addFailures(failure);
     }
     if (validationContext.failures.length > 0 && keyCascadeMode === 'Stop') {

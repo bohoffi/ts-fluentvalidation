@@ -2,7 +2,17 @@ import { createValidator } from '../lib/create-validator';
 import { ValidationError } from '../lib/errors';
 import { ValidationResult } from '../lib/result';
 import { ValidationContext } from '../lib/validation-context';
-import { greaterThanOrEquals, lessThanOrEquals, matches, mustAsync, notEmpty, setValidator, setValidatorAsync } from '../lib/validations';
+import {
+  equals,
+  greaterThanOrEquals,
+  lessThanOrEquals,
+  matches,
+  must,
+  mustAsync,
+  notEmpty,
+  setValidator,
+  setValidatorAsync
+} from '../lib/validations';
 import { testValidate, testValidateAsync } from '../testing/src/test-validate';
 import {
   expectFailureLength,
@@ -26,7 +36,7 @@ describe('Validator', () => {
       expectValidationsForWithLength(personValidator, 'lastName', 1);
     });
 
-    it('should add included rules to existing keys', () => {
+    it('should add included validations to existing keys', () => {
       const personAgeValidator = createValidator<Person>().ruleFor('age', greaterThanOrEquals(18));
       const personValidator = createValidator<Person>().ruleFor('age', lessThanOrEquals(65)).include(personAgeValidator);
 
@@ -331,6 +341,75 @@ describe('Validator', () => {
 
       expectResultInvalid(result);
       result.shouldHaveValidationErrorFor('orders[0].productName');
+    });
+  });
+
+  describe('overridePropertyName', () => {
+    const invalidPerson = createPersonWith({
+      lastName: '',
+      address: createAddressWith({ city: '' }),
+      orders: [createOrderWith({ productName: 'BAR' }), createOrderWith({ productName: 'FOO' })]
+    });
+
+    it('should override property name for single key', () => {
+      const validator = createValidator<Person>().ruleFor('lastName', equals('John').overridePropertyName('foo'));
+
+      const result = testValidate(validator, invalidPerson);
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 1);
+      result.shouldNotHaveValidationErrorFor('lastName');
+      result.shouldHaveValidationErrorFor('foo');
+    });
+
+    it('should override property name for single key with multiple validations', () => {
+      const validator = createValidator<Person>().ruleFor('lastName', equals('John').overridePropertyName('foo'), notEmpty());
+
+      const result = testValidate(validator, invalidPerson);
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 2);
+      result.shouldHaveValidationErrorFor('foo').withErrorCode(equals.name);
+      result.shouldHaveValidationErrorFor('foo').withErrorCode(notEmpty.name);
+    });
+
+    it('should not override property name for further `ruleFor` calls', () => {
+      const validator = createValidator<Person>()
+        .ruleFor('lastName', equals('John').overridePropertyName('foo'))
+        .ruleFor('lastName', equals('Jane'));
+
+      const result = testValidate(validator, invalidPerson);
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 2);
+      result.shouldHaveValidationErrorFor('foo').withErrorCode(equals.name);
+      result.shouldHaveValidationErrorFor('lastName').withErrorCode(equals.name);
+    });
+
+    it('should override property name for child validator', () => {
+      const addressValidator = createValidator<Address>().ruleFor('city', notEmpty().overridePropertyName('Stadt'));
+      const validator = createValidator<Person>().ruleFor('address', setValidator(addressValidator).overridePropertyName('Anschrift'));
+
+      const result = testValidate(validator, invalidPerson);
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 1);
+      result.shouldNotHaveValidationErrorFor('address');
+      result.shouldHaveValidationErrorFor('Anschrift.Stadt');
+    });
+
+    it('should override property name for collection using `ruleForEach`', () => {
+      const validator = createValidator<Person>().ruleForEach(
+        'orders',
+        must<Order, Person>(order => order.productName === 'BAR').overridePropertyName('Bestellung')
+      );
+
+      const result = testValidate(validator, invalidPerson);
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 1);
+      result.shouldNotHaveValidationErrorFor('orders');
+      result.shouldHaveValidationErrorFor('Bestellung[1]');
     });
   });
 });

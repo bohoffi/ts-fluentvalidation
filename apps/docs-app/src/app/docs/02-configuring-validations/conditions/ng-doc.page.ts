@@ -1,11 +1,11 @@
 import { NgDocPage } from '@ng-doc/core';
-import ConfiguringRules from '../ng-doc.category';
+import ConfiguringValidations from '../ng-doc.category';
 
 const OverrideMessage: NgDocPage = {
   title: `Conditions`,
   mdFile: './index.md',
   route: `conditions`,
-  category: ConfiguringRules,
+  category: ConfiguringValidations,
   order: 3
 };
 

@@ -25,7 +25,7 @@ interface Validation {
 const validationCategories: ValidationCategory[] = [
   {
     title: 'Common',
-    description: 'Common rules that can be used with any type of value.',
+    description: 'Common validations that can be used with any type of value.',
     validations: [
       {
         name: 'equals',
@@ -153,7 +153,7 @@ const validationCategories: ValidationCategory[] = [
   },
   {
     title: 'Length',
-    description: 'Rules that validate the length of a value. The value must satisfy the constraint `{ length: number; }`',
+    description: 'Validations that validate the length of a value. The value must satisfy the constraint `{ length: number; }`',
     validations: [
       {
         name: 'empty',
@@ -257,7 +257,7 @@ const validationCategories: ValidationCategory[] = [
   },
   {
     title: 'Number',
-    description: 'Rules that validate numeric values.',
+    description: 'Validations that validate numeric values.',
     validations: [
       {
         name: 'exclusiveBetween',
@@ -411,7 +411,7 @@ const validationCategories: ValidationCategory[] = [
   },
   {
     title: 'Boolean',
-    description: 'Rules that validate boolean properties.',
+    description: 'Validations that validate boolean properties.',
     validations: [
       {
         name: 'isFalse',
@@ -441,7 +441,7 @@ const validationCategories: ValidationCategory[] = [
   },
   {
     title: 'String',
-    description: 'Rules that validate string values.',
+    description: 'Validations that validate string values.',
     validations: [
       {
         name: 'matches',
