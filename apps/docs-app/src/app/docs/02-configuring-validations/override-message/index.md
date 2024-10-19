@@ -1,5 +1,5 @@
 ---
-keyword: 'ConfiguringRulesOverrideMessage'
+keyword: 'ConfiguringValidationsOverrideMessage'
 ---
 
 A validations message can be ovewritten in two ways.
@@ -55,7 +55,7 @@ Used in range validations (`exclusiveBetween()`, `inclusiveBetween()`):
 - `{lowerBound}` - Lower bound
 - `{upperBound}` - Upper bound
 
-For a complete list of error message placeholders used see the `*BuildingRulesBuiltInRules` page. Each built-in validation has its own supported placeholders.
+For a complete list of error message placeholders used see the `*BuildingValidationsBuiltInValidations` page. Each built-in validation has its own supported placeholders.
 
 It is also possible to use your own custom placeholders in the validation message. This can be done by using the `withMessage()` function in combination with the `withPlaceholder()` function:
 
