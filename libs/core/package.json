@@ -18,7 +18,7 @@
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bohoffi/ts-fluentvalidation.git",
+    "url": "git+https://github.com/bohoffi/ts-fluentvalidation.git",
     "directory": "libs/core"
   },
   "homepage": "https://bohoffi.github.io/ts-fluentvalidation/"
