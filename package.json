@@ -1,9 +1,24 @@
 {
   "name": "ts-fluentvalidation",
   "scripts": {
-    "release": "ts-node ./tools/scripts/release.ts"
+    "release": "ts-node ./tools/scripts/release.ts",
+    "prepare": "husky"
   },
   "private": true,
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "scope-enum": [
+        2,
+        "always",
+        [
+          "core"
+        ]
+      ]
+    }
+  },
   "dependencies": {
     "@angular/animations": "18.2.5",
     "@angular/common": "18.2.5",
@@ -32,6 +47,8 @@
     "@angular/cli": "~18.2.0",
     "@angular/compiler-cli": "18.2.5",
     "@angular/language-service": "18.2.5",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
     "@faker-js/faker": "^8.4.1",
     "@nx/angular": "19.7.4",
     "@nx/esbuild": "19.7.4",
