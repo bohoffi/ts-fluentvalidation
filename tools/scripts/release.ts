@@ -1,5 +1,6 @@
 import { logger } from '@nx/devkit';
 import chalk from 'chalk';
+import { copyFileSync } from 'fs';
 import { createProject, getSourceFile, NgMorphTree, saveActiveProject, setActiveProject } from 'ng-morph';
 import { releaseChangelog, releaseVersion } from 'nx/release';
 import { ChangelogOptions, NxReleaseArgs, VersionOptions } from 'nx/src/command-line/release/command-object';
@@ -13,11 +14,13 @@ const projectMap: Record<
   {
     packageName: string;
     versionFilePath: string;
+    outputPath: string;
   }
 > = {
   core: {
     packageName: '@ts-fluentvalidation/core',
-    versionFilePath: 'libs/core/src/lib/version.ts'
+    versionFilePath: 'libs/core/src/lib/version.ts',
+    outputPath: 'dist/libs/core'
   }
 };
 
@@ -81,6 +84,8 @@ const projectMap: Record<
     ...versionOptions
   });
 
+  copyAssetsForPackages();
+
   await updateVersionPlaceholders(projectsVersionData, nxReleaseArgs);
 
   logger.info('📋  Generating CHANGELOG...\n\n');
@@ -104,9 +109,13 @@ const projectMap: Record<
   process.exit();
 })();
 
+/**
+ * Updates version placeholders in projects version files.
+ *
+ * @param versionData - The new version data for each project
+ * @param options - The release options
+ */
 async function updateVersionPlaceholders(versionData: VersionData, options: Pick<NxReleaseArgs, 'dryRun' | 'verbose'>) {
-  logger.info('#️⃣  Updating version placeholders...\n\n');
-
   for (const [project, { packageName, versionFilePath }] of Object.entries(projectMap)) {
     logger.info(`🔄  Updating version placeholder for ${packageName}...\n`);
 
@@ -116,7 +125,7 @@ async function updateVersionPlaceholders(versionData: VersionData, options: Pick
       if (changedFile) {
         logger.info(`Updated ${changedFile}\n`);
 
-        logger.info(`✅  ${chalk.green(`Set VERSION of '${packageName}' to ${packageNewVersion}`)}\n\n`);
+        logger.info(`📦  ${chalk.green(`Set VERSION of '${packageName}' to ${packageNewVersion}`)}\n\n`);
 
         await commitChanges({
           changedFiles: [changedFile],
@@ -129,6 +138,14 @@ async function updateVersionPlaceholders(versionData: VersionData, options: Pick
   }
 }
 
+/**
+ * Updates the version placeholder in the specified file.
+ *
+ * @param versionFilePath - The path to the file containing the version placeholder
+ * @param version - The new version to set
+ * @param dryRun - Whether or not to perform a dry-run of the update
+ * @returns The path to the file that was changed
+ */
 function updateVersionPlaceholder(versionFilePath: string, version: string, dryRun?: boolean): string {
   setActiveProject(createProject(new NgMorphTree(), '/', ['**/*.ts']));
 
@@ -149,4 +166,20 @@ function updateVersionPlaceholder(versionFilePath: string, version: string, dryR
   }
 
   return sourceFilePath;
+}
+
+/**
+ * Copies README and LICENSE files to the projects output folder.
+ */
+function copyAssetsForPackages(): void {
+  logger.info('#️🚛  Copying assets...\n\n');
+
+  for (const { packageName, outputPath } of Object.values(projectMap)) {
+    // Copy README.md
+    copyFileSync('README.md', `${outputPath}/README.md`);
+    // Copy LICENSE
+    copyFileSync('LICENSE', `${outputPath}/LICENSE`);
+
+    logger.info(`✅  ${chalk.green(`Copied assets for '${packageName}'`)}\n\n`);
+  }
 }
