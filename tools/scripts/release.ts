@@ -62,7 +62,7 @@ const projectMap: Record<
 
   const gitCommitAndTagOptions: Pick<VersionOptions, 'stageChanges' | 'gitCommit' | 'gitTag'> = {
     gitCommit: true,
-    gitTag: true,
+    gitTag: false,
     stageChanges: true
   };
 
@@ -88,7 +88,7 @@ const projectMap: Record<
   const changelogOptions: ChangelogOptions = {
     ...nxReleaseArgs,
     ...gitCommitAndTagOptions,
-    gitCommit: false,
+    gitTag: true,
     versionData: projectsVersionData,
     version: workspaceVersion,
     firstRelease: options.firstRelease,
