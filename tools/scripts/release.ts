@@ -27,10 +27,6 @@ const projectMap: Record<
 (async () => {
   const options = await yargs
     .version(false) // don't use the default meaning of version in yargs
-    .option('version', {
-      description: 'Explicit version specifier to use, if overriding conventional commits',
-      type: 'string'
-    })
     .option('dryRun', {
       alias: 'd',
       description: 'Whether or not to perform a dry-run of the release process, defaults to false',
@@ -42,12 +38,11 @@ const projectMap: Record<
       type: 'boolean',
       default: false
     })
-    .option('interactive', {
-      alias: 'i',
+    .option('preid', {
       type: 'string',
-      description:
-        'Interactively modify changelog markdown contents in your code editor before applying the changes. You can set it to be interactive for all changelogs, or only the workspace level, or only the project level.',
-      choices: ['all', 'workspace', 'projects']
+      describe:
+        'The optional prerelease identifier to apply to the version. This will only be applied in the case that the specifier argument has been set to `prerelease` OR when conventional commits are enabled, in which case it will modify the resolved specifier from conventional commits to be its prerelease equivalent. E.g. minor -> preminor.',
+      default: ''
     })
     .option('verbose', {
       description: 'Whether or not to enable verbose logging, defaults to false',
@@ -63,21 +58,16 @@ const projectMap: Record<
     verbose: options.verbose
   };
 
-  const gitCommitAndTagOptions: Pick<VersionOptions, 'stageChanges' | 'gitCommit' | 'gitTag'> = {
-    gitCommit: true,
-    gitTag: false,
-    stageChanges: true
-  };
-
   logger.info('🛠️  Starting release process...\n\n');
 
   logger.info('#️⃣  Versioning...\n\n');
 
   const versionOptions: VersionOptions = {
     ...nxReleaseArgs,
-    ...gitCommitAndTagOptions,
-    specifier: options.version,
-    firstRelease: options.firstRelease
+    gitCommit: false,
+    gitTag: false,
+    firstRelease: options.firstRelease,
+    preid: options.preid
   };
 
   const { workspaceVersion, projectsVersionData } = await releaseVersion({
@@ -92,12 +82,12 @@ const projectMap: Record<
 
   const changelogOptions: ChangelogOptions = {
     ...nxReleaseArgs,
-    ...gitCommitAndTagOptions,
+    gitCommit: true,
     gitTag: true,
     versionData: projectsVersionData,
     version: workspaceVersion,
     firstRelease: options.firstRelease,
-    interactive: options.interactive
+    interactive: 'all'
   };
 
   await releaseChangelog({

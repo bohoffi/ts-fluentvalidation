@@ -1,7 +1,7 @@
 {
   "name": "ts-fluentvalidation",
   "scripts": {
-    "release": "ts-node ./tools/scripts/release.ts --interactive all"
+    "release": "ts-node ./tools/scripts/release.ts"
   },
   "private": true,
     "dependencies": {
