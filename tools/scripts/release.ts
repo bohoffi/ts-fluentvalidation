@@ -62,7 +62,7 @@ const projectMap: Record<
 
   const gitCommitAndTagOptions: Pick<VersionOptions, 'stageChanges' | 'gitCommit' | 'gitTag'> = {
     gitCommit: true,
-    gitTag: false,
+    gitTag: true,
     stageChanges: true
   };
 
