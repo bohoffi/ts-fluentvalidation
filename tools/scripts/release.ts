@@ -94,7 +94,9 @@ const projectMap: Record<
     ...changelogOptions
   });
 
-  logger.info(`🔥  ${chalk.green('DONE')}`);
+  logger.info(`🔥  ${chalk.green('DONE')}\n\n`);
+
+  logger.info(`❗  ${chalk.yellow('Publishing packages to npm and creating Github release needs to be done manually')}\n\n`);
 
   process.exit();
 })();
