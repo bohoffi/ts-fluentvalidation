@@ -1,5 +1,8 @@
 {
   "name": "ts-fluentvalidation",
+  "scripts": {
+    "release": "ts-node ./tools/scripts/release.ts --interactive all"
+  },
   "private": true,
     "dependencies": {
     "@angular/animations": "18.2.5",
