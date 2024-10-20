@@ -1,0 +1,22 @@
+name: Action for setting up node
+description: Setup Node.js
+
+inputs:
+  node-version:
+    description: Node.js version
+    required: false
+    default: "20.x"
+
+runs:
+  using: composite
+  steps:
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: "npm"
+        check-latest: true
+
+    - name: Install Dependencies
+      shell: bash
+      run: npm ci

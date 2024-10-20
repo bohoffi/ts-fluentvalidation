@@ -1,0 +1,36 @@
+name: Release - Github Pages Deployment
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-docs:
+    name: Builds and uploads Artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and upload docs
+        uses: ./.github/actions/docs-build-upload
+
+  deploy:
+    name: Deploys the artifact to Github Pages
+    runs-on: ubuntu-latest
+
+    needs: build-docs
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,7 +1,25 @@
 {
   "name": "@ts-fluentvalidation/core",
   "version": "0.0.1",
+  "description": "Core library of @ts-fluentvalidation providing validations in a fluent syntax.",
+  "keywords": [
+    "typescript",
+    "validation",
+    "fluent",
+    "fluentvalidation"
+  ],
+  "author": {
+    "name": "bohoffi",
+    "email": "bo.hoffi@gmail.com",
+    "url": "https://bohoffi.github.io/"
+  },
+  "license": "Apache-2.0",
   "dependencies": {},
-  "type": "commonjs",
-  "main": "./index.cjs"
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bohoffi/ts-fluentvalidation.git",
+    "directory": "libs/core"
+  },
+  "homepage": "https://bohoffi.github.io/ts-fluentvalidation/"
 }

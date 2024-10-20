@@ -1,3 +1,14 @@
+a.brand {
+  text-decoration: none;
+color: var(--ng-doc-heading-color);
+}
+
+div[ngDocNavbarRight] {
+  display: flex;
+  gap: 1rem;
+  margin-left: 1rem;
+}
+
 .doc-footer {
   display: flex;
   align-items: center;

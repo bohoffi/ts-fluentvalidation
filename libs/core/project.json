@@ -20,7 +20,16 @@
         "outputPath": "dist/libs/core",
         "main": "libs/core/src/index.ts",
         "tsConfig": "libs/core/tsconfig.lib.json",
-        "assets": ["libs/core/*.md"]
+        "assets": ["libs/core/*.md"],
+        "additionalEntryPoints": ["libs/core/src/testing/index.ts"],
+        "generateExportsField": true
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/libs/core"],
+      "options": {
+        "jestConfig": "libs/core/jest.config.ts"
       }
     },
     "nx-release-publish": {
