@@ -1,5 +1,5 @@
-import { IsAsyncCallable } from './ts-helpers';
-import { ApplyConditionTo, Severity } from './types';
+import { IsAsyncCallable, KeyOf } from './ts-helpers';
+import { ApplyConditionTo, CascadeMode, Severity } from './types';
 import { ValidatorCore } from './validator-core';
 
 /**
@@ -206,6 +206,17 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
     customStateProvider: (model: TStateModel, value: TStateValue) => unknown
   ): ValidationBase<TValue, TValidationFunction, TModel>;
 } & TValidationFunction;
+
+/**
+ * Interface to store validations for a key.
+ *
+ * @internal
+ */
+export interface KeyValidations<TModel extends object> {
+  key: KeyOf<TModel>;
+  validations: Validation<TModel[KeyOf<TModel>], TModel>[];
+  cascadeMode: CascadeMode;
+}
 
 /**
  * @internal

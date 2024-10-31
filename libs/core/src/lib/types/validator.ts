@@ -72,7 +72,7 @@ export interface Validator<TModel extends object, ModelValidations extends objec
   /**
    * Includes the validations from the given validator.
    *
-   * @remarks Neither the `cascadeMode` will be included nor the conditions applied to preceding validations.
+   * @remarks `CascadeMode` will be set from `ValidatorConfig` or the default (`Continue`) and conditions won't be applied to preceding validations.
    *
    * @param validator - The validator to include.
    */
