@@ -180,58 +180,34 @@ export function createValidator<TModel extends object, ModelValidations extends 
 function applyConditions<TModel extends object, TValue>(...validations: Validation<TValue, TModel>[]): void {
   // the latest validation to add which contains `ApplyConditionTo === 'AllValidators'` or none which will default to 'AllValidators'
   // will aplly its condition to all preceding validators from the same `ruleFor` call
-  const lastWhenValidation = getLastElement(
+  const lastConditionValidation = getLastElement(
     validations,
-    v => v.metadata.when !== undefined && v.metadata.whenApplyTo !== 'CurrentValidator'
+    v => v.metadata.condition !== undefined && v.metadata.applyConditionTo !== 'CurrentValidator'
   );
-  if (lastWhenValidation) {
-    const index = validations.indexOf(lastWhenValidation);
-    const when = lastWhenValidation.metadata.when as ((model: TModel) => boolean) | undefined;
-    if (when) {
+  if (lastConditionValidation) {
+    const index = validations.indexOf(lastConditionValidation);
+    const condition = lastConditionValidation.metadata.condition as
+      | ((model: TModel, validationContext: ValidationContext<TModel>) => boolean)
+      | undefined;
+    if (condition) {
       for (let i = 0; i < index; i++) {
-        validations[i].metadata.when = when;
+        validations[i].metadata.condition = condition;
       }
     }
   }
 
-  const lastUnlessValidation = getLastElement(
+  const lastAsyncConditionValidation = getLastElement(
     validations,
-    v => v.metadata.unless !== undefined && v.metadata.unlessApplyTo !== 'CurrentValidator'
+    v => v.metadata.asyncCondition !== undefined && v.metadata.applyAsyncConditionTo !== 'CurrentValidator'
   );
-  if (lastUnlessValidation) {
-    const index = validations.indexOf(lastUnlessValidation);
-    const unless = lastUnlessValidation.metadata.unless as ((model: TModel) => boolean) | undefined;
-    if (unless) {
+  if (lastAsyncConditionValidation) {
+    const index = validations.indexOf(lastAsyncConditionValidation);
+    const asyncCondition = lastAsyncConditionValidation.metadata.asyncCondition as
+      | ((model: TModel, validationContext: ValidationContext<TModel>) => Promise<boolean>)
+      | undefined;
+    if (asyncCondition) {
       for (let i = 0; i < index; i++) {
-        validations[i].metadata.unless = unless;
-      }
-    }
-  }
-
-  const lastWhenAsyncValidation = getLastElement(
-    validations,
-    v => v.metadata.whenAsync !== undefined && v.metadata.whenApplyTo !== 'CurrentValidator'
-  );
-  if (lastWhenAsyncValidation) {
-    const index = validations.indexOf(lastWhenAsyncValidation);
-    const whenAsync = lastWhenAsyncValidation.metadata.whenAsync as ((model: TModel) => Promise<boolean>) | undefined;
-    if (whenAsync) {
-      for (let i = 0; i < index; i++) {
-        validations[i].metadata.whenAsync = whenAsync;
-      }
-    }
-  }
-
-  const lastUnlessAsyncValidation = getLastElement(
-    validations,
-    v => v.metadata.unlessAsync !== undefined && v.metadata.unlessApplyTo !== 'CurrentValidator'
-  );
-  if (lastUnlessAsyncValidation) {
-    const index = validations.indexOf(lastUnlessAsyncValidation);
-    const unlessAsync = lastUnlessAsyncValidation.metadata.unlessAsync as ((model: TModel) => Promise<boolean>) | undefined;
-    if (unlessAsync) {
-      for (let i = 0; i < index; i++) {
-        validations[i].metadata.unlessAsync = unlessAsync;
+        validations[i].metadata.asyncCondition = asyncCondition;
       }
     }
   }

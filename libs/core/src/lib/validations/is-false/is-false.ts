@@ -14,5 +14,5 @@ export function isFalse<TValue extends BooleanProperty, TModel>(): SyncValidatio
  */
 export function isFalse<TValue extends BooleanProperty, TModel>(message: string): SyncValidation<TValue, TModel>;
 export function isFalse<TValue extends BooleanProperty, TModel>(message?: string): SyncValidation<TValue, TModel> {
-  return not(isTrue(message || `'{propertyName}' must be false.`)).withErrorCode(isFalse.name);
+  return not<TValue, TModel>(isTrue(message || `'{propertyName}' must be false.`)).withErrorCode(isFalse.name);
 }

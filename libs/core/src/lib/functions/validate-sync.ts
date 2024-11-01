@@ -25,7 +25,7 @@ export function validateSync<TModel extends object>(
   if (
     validationEntries
       .flatMap(({ validations }) => validations)
-      .some(validation => validation.metadata.isAsync || validation.metadata.unlessAsync || validation.metadata.whenAsync)
+      .some(validation => validation.metadata.isAsync || validation.metadata.asyncCondition !== undefined)
   ) {
     throw new AsyncValidatorInvokedSynchronouslyError();
   }
