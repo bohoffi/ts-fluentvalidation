@@ -38,7 +38,7 @@ export interface ValidationMetadata<TAsync extends boolean, TModel> {
    * @param validationContext - The validation context.
    * @returns True if the validation should be applied; otherwise, false.
    */
-  condition?: (model: TModel, validationContext: ValidationContext<TModel>) => boolean;
+  condition?: ValidationPredicate<TModel>;
   /**
    * The target to which the condition should be applied to.
    */
@@ -50,7 +50,7 @@ export interface ValidationMetadata<TAsync extends boolean, TModel> {
    * @param validationContext - The validation context.
    * @returns Promise resolving to True if the validation should be applied; otherwise, false.
    */
-  asyncCondition?: (model: TModel, validationContext: ValidationContext<TModel>) => Promise<boolean>;
+  asyncCondition?: AsyncValidationPredicate<TModel>;
   /**
    * The target to which the async condition should be applied to.
    */
@@ -107,10 +107,7 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
    * @param predicate The condition to apply.
    * @param applyTo The target to which the condition should be applied.
    */
-  when<TModel>(
-    predicate: (value: TModel, validationContext: ValidationContext<TModel>) => boolean,
-    applyTo?: ApplyConditionTo
-  ): ValidationBase<TValue, TValidationFunction, TModel>;
+  when<TModel>(predicate: ValidationPredicate<TModel>, applyTo?: ApplyConditionTo): ValidationBase<TValue, TValidationFunction, TModel>;
   /**
    * Applies an asynchronous condition when to execute the validation.
    *
@@ -118,7 +115,7 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
    * @param applyConditionTo The target to which the condition should be applied.
    */
   whenAsync<TModel>(
-    predicate: (value: TModel, validationContext: ValidationContext<TModel>) => Promise<boolean>,
+    predicate: AsyncValidationPredicate<TModel>,
     applyConditionTo?: ApplyConditionTo
   ): ValidationBase<TValue, TValidationFunction, TModel>;
   /**
@@ -128,7 +125,7 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
    * @param applyConditionTo The target to which the condition should be applied.
    */
   unless<TModel>(
-    predicate: (value: TModel, validationContext: ValidationContext<TModel>) => boolean,
+    predicate: ValidationPredicate<TModel>,
     applyConditionTo?: ApplyConditionTo
   ): ValidationBase<TValue, TValidationFunction, TModel>;
   /**
@@ -138,7 +135,7 @@ export type ValidationBase<TValue, TValidationFunction extends ValidationFunctio
    * @param applyConditionTo The target to which the condition should be applied.
    */
   unlessAsync<TModel>(
-    predicate: (value: TModel, validationContext: ValidationContext<TModel>) => Promise<boolean>,
+    predicate: AsyncValidationPredicate<TModel>,
     applyConditionTo?: ApplyConditionTo
   ): ValidationBase<TValue, TValidationFunction, TModel>;
   /**
@@ -282,3 +279,6 @@ export function isValidatorValidation<TValue, TModel>(
 ): validation is SyncValidatorValidation<TValue, TModel> | AsyncValidatorValidation<TValue, TModel> {
   return typeof validation === 'function' && 'validator' in validation;
 }
+
+export type ValidationPredicate<TModel> = (model: TModel, validationContext: ValidationContext<TModel>) => boolean;
+export type AsyncValidationPredicate<TModel> = (model: TModel, validationContext: ValidationContext<TModel>) => Promise<boolean>;

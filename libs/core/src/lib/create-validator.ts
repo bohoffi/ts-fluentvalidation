@@ -4,8 +4,8 @@ import { validateSync } from './functions/validate-sync';
 import { createValidationResult, ValidationResult } from './result';
 import { ArrayKeyOf, EmptyObject, getLastElement, InferArrayElement, KeyOf } from './types/ts-helpers';
 import { CascadeMode, ValidatorConfig } from './types/types';
-import { KeyValidations, Validation } from './types/validations';
-import { InferValidations, Validator } from './types/validator';
+import { AsyncValidationPredicate, KeyValidations, Validation, ValidationPredicate } from './types/validations';
+import { InferValidations, OtherwisableValidator, Validator } from './types/validator';
 import { createValidationContext, isValidationContext, ValidationContext } from './validation-context';
 
 /**
@@ -118,6 +118,136 @@ export function createValidator<TModel extends object, ModelValidations extends 
     ): Validator<TModel, ModelValidations> {
       preValidation = preValidationFunc;
       return this;
+    },
+
+    when<TConditionalModel extends TModel = TModel, ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>>(
+      predicate: ValidationPredicate<TModel>,
+      callback: (
+        validator: Validator<TModel, ModelValidations>
+      ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+    ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations> {
+      const validator = { ...this };
+      const conditionalValidator = callback(createValidator<TModel, ModelValidations>());
+      const conditionalValidations = conditionalValidator.validations;
+
+      Object.entries(conditionalValidations).forEach(([key, validations]) => {
+        keyValidations.push({
+          key: key as KeyOf<TModel>,
+          validations: (validations as Validation<TModel[KeyOf<TModel>], TModel>[]).map(v => v.when(predicate)),
+          cascadeMode: validatorConfig.propertyCascadeMode || 'Continue'
+        });
+      });
+      updateValidations(validator);
+
+      return {
+        ...validator,
+
+        otherwise<
+          TOtherwiseModel extends TModel = TModel,
+          OtherwiseValidations extends object = InferValidations<Validator<TOtherwiseModel>>
+        >(
+          callback: (
+            validator: Validator<TModel, ModelValidations>
+          ) => Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations>
+        ): Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations> {
+          const otherwiseValidator = callback(createValidator<TModel, ModelValidations>());
+          const otherwiseValidations = otherwiseValidator.validations;
+
+          Object.entries(otherwiseValidations).forEach(([key, validations]) => {
+            keyValidations.push({
+              key: key as KeyOf<TModel>,
+              validations: (validations as Validation<TModel[KeyOf<TModel>], TModel>[]).map(v => v.when((m, c) => !predicate(m, c))),
+              cascadeMode: validatorConfig.propertyCascadeMode || 'Continue'
+            });
+          });
+          updateValidations(validator);
+
+          return {
+            ...validator
+          } as unknown as Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations>;
+        }
+      } as unknown as OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+    },
+
+    whenAsync<
+      TConditionalModel extends TModel = TModel,
+      ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>
+    >(
+      predicate: AsyncValidationPredicate<TModel>,
+      callback: (
+        validator: Validator<TModel, ModelValidations>
+      ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+    ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations> {
+      const validator = { ...this };
+      const conditionalValidator = callback(createValidator<TModel, ModelValidations>());
+      const conditionalValidations = conditionalValidator.validations;
+
+      Object.entries(conditionalValidations).forEach(([key, validations]) => {
+        keyValidations.push({
+          key: key as KeyOf<TModel>,
+          validations: (validations as Validation<TModel[KeyOf<TModel>], TModel>[]).map(v => v.whenAsync(predicate)),
+          cascadeMode: validatorConfig.propertyCascadeMode || 'Continue'
+        });
+      });
+      updateValidations(validator);
+
+      return {
+        ...validator,
+
+        otherwise<
+          TOtherwiseModel extends TModel = TModel,
+          OtherwiseValidations extends object = InferValidations<Validator<TOtherwiseModel>>
+        >(
+          callback: (
+            validator: Validator<TModel, ModelValidations>
+          ) => Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations>
+        ): Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations> {
+          const otherwiseValidator = callback(createValidator<TModel, ModelValidations>());
+          const otherwiseValidations = otherwiseValidator.validations;
+
+          Object.entries(otherwiseValidations).forEach(([key, validations]) => {
+            keyValidations.push({
+              key: key as KeyOf<TModel>,
+              validations: (validations as Validation<TModel[KeyOf<TModel>], TModel>[]).map(v =>
+                v.whenAsync(async (m, c) => !(await predicate(m, c)))
+              ),
+              cascadeMode: validatorConfig.propertyCascadeMode || 'Continue'
+            });
+          });
+          updateValidations(validator);
+
+          return {
+            ...validator
+          } as unknown as Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations>;
+        }
+      } as unknown as OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+    },
+
+    unless<
+      TConditionalModel extends TModel = TModel,
+      ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>
+    >(
+      predicate: ValidationPredicate<TModel>,
+      callback: (
+        validator: Validator<TModel, ModelValidations>
+      ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+    ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations> {
+      return this.when((model: TModel, validationContext: ValidationContext<TModel>) => !predicate(model, validationContext), callback);
+    },
+
+    unlessAsync<
+      TConditionalModel extends TModel = TModel,
+      ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>
+    >(
+      predicate: AsyncValidationPredicate<TModel>,
+      callback: (
+        validator: Validator<TModel, ModelValidations>
+      ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+    ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations> {
+      return this.whenAsync(
+        async (model: TModel, validationContext: ValidationContext<TModel>) => !(await predicate(model, validationContext)),
+        callback
+      );
     },
 
     validate(modelOrContext: TModel | ValidationContext<TModel>, config?: (config: ValidatorConfig<TModel>) => void): ValidationResult {
