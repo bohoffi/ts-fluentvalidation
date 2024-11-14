@@ -20,8 +20,8 @@ describe('conditions', () => {
           notEmpty().when(p => p.age >= 18)
         );
 
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'when');
-        expectValidationsMetadataToBe(validator, 'lastName', 0, 'whenApplyTo', 'AllValidators');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBe(validator, 'lastName', 0, 'applyConditionTo', 'AllValidators');
       });
 
       it('should run validation when condition is true', () => {
@@ -54,8 +54,8 @@ describe('conditions', () => {
           notEmpty().unless(p => p.age >= 18)
         );
 
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'unless');
-        expectValidationsMetadataToBe(validator, 'lastName', 0, 'unlessApplyTo', 'AllValidators');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBe(validator, 'lastName', 0, 'applyConditionTo', 'AllValidators');
       });
 
       it('should run validation when condition is false', () => {
@@ -90,8 +90,8 @@ describe('conditions', () => {
           notEmpty().whenAsync(p => Promise.resolve(p.age >= 18))
         );
 
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'whenAsync');
-        expectValidationsMetadataToBe(validator, 'lastName', 0, 'whenApplyTo', 'AllValidators');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+        expectValidationsMetadataToBe(validator, 'lastName', 0, 'applyAsyncConditionTo', 'AllValidators');
       });
 
       it('should run validation when condition is true', async () => {
@@ -123,8 +123,8 @@ describe('conditions', () => {
           notEmpty().unlessAsync(p => Promise.resolve(p.age >= 18))
         );
 
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'unlessAsync');
-        expectValidationsMetadataToBe(validator, 'lastName', 0, 'unlessApplyTo', 'AllValidators');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+        expectValidationsMetadataToBe(validator, 'lastName', 0, 'applyAsyncConditionTo', 'AllValidators');
       });
       it('should run validation when condition is false', async () => {
         const validator = createValidator<Person>().ruleFor(
@@ -158,8 +158,8 @@ describe('conditions', () => {
           notEmpty().when(p => p.age >= 18)
         );
 
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'when');
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'when');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'condition');
       });
       it('should apply to current validation only', () => {
         const validator = createValidator<Person>().ruleFor(
@@ -168,8 +168,8 @@ describe('conditions', () => {
           notEmpty().when(p => p.age >= 18, 'CurrentValidator')
         );
 
-        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'when');
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'when');
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'condition');
       });
     });
 
@@ -181,8 +181,8 @@ describe('conditions', () => {
           notEmpty().unless(p => p.age >= 18)
         );
 
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'unless');
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'unless');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'condition');
       });
       it('should apply to current validation only', () => {
         const validator = createValidator<Person>().ruleFor(
@@ -191,8 +191,8 @@ describe('conditions', () => {
           notEmpty().unless(p => p.age >= 18, 'CurrentValidator')
         );
 
-        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'unless');
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'unless');
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'condition');
       });
     });
 
@@ -204,8 +204,8 @@ describe('conditions', () => {
           notEmpty().whenAsync(p => Promise.resolve(p.age >= 18))
         );
 
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'whenAsync');
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'whenAsync');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'asyncCondition');
       });
       it('should apply to current validation only', () => {
         const validator = createValidator<Person>().ruleFor(
@@ -214,8 +214,8 @@ describe('conditions', () => {
           notEmpty().whenAsync(p => Promise.resolve(p.age >= 18), 'CurrentValidator')
         );
 
-        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'whenAsync');
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'whenAsync');
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'asyncCondition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'asyncCondition');
       });
     });
 
@@ -227,8 +227,8 @@ describe('conditions', () => {
           notEmpty().unlessAsync(p => Promise.resolve(p.age >= 18))
         );
 
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'unlessAsync');
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'unlessAsync');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'asyncCondition');
       });
       it('should apply to current validation only', () => {
         const validator = createValidator<Person>().ruleFor(
@@ -237,8 +237,8 @@ describe('conditions', () => {
           notEmpty().unlessAsync(p => Promise.resolve(p.age >= 18), 'CurrentValidator')
         );
 
-        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'unlessAsync');
-        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'unlessAsync');
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'asyncCondition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'asyncCondition');
       });
     });
   });

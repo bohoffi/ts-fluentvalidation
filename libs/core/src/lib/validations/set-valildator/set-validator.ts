@@ -16,7 +16,7 @@ export function setValidator<TValue extends ComplexProperty, TModel extends obje
   if (
     Object.entries<Validation<TModel[KeyOf<TModel>], TModel>[]>(validator.validations)
       .flatMap(([, validations]) => validations)
-      .some(validation => validation.metadata.isAsync || validation.metadata.unlessAsync || validation.metadata.whenAsync)
+      .some(validation => validation.metadata.isAsync || validation.metadata.asyncCondition !== undefined)
   ) {
     throw new AsyncValidatorSetSynchronouslyError();
   }

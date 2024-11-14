@@ -13,5 +13,5 @@ export function isFalsy<TValue, TModel>(): SyncValidation<TValue, TModel>;
  */
 export function isFalsy<TValue, TModel>(message: string): SyncValidation<TValue, TModel>;
 export function isFalsy<TValue, TModel>(message?: string): SyncValidation<TValue, TModel> {
-  return not(isTruthy(message || `'{propertyName}' must be falsy.`)).withErrorCode(isFalsy.name);
+  return not<TValue, TModel>(isTruthy(message || `'{propertyName}' must be falsy.`)).withErrorCode(isFalsy.name);
 }

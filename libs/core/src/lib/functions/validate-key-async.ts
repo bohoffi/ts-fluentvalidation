@@ -26,22 +26,11 @@ export async function validateKeyAsync<
   throwOnFailures?: boolean
 ): Promise<void> {
   for (const validation of validations) {
-    // check conditions - when
-    const when = validation.metadata.when;
-    if (when && !when(validationContext.modelToValidate)) {
+    // check conditions
+    if (!validation.invokeCondition(validationContext.modelToValidate, validationContext)) {
       continue;
     }
-    const whenAsync = validation.metadata.whenAsync;
-    if (whenAsync && !(await whenAsync(validationContext.modelToValidate))) {
-      continue;
-    }
-    // check conditions - unless
-    const unless = validation.metadata.unless;
-    if (unless && unless(validationContext.modelToValidate)) {
-      continue;
-    }
-    const unlessAsync = validation.metadata.unlessAsync;
-    if (unlessAsync && (await unlessAsync(validationContext.modelToValidate))) {
+    if (!(await validation.invokeAsyncCondition(validationContext.modelToValidate, validationContext))) {
       continue;
     }
 
