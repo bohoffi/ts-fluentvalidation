@@ -14,7 +14,8 @@
         2,
         "always",
         [
-          "core"
+          "core",
+          "release"
         ]
       ]
     }
