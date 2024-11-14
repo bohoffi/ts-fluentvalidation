@@ -7,6 +7,7 @@ import {
   greaterThanOrEquals,
   lessThanOrEquals,
   matches,
+  minLength,
   must,
   mustAsync,
   notEmpty,
@@ -19,7 +20,9 @@ import {
   expectResultInvalid,
   expectResultValid,
   expectValidationsFor,
-  expectValidationsForWithLength
+  expectValidationsForWithLength,
+  expectValidationsMetadataToBeDefined,
+  expectValidationsMetadataToBeUndefined
 } from './assertions';
 import { Address, createAddressWith, createOrderWith, createPersonWith, Order, Person } from './fixtures';
 
@@ -410,6 +413,420 @@ describe('Validator', () => {
       expectFailureLength(result, 1);
       result.shouldNotHaveValidationErrorFor('orders');
       result.shouldHaveValidationErrorFor('Bestellung[1]');
+    });
+  });
+
+  describe('conditional validator', () => {
+    describe('when', () => {
+      it('should add conditional validations', () => {
+        const validator = createValidator<Person>().when(
+          person => person.age > 18,
+          personValidator => personValidator.ruleFor('lastName', notEmpty())
+        );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+      });
+
+      it('should add conditional validations to existing validations', () => {
+        const validator = createValidator<Person>()
+          .ruleFor('lastName', notEmpty())
+          .when(
+            person => person.age > 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          );
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'condition');
+      });
+
+      it('should add conditional validations with multiple conditions', () => {
+        const validator = createValidator<Person>()
+          .when(
+            person => person.age > 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .when(
+            person => person.age > 21,
+            personValidator => personValidator.ruleFor('firstName', notEmpty())
+          );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'firstName', 0, 'condition');
+      });
+
+      it('should add conditional validations with multiple conditions to existing validations', () => {
+        const validator = createValidator<Person>()
+          .ruleFor('lastName', notEmpty())
+          .ruleFor('firstName', notEmpty())
+          .when(
+            person => person.age > 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .when(
+            person => person.age > 21,
+            personValidator => personValidator.ruleFor('firstName', notEmpty())
+          )
+          .ruleFor('age', greaterThanOrEquals(18));
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'condition');
+        expectValidationsMetadataToBeUndefined(validator, 'firstName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'firstName', 1, 'condition');
+        expectValidationsMetadataToBeUndefined(validator, 'age', 0, 'condition');
+      });
+
+      describe('otherwise', () => {
+        it('should otherwise validations', () => {
+          const validator = createValidator<Person>()
+            .when(
+              person => person.age > 18,
+              personValidator => personValidator.ruleFor('lastName', notEmpty())
+            )
+            .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()));
+
+          expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+          expectValidationsMetadataToBeDefined(validator, 'firstName', 0, 'condition');
+        });
+      });
+
+      it('should process validation by predicate', () => {
+        const validator = createValidator<Person>()
+          .when(
+            person => person.age >= 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()));
+
+        const result = testValidate(validator, createPersonWith({ age: 18, firstName: '', lastName: '' }));
+        result.shouldHaveValidationErrorFor('lastName');
+        result.shouldNotHaveValidationErrorFor('firstName');
+      });
+
+      it('should not affect validation passed outside of when/otherwise', () => {
+        const validator = createValidator<Person>()
+          .when(
+            person => person.age >= 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()))
+          .ruleFor('lastName', minLength(3))
+          .ruleFor('firstName', minLength(3));
+
+        const result = testValidate(validator, createPersonWith({ age: 18, firstName: '', lastName: '' }));
+        result.shouldHaveValidationErrorFor('lastName').withErrorCode(notEmpty.name);
+        result.shouldHaveValidationErrorFor('lastName').withErrorCode(minLength.name);
+        result.shouldHaveValidationErrorFor('firstName').withoutErrorCode(notEmpty.name);
+        result.shouldHaveValidationErrorFor('firstName').withErrorCode(minLength.name);
+      });
+    });
+
+    describe('whenAsync', () => {
+      it('should add conditional validations', () => {
+        const validator = createValidator<Person>().whenAsync(
+          person => Promise.resolve(person.age > 18),
+          personValidator => personValidator.ruleFor('lastName', notEmpty())
+        );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+      });
+
+      it('should add conditional validations to existing validations', () => {
+        const validator = createValidator<Person>()
+          .ruleFor('lastName', notEmpty())
+          .whenAsync(
+            person => Promise.resolve(person.age > 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          );
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'asyncCondition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'asyncCondition');
+      });
+
+      it('should add conditional validations with multiple conditions', () => {
+        const validator = createValidator<Person>()
+          .whenAsync(
+            person => Promise.resolve(person.age > 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .whenAsync(
+            person => Promise.resolve(person.age > 21),
+            personValidator => personValidator.ruleFor('firstName', notEmpty())
+          );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+        expectValidationsMetadataToBeDefined(validator, 'firstName', 0, 'asyncCondition');
+      });
+
+      it('should add conditional validations with multiple conditions to existing validations', () => {
+        const validator = createValidator<Person>()
+          .ruleFor('lastName', notEmpty())
+          .ruleFor('firstName', notEmpty())
+          .whenAsync(
+            person => Promise.resolve(person.age > 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .whenAsync(
+            person => Promise.resolve(person.age > 21),
+            personValidator => personValidator.ruleFor('firstName', notEmpty())
+          )
+          .ruleFor('age', greaterThanOrEquals(18));
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'asyncCondition');
+        expectValidationsMetadataToBeUndefined(validator, 'firstName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'firstName', 1, 'asyncCondition');
+        expectValidationsMetadataToBeUndefined(validator, 'age', 0, 'condition');
+      });
+
+      describe('otherwise', () => {
+        it('should otherwise validations', () => {
+          const validator = createValidator<Person>()
+            .whenAsync(
+              person => Promise.resolve(person.age > 18),
+              personValidator => personValidator.ruleFor('lastName', notEmpty())
+            )
+            .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()));
+
+          expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+          expectValidationsMetadataToBeDefined(validator, 'firstName', 0, 'asyncCondition');
+        });
+      });
+
+      it('should process validation by predicate', async () => {
+        const validator = createValidator<Person>()
+          .whenAsync(
+            person => Promise.resolve(person.age >= 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()));
+
+        const result = await testValidateAsync(validator, createPersonWith({ age: 18, firstName: '', lastName: '' }));
+        result.shouldHaveValidationErrorFor('lastName');
+        result.shouldNotHaveValidationErrorFor('firstName');
+      });
+
+      it('should not affect validation passed outside of when/otherwise', async () => {
+        const validator = createValidator<Person>()
+          .whenAsync(
+            person => Promise.resolve(person.age >= 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()))
+          .ruleFor('lastName', minLength(3))
+          .ruleFor('firstName', minLength(3));
+
+        const result = await testValidateAsync(validator, createPersonWith({ age: 18, firstName: '', lastName: '' }));
+        result.shouldHaveValidationErrorFor('lastName').withErrorCode(notEmpty.name);
+        result.shouldHaveValidationErrorFor('lastName').withErrorCode(minLength.name);
+        result.shouldHaveValidationErrorFor('firstName').withoutErrorCode(notEmpty.name);
+        result.shouldHaveValidationErrorFor('firstName').withErrorCode(minLength.name);
+      });
+    });
+
+    describe('unless', () => {
+      it('should add conditional validations', () => {
+        const validator = createValidator<Person>().unless(
+          person => person.age > 18,
+          personValidator => personValidator.ruleFor('lastName', notEmpty())
+        );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+      });
+
+      it('should add conditional validations to existing validations', () => {
+        const validator = createValidator<Person>()
+          .ruleFor('lastName', notEmpty())
+          .unless(
+            person => person.age > 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          );
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'condition');
+      });
+
+      it('should add conditional validations with multiple conditions', () => {
+        const validator = createValidator<Person>()
+          .unless(
+            person => person.age > 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .unless(
+            person => person.age > 21,
+            personValidator => personValidator.ruleFor('firstName', notEmpty())
+          );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'firstName', 0, 'condition');
+      });
+
+      it('should add conditional validations with multiple conditions to existing validations', () => {
+        const validator = createValidator<Person>()
+          .ruleFor('lastName', notEmpty())
+          .ruleFor('firstName', notEmpty())
+          .unless(
+            person => person.age > 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .unless(
+            person => person.age > 21,
+            personValidator => personValidator.ruleFor('firstName', notEmpty())
+          )
+          .ruleFor('age', greaterThanOrEquals(18));
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'condition');
+        expectValidationsMetadataToBeUndefined(validator, 'firstName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'firstName', 1, 'condition');
+        expectValidationsMetadataToBeUndefined(validator, 'age', 0, 'condition');
+      });
+
+      describe('otherwise', () => {
+        it('should otherwise validations', () => {
+          const validator = createValidator<Person>()
+            .unless(
+              person => person.age > 18,
+              personValidator => personValidator.ruleFor('lastName', notEmpty())
+            )
+            .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()));
+
+          expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'condition');
+          expectValidationsMetadataToBeDefined(validator, 'firstName', 0, 'condition');
+        });
+      });
+
+      it('should process validation by predicate', () => {
+        const validator = createValidator<Person>()
+          .unless(
+            person => person.age >= 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()));
+
+        const result = testValidate(validator, createPersonWith({ age: 17, firstName: '', lastName: '' }));
+        result.shouldHaveValidationErrorFor('lastName');
+        result.shouldNotHaveValidationErrorFor('firstName');
+      });
+
+      it('should not affect validation passed outside of when/otherwise', () => {
+        const validator = createValidator<Person>()
+          .unless(
+            person => person.age >= 18,
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()))
+          .ruleFor('lastName', minLength(3))
+          .ruleFor('firstName', minLength(3));
+
+        const result = testValidate(validator, createPersonWith({ age: 17, firstName: '', lastName: '' }));
+        result.shouldHaveValidationErrorFor('lastName').withErrorCode(notEmpty.name);
+        result.shouldHaveValidationErrorFor('lastName').withErrorCode(minLength.name);
+        result.shouldHaveValidationErrorFor('firstName').withoutErrorCode(notEmpty.name);
+        result.shouldHaveValidationErrorFor('firstName').withErrorCode(minLength.name);
+      });
+    });
+
+    describe('unlessAsync', () => {
+      it('should add conditional validations', () => {
+        const validator = createValidator<Person>().unlessAsync(
+          person => Promise.resolve(person.age > 18),
+          personValidator => personValidator.ruleFor('lastName', notEmpty())
+        );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+      });
+
+      it('should add conditional validations to existing validations', () => {
+        const validator = createValidator<Person>()
+          .ruleFor('lastName', notEmpty())
+          .unlessAsync(
+            person => Promise.resolve(person.age > 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          );
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'asyncCondition');
+      });
+
+      it('should add conditional validations with multiple conditions', () => {
+        const validator = createValidator<Person>()
+          .unlessAsync(
+            person => Promise.resolve(person.age > 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .unlessAsync(
+            person => Promise.resolve(person.age > 21),
+            personValidator => personValidator.ruleFor('firstName', notEmpty())
+          );
+
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+        expectValidationsMetadataToBeDefined(validator, 'firstName', 0, 'asyncCondition');
+      });
+
+      it('should add conditional validations with multiple conditions to existing validations', () => {
+        const validator = createValidator<Person>()
+          .ruleFor('lastName', notEmpty())
+          .ruleFor('firstName', notEmpty())
+          .unlessAsync(
+            person => Promise.resolve(person.age > 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .unlessAsync(
+            person => Promise.resolve(person.age > 21),
+            personValidator => personValidator.ruleFor('firstName', notEmpty())
+          )
+          .ruleFor('age', greaterThanOrEquals(18));
+
+        expectValidationsMetadataToBeUndefined(validator, 'lastName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'lastName', 1, 'asyncCondition');
+        expectValidationsMetadataToBeUndefined(validator, 'firstName', 0, 'condition');
+        expectValidationsMetadataToBeDefined(validator, 'firstName', 1, 'asyncCondition');
+        expectValidationsMetadataToBeUndefined(validator, 'age', 0, 'condition');
+      });
+
+      describe('otherwise', () => {
+        it('should otherwise validations', () => {
+          const validator = createValidator<Person>()
+            .unlessAsync(
+              person => Promise.resolve(person.age > 18),
+              personValidator => personValidator.ruleFor('lastName', notEmpty())
+            )
+            .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()));
+
+          expectValidationsMetadataToBeDefined(validator, 'lastName', 0, 'asyncCondition');
+          expectValidationsMetadataToBeDefined(validator, 'firstName', 0, 'asyncCondition');
+        });
+      });
+
+      it('should process validation by predicate', async () => {
+        const validator = createValidator<Person>()
+          .unlessAsync(
+            person => Promise.resolve(person.age > 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()));
+
+        const result = await testValidateAsync(validator, createPersonWith({ age: 17, firstName: '', lastName: '' }));
+        result.shouldHaveValidationErrorFor('lastName');
+        result.shouldNotHaveValidationErrorFor('firstName');
+      });
+
+      it('should not affect validation passed outside of when/otherwise', async () => {
+        const validator = createValidator<Person>()
+          .unlessAsync(
+            person => Promise.resolve(person.age > 18),
+            personValidator => personValidator.ruleFor('lastName', notEmpty())
+          )
+          .otherwise(personValidator => personValidator.ruleFor('firstName', notEmpty()))
+          .ruleFor('lastName', minLength(3))
+          .ruleFor('firstName', minLength(3));
+
+        const result = await testValidateAsync(validator, createPersonWith({ age: 17, firstName: '', lastName: '' }));
+        result.shouldHaveValidationErrorFor('lastName').withErrorCode(notEmpty.name);
+        result.shouldHaveValidationErrorFor('lastName').withErrorCode(minLength.name);
+        result.shouldHaveValidationErrorFor('firstName').withoutErrorCode(notEmpty.name);
+        result.shouldHaveValidationErrorFor('firstName').withErrorCode(minLength.name);
+      });
     });
   });
 });

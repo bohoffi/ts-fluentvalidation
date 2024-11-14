@@ -26,14 +26,8 @@ export function validateKeySync<
   throwOnFailures?: boolean
 ): void {
   for (const validation of keyValidations) {
-    // check conditions - when
-    const when = validation.metadata.when;
-    if (when && !when(validationContext.modelToValidate)) {
-      continue;
-    }
-    // check conditions - unless
-    const unless = validation.metadata.unless;
-    if (unless && unless(validationContext.modelToValidate)) {
+    //check condition
+    if (!validation.invokeCondition(validationContext.modelToValidate, validationContext)) {
       continue;
     }
 

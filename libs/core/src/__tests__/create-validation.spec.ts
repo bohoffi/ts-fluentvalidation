@@ -242,7 +242,7 @@ describe(createAsyncValidation.name, () => {
   describe('withSeverity', () => {
     const testPerson = createPersonWith({ lastName: '' });
     it('should create a validation function with a severity', async () => {
-      const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0)).withSeverity('Warning');
+      const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withSeverity('Warning');
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = await testValidateAsync(validator, testPerson);
 
@@ -253,7 +253,7 @@ describe(createAsyncValidation.name, () => {
     });
 
     it('should create a validation function with a severity provider using model', async () => {
-      const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0)).withSeverity<Person>(
+      const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withSeverity<Person>(
         model => 'Warning'
       );
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
@@ -266,9 +266,10 @@ describe(createAsyncValidation.name, () => {
     });
 
     it('should create a validation function with a severity provider using model and value', async () => {
-      const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0)).withSeverity<Person, string>(
-        (model, value) => 'Warning'
-      );
+      const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withSeverity<
+        Person,
+        string
+      >((model, value) => 'Warning');
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = await testValidateAsync(validator, testPerson);
 
@@ -283,7 +284,7 @@ describe(createAsyncValidation.name, () => {
     const testPerson = createPersonWith({ lastName: '' });
     const customState = { foo: 'bar' };
     it('should create a validation function with custom state', async () => {
-      const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0)).withState(customState);
+      const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withState(customState);
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = await testValidateAsync(validator, testPerson);
 
@@ -294,7 +295,7 @@ describe(createAsyncValidation.name, () => {
     });
 
     it('should create a validation function with custom state provider using model', async () => {
-      const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0)).withState<Person>(
+      const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withState<Person>(
         model => customState
       );
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
@@ -307,7 +308,7 @@ describe(createAsyncValidation.name, () => {
     });
 
     it('should create a validation function with custom state provider using model and value', async () => {
-      const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0)).withState<Person, string>(
+      const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withState<Person, string>(
         (model, value) => customState
       );
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);

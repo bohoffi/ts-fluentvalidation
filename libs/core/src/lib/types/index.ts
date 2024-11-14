@@ -27,4 +27,4 @@ export {
   ValidationMetadata,
   isValidatorValidation
 } from './validations';
-export { InferValidations, Validator } from './validator';
+export { InferValidations, OtherwisableValidator, Validator } from './validator';
