@@ -28,66 +28,60 @@ export function expectValidationsForWithLength<T extends object, Validations ext
   expect((validator.validations as any)[validationsKey]).toHaveLength(length);
 }
 
-export function expectValidationToPass<TValue, TModel extends object>(validation: SyncValidation<TValue, TModel>, value: TValue): void {
+export function expectValidationToPass<TValue, TModel>(validation: SyncValidation<TValue, TModel>, value: TValue): void {
   expect(validation(value)).toBe(true);
 }
 
-export async function expectValidationToPassAsync<TValue, TModel extends object>(
+export async function expectValidationToPassAsync<TValue, TModel>(
   validation: AsyncValidation<TValue, TModel>,
   value: TValue
 ): Promise<void> {
   expect(await validation(value)).toBe(true);
 }
 
-export function expectValidationToFail<TValue, TModel extends object>(validation: SyncValidation<TValue, TModel>, value: TValue): void {
+export function expectValidationToFail<TValue, TModel>(validation: SyncValidation<TValue, TModel>, value: TValue): void {
   expect(validation(value)).toBe(false);
 }
 
-export async function expectValidationToFailAsync<TValue, TModel extends object>(
+export async function expectValidationToFailAsync<TValue, TModel>(
   validation: AsyncValidation<TValue, TModel>,
   value: TValue
 ): Promise<void> {
   expect(await validation(value)).toBe(false);
 }
 
-export function expectValidationMessageToBe<TValue, TModel extends object>(validation: Validation<TValue, TModel>, message: string): void {
+export function expectValidationMessageToBe<TValue, TModel>(validation: Validation<TValue, TModel>, message: string): void {
   expect(validation.metadata.message).toBe(message);
 }
 
-export function expectValidationMessageToBeUndefined<TValue, TModel extends object>(validation: Validation<TValue, TModel>): void {
+export function expectValidationMessageToBeUndefined<TValue, TModel>(validation: Validation<TValue, TModel>): void {
   expect(validation.metadata.message).toBeUndefined();
 }
 
-export function expectValidationErrorCodeToBe<TValue, TModel extends object>(
-  validation: Validation<TValue, TModel>,
-  errorCode: string
-): void {
+export function expectValidationErrorCodeToBe<TValue, TModel>(validation: Validation<TValue, TModel>, errorCode: string): void {
   expect(validation.metadata.errorCode).toBe(errorCode);
 }
 
-export function expectValidationErrorCodeToBeUndefined<TValue, TModel extends object>(validation: Validation<TValue, TModel>): void {
+export function expectValidationErrorCodeToBeUndefined<TValue, TModel>(validation: Validation<TValue, TModel>): void {
   expect(validation.metadata.errorCode).toBeUndefined();
 }
 
-export function expectValidationPropertyNameToBe<TValue, TModel extends object>(
-  validation: Validation<TValue, TModel>,
-  propertyName: string
-): void {
+export function expectValidationPropertyNameToBe<TValue, TModel>(validation: Validation<TValue, TModel>, propertyName: string): void {
   expect(validation.metadata.propertyName).toBe(propertyName);
 }
 
-export function expectValidationPropertyNameOverrideToBe<TValue, TModel extends object>(
+export function expectValidationPropertyNameOverrideToBe<TValue, TModel>(
   validation: Validation<TValue, TModel>,
   propertyNameOverride: string
 ): void {
   expect(validation.metadata.propertyNameOverride).toBe(propertyNameOverride);
 }
 
-export function expectValidationPropertyNameToBeUndefined<TValue, TModel extends object>(validation: Validation<TValue, TModel>): void {
+export function expectValidationPropertyNameToBeUndefined<TValue, TModel>(validation: Validation<TValue, TModel>): void {
   expect(validation.metadata.propertyName).toBeUndefined();
 }
 
-export function expectValidationPlaceholdersToBe<TValue, TModel extends object>(
+export function expectValidationPlaceholdersToBe<TValue, TModel>(
   validation: Validation<TValue, TModel>,
   placeholders: Record<string, unknown>
 ): void {

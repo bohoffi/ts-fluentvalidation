@@ -42,8 +42,7 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 
 ### Commit Message Format
 
-Each commit message consists of a **header**, a **body** and a **footer**. The header has a special
-format that includes a **type**, a **scope** and a **subject**:
+Each commit message consists of a **header**, a **body** and a **footer** following [conventional commits](https://www.conventionalcommits.org/) checked via [commitlint](https://commitlint.js.org/reference/rules.html). The header has a special format that includes a [**type**](https://commitlint.js.org/reference/rules.html#type-enum), an optional **scope** (list of allowed scopes is configured in root `package.json`) and a **subject**:
 
 ```
 <type>(<scope>): <subject>
@@ -55,8 +54,7 @@ format that includes a **type**, a **scope** and a **subject**:
 
 The **header** is mandatory and the **scope** of the header is optional.
 
-Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
-to read on GitHub as well as in various git tools.
+Any line of the commit message cannot be longer 100 characters! This allows the message to be easier to read on GitHub as well as in various git tools.
 
 The footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
 

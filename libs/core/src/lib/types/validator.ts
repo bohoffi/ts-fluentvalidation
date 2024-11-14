@@ -2,7 +2,7 @@ import { ValidationResult } from '../result';
 import { ValidationContext } from '../validation-context';
 import { ArrayKeyOf, EmptyObject, InferArrayElement, KeyOf } from './ts-helpers';
 import { CascadeMode } from './types';
-import { Validation } from './validations';
+import { AsyncValidationPredicate, Validation, ValidationPredicate } from './validations';
 import { ValidatorCore } from './validator-core';
 
 /**
@@ -72,7 +72,7 @@ export interface Validator<TModel extends object, ModelValidations extends objec
   /**
    * Includes the validations from the given validator.
    *
-   * @remarks Neither the `cascadeMode` will be included nor the conditions applied to preceding validations.
+   * @remarks `CascadeMode` will be set from `ValidatorConfig` or the default (`Continue`) and conditions won't be applied to preceding validations.
    *
    * @param validator - The validator to include.
    */
@@ -90,4 +90,140 @@ export interface Validator<TModel extends object, ModelValidations extends objec
   preValidate(
     preValidation: (validationContext: ValidationContext<TModel>, validationResult: ValidationResult) => boolean
   ): Validator<TModel, ModelValidations>;
+
+  /**
+   * Defines a `when` condition for several rules.
+   *
+   * @param predicate - The condition to check.
+   * @param callback - The callback to define conditional rules.
+   */
+  when<TConditionalModel extends TModel = TModel, ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>>(
+    predicate: (model: TModel) => boolean,
+    callback: (
+      validator: Validator<TModel, ModelValidations>
+    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+
+  /**
+   * Defines a `when` condition for several rules.
+   *
+   * @param predicate - The condition to check.
+   * @param callback - The callback to define conditional rules.
+   */
+  when<TConditionalModel extends TModel = TModel, ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>>(
+    predicate: ValidationPredicate<TModel>,
+    callback: (
+      validator: Validator<TModel, ModelValidations>
+    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+
+  /**
+   * Defines an async `when` condition for several rules.
+   *
+   * @param predicate - The condition to check.
+   * @param callback - The callback to define conditional rules.
+   */
+  whenAsync<
+    TConditionalModel extends TModel = TModel,
+    ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>
+  >(
+    predicate: (model: TModel) => Promise<boolean>,
+    callback: (
+      validator: Validator<TModel, ModelValidations>
+    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+
+  /**
+   * Defines an `when` condition for several rules.
+   *
+   * @param predicate - The condition to check.
+   * @param callback - The callback to define conditional rules.
+   */
+  whenAsync<
+    TConditionalModel extends TModel = TModel,
+    ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>
+  >(
+    predicate: AsyncValidationPredicate<TModel>,
+    callback: (
+      validator: Validator<TModel, ModelValidations>
+    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+
+  /**
+   * Defines an `unless` condition for several rules.
+   *
+   * @param predicate - The condition to check.
+   * @param callback - The callback to define conditional rules.
+   */
+  unless<TConditionalModel extends TModel = TModel, ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>>(
+    predicate: (model: TModel) => boolean,
+    callback: (
+      validator: Validator<TModel, ModelValidations>
+    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+
+  /**
+   * Defines an `unless` condition for several rules.
+   *
+   * @param predicate - The condition to check.
+   * @param callback - The callback to define conditional rules.
+   */
+  unless<TConditionalModel extends TModel = TModel, ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>>(
+    predicate: ValidationPredicate<TModel>,
+    callback: (
+      validator: Validator<TModel, ModelValidations>
+    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+
+  /**
+   * Defines an async `unless` condition for several rules.
+   *
+   * @param predicate - The condition to check.
+   * @param callback - The callback to define conditional rules.
+   */
+  unlessAsync<
+    TConditionalModel extends TModel = TModel,
+    ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>
+  >(
+    predicate: (model: TModel) => Promise<boolean>,
+    callback: (
+      validator: Validator<TModel, ModelValidations>
+    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+
+  /**
+   * Defines an async `unless` condition for several rules.
+   *
+   * @param predicate - The condition to check.
+   * @param callback - The callback to define conditional rules.
+   */
+  unlessAsync<
+    TConditionalModel extends TModel = TModel,
+    ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>
+  >(
+    predicate: AsyncValidationPredicate<TModel>,
+    callback: (
+      validator: Validator<TModel, ModelValidations>
+    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
+  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
+}
+
+/**
+ * Represents a validator created by using `when`/`unless` which offers an `otherwise` function.
+ *
+ * @template TModel - The type of the model to validate.
+ * @template ModelValidations - The type of the validations for the model.
+ *
+ * @template TOtherwiseModel - The type of the model to validate when the condition is not met.
+ * @template OtherwiseValidations - The type of the validations for the model when the condition is not met.
+ *
+ * @see {@link Validator}
+ */
+export interface OtherwisableValidator<TModel extends object, ModelValidations extends object = EmptyObject>
+  extends Validator<TModel, ModelValidations> {
+  otherwise<TOtherwiseModel extends TModel = TModel, OtherwiseValidations extends object = InferValidations<Validator<TOtherwiseModel>>>(
+    callback: (
+      validator: Validator<TModel, ModelValidations>
+    ) => Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations>
+  ): Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations>;
 }
