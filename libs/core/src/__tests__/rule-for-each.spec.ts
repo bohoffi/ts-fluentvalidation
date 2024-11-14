@@ -130,7 +130,7 @@ describe('ruleForEach', () => {
       result.shouldHaveValidationErrorFor('orders[1]').withMessage(`'orders[1]' must meet the specified criteria.`);
     });
 
-    it('should use propertyCascadeMode from last ruleForForEach call for the same key', () => {
+    it('should not overwrite CascadeMode of preceeding ruleForForEach call for the same key', () => {
       const validator = createValidator<Person>()
         .ruleForEach(
           'orders',
@@ -145,10 +145,9 @@ describe('ruleForEach', () => {
 
       const result = testValidate(validator, ruleForEachPerson);
       expectResultInvalid(result);
-      expectFailureLength(result, 4);
+      expectFailureLength(result, 3);
       result.shouldHaveValidationErrorFor('orders[0]').withMessage(`'orders[0]' must meet the specified criteria.`);
       result.shouldHaveValidationErrorFor('orders[0]').withMessage('Amount must be positive.');
-      result.shouldHaveValidationErrorFor('orders[1]').withMessage(`'orders[1]' must meet the specified criteria.`);
       result.shouldHaveValidationErrorFor('orders[1]').withMessage('Amount must be positive.');
     });
   });

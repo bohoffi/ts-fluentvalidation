@@ -8,6 +8,7 @@ export {
   CascadeMode,
   LengthProperty,
   NumberProperty,
+  OtherwisableValidator,
   Severity,
   StringProperty,
   SyncValidation,

@@ -67,6 +67,9 @@ result
   .withSeverity('Error');
 ```
 
+> **Note**
+> The test extensions offer inverse version of the `with` function - starting with `without`.
+
 ## Asynchronous `testValidate`
 
 There is also an asynchronous `testValidateAsync()` function available which corresponds to the regular `validateAsync()` function. Usage is similar, except the method returns a promise instead.

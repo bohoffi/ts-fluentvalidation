@@ -1,6 +1,6 @@
 import { ValidationFailure } from '../result/validation-failure';
-import { KeyOf } from '../types/ts-helpers';
-import { CascadeMode, ValidatorConfig } from '../types/types';
+import { ValidatorConfig } from '../types/types';
+import { KeyValidations } from '../types/validations';
 import { createValidationContext, ValidationContext } from '../validation-context';
 import { validateKeySync } from './validate-key-sync';
 import { validateSync } from './validate-sync';
@@ -24,20 +24,15 @@ describe(validateSync.name, () => {
     prop2: 42
   };
 
-  const validations = {
-    prop1: [],
-    prop2: []
-  };
+  const validations: KeyValidations<TestModel>[] = [
+    { key: 'prop1', validations: [], cascadeMode: 'Continue' },
+    { key: 'prop2', validations: [], cascadeMode: 'Stop' }
+  ];
 
   const validatorConfig: ValidatorConfig<TestModel> = {
     includeProperties: ['prop1', 'prop2'],
     cascadeMode: 'Continue',
     throwOnFailures: false
-  };
-
-  const keyCascadeModes: Record<KeyOf<TestModel>, CascadeMode> = {
-    prop1: 'Continue',
-    prop2: 'Stop'
   };
 
   let validationContext: ValidationContext<TestModel>;
@@ -49,12 +44,12 @@ describe(validateSync.name, () => {
   it('should validate all properties when cascadeMode is Continue', () => {
     mockValidateKeySync.mockImplementation();
 
-    validateSync(validationContext, validations, validatorConfig, keyCascadeModes);
+    validateSync(validationContext, validations, validatorConfig);
 
     expect(validationContext.failures).toEqual([]);
     expect(mockValidateKeySync).toHaveBeenCalledTimes(2);
-    expect(mockValidateKeySync).toHaveBeenCalledWith(validationContext, 'prop1', validations['prop1'], 'Continue', false);
-    expect(mockValidateKeySync).toHaveBeenCalledWith(validationContext, 'prop2', validations['prop2'], 'Stop', false);
+    expect(mockValidateKeySync).toHaveBeenCalledWith(validationContext, validations[0].key, validations[0].validations, 'Continue', false);
+    expect(mockValidateKeySync).toHaveBeenCalledWith(validationContext, validations[1].key, validations[1].validations, 'Stop', false);
   });
 
   it('should stop validation when cascadeMode is Stop and there are failures', () => {
@@ -63,11 +58,11 @@ describe(validateSync.name, () => {
 
     validatorConfig.cascadeMode = 'Stop';
 
-    validateSync(validationContext, validations, validatorConfig, keyCascadeModes);
+    validateSync(validationContext, validations, validatorConfig);
 
     expect(validationContext.failures).toEqual([failure]);
     expect(mockValidateKeySync).toHaveBeenCalledTimes(1);
-    expect(mockValidateKeySync).toHaveBeenCalledWith(validationContext, 'prop1', validations['prop1'], 'Continue', false);
+    expect(mockValidateKeySync).toHaveBeenCalledWith(validationContext, validations[0].key, validations[0].validations, 'Continue', false);
   });
 
   it('should filter properties based on includeProperties', () => {
@@ -75,15 +70,15 @@ describe(validateSync.name, () => {
 
     validatorConfig.includeProperties = ['prop1'];
 
-    validateSync(validationContext, validations, validatorConfig, keyCascadeModes);
+    validateSync(validationContext, validations, validatorConfig);
 
     expect(validationContext.failures).toEqual([]);
     expect(mockValidateKeySync).toHaveBeenCalledTimes(1);
-    expect(mockValidateKeySync).toHaveBeenCalledWith(validationContext, 'prop1', validations['prop1'], 'Continue', false);
+    expect(mockValidateKeySync).toHaveBeenCalledWith(validationContext, validations[0].key, validations[0].validations, 'Continue', false);
   });
 
   it('should handle empty validations dictionary', () => {
-    validateSync(validationContext, {}, validatorConfig, keyCascadeModes);
+    validateSync(validationContext, [], validatorConfig);
 
     expect(validationContext.failures).toEqual([]);
     expect(mockValidateKeySync).not.toHaveBeenCalled();
