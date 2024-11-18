@@ -17,6 +17,10 @@ jobs:
       - name: Setup node
         uses: ./.github/actions/setup-node
 
+      - name: Build
+        shell: bash
+        run: npx nx affected:build
+
       - name: Lint
         shell: bash
         run: npx nx affected:lint
@@ -24,7 +28,3 @@ jobs:
       - name: Test
         shell: bash
         run: npx nx affected:test
-
-      - name: Build
-        shell: bash
-        run: npx nx affected:build
