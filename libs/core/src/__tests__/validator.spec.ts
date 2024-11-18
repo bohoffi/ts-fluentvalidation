@@ -50,10 +50,7 @@ describe('Validator', () => {
 
   describe('preValidate', () => {
     describe('pre-validation fails', () => {
-      const failingPreValidation: Parameters<ReturnType<typeof createValidator<Person>>['preValidate']>[0] = (
-        validationContext: ValidationContext<Person>,
-        validationResult: ValidationResult
-      ) => false;
+      const failingPreValidation: Parameters<ReturnType<typeof createValidator<Person>>['preValidate']>[0] = () => false;
 
       const failingPreValidationWithError: Parameters<ReturnType<typeof createValidator<Person>>['preValidate']>[0] = (
         _: ValidationContext<Person>,
@@ -116,7 +113,7 @@ describe('Validator', () => {
           .preValidate(failingPreValidationWithError)
           .ruleFor('age', greaterThanOrEquals(18));
 
-        expect(
+        await expect(
           async () => await personValidator.validateAsync(createPersonWith(), config => (config.throwOnFailures = true))
         ).rejects.toThrow(ValidationError);
       });

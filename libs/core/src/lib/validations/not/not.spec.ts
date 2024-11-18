@@ -1,8 +1,9 @@
+import { SyncValidation } from '../../types/validations';
 import { createValidation } from '../create-validation';
 import { not } from './not';
 
-function valueMustEqual42(message?: string) {
-  return createValidation((value: number | undefined) => value === 42, message || '');
+function valueMustEqual42(message?: string): SyncValidation<number | undefined, unknown> {
+  return createValidation((value: number | undefined) => value === 42, message ?? '');
 }
 
 describe(not.name, () => {
@@ -17,8 +18,8 @@ describe(not.name, () => {
   });
 
   it('should return false', () => {
-    function valueMustNotEqual42(message?: string) {
-      return createValidation((value: number | undefined) => value !== 42, message || '');
+    function valueMustNotEqual42(message?: string): SyncValidation<number | undefined, unknown> {
+      return createValidation((value: number | undefined) => value !== 42, message ?? '');
     }
 
     const validation = not(valueMustNotEqual42());

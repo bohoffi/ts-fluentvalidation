@@ -9,20 +9,10 @@ import { InferValidations, OtherwisableValidator, Validator } from './types/vali
 import { createValidationContext, isValidationContext, ValidationContext } from './validation-context';
 
 /**
- * Creates a new validator.
- */
-export function createValidator<TModel extends object, ModelValidations extends object = EmptyObject>(): Validator<
-  TModel,
-  ModelValidations
->;
-/**
  * Creates a new validator with the given configuration.
  *
  * @param config - The configuration for the validator.
  */
-export function createValidator<TModel extends object, ModelValidations extends object = EmptyObject>(
-  config: ValidatorConfig<TModel>
-): Validator<TModel, ModelValidations>;
 export function createValidator<TModel extends object, ModelValidations extends object = EmptyObject>(
   config?: ValidatorConfig<TModel>
 ): Validator<TModel, ModelValidations> {
@@ -33,7 +23,7 @@ export function createValidator<TModel extends object, ModelValidations extends 
   };
   const validatorConfig: ValidatorConfig<TModel> = {
     ..._defaultConfig,
-    ...(config || {})
+    ...(config ?? {})
   };
 
   let preValidation: (validationContext: ValidationContext<TModel>, validationResult: ValidationResult) => boolean = () => true;
@@ -44,15 +34,18 @@ export function createValidator<TModel extends object, ModelValidations extends 
    * @param validator - The validator to update.
    */
   function updateValidations(validator: Validator<TModel, ModelValidations>): void {
-    (validator.validations as unknown) = keyValidations.reduce((acc, { key, validations: keyValidations }) => {
-      if (!acc[key]) {
-        acc[key] = [];
-      }
+    (validator.validations as unknown) = keyValidations.reduce<Record<string, Validation<TModel[KeyOf<TModel>], TModel>[]>>(
+      (acc, { key, validations: keyValidations }) => {
+        if (!acc[key]) {
+          acc[key] = [];
+        }
 
-      acc[key].push(...keyValidations);
+        acc[key].push(...keyValidations);
 
-      return acc;
-    }, {} as Record<string, Validation<TModel[KeyOf<TModel>], TModel>[]>) as ModelValidations;
+        return acc;
+      },
+      {}
+    ) as ModelValidations;
   }
 
   return {
@@ -61,7 +54,7 @@ export function createValidator<TModel extends object, ModelValidations extends 
     ruleFor<Key extends KeyOf<TModel>>(
       key: Key,
       ...cascadeModeAndValidations: [CascadeMode, ...Validation<TModel[Key], TModel>[]] | Validation<TModel[Key], TModel>[]
-    ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }> {
+    ): Validator<TModel, ModelValidations & Record<Key, Validation<TModel[Key], TModel>[]>> {
       const cascadeMode = typeof cascadeModeAndValidations[0] === 'string' ? (cascadeModeAndValidations.shift() as CascadeMode) : undefined;
       const validations = cascadeModeAndValidations as Validation<TModel[Key], TModel>[];
 
@@ -71,17 +64,17 @@ export function createValidator<TModel extends object, ModelValidations extends 
       keyValidations.push({
         key,
         validations: validations as Validation<TModel[KeyOf<TModel>], TModel>[],
-        cascadeMode: cascadeMode || validatorConfig.propertyCascadeMode || 'Continue'
+        cascadeMode: cascadeMode ?? validatorConfig.propertyCascadeMode ?? 'Continue'
       });
       updateValidations(this);
 
-      return this as Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }>;
+      return this as Validator<TModel, ModelValidations & Record<Key, Validation<TModel[Key], TModel>[]>>;
     },
 
     ruleForEach<Key extends ArrayKeyOf<TModel>, TItem = InferArrayElement<TModel[Key]>>(
       key: Key,
       ...cascadeModeAndValidations: [CascadeMode, ...Validation<TItem, TModel>[]] | Validation<TItem, TModel>[]
-    ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }> {
+    ): Validator<TModel, ModelValidations & Record<Key, Validation<TItem, TModel>[]>> {
       const cascadeMode = typeof cascadeModeAndValidations[0] === 'string' ? (cascadeModeAndValidations.shift() as CascadeMode) : undefined;
       const validations = cascadeModeAndValidations as Validation<TItem, TModel>[];
 
@@ -91,11 +84,11 @@ export function createValidator<TModel extends object, ModelValidations extends 
       keyValidations.push({
         key,
         validations: validations as Validation<TModel[KeyOf<TModel>], TModel>[],
-        cascadeMode: cascadeMode || validatorConfig.propertyCascadeMode || 'Continue'
+        cascadeMode: cascadeMode ?? validatorConfig.propertyCascadeMode ?? 'Continue'
       });
       updateValidations(this);
 
-      return this as Validator<TModel, ModelValidations & { [P in Key]: Validation<TItem, TModel>[] }>;
+      return this as Validator<TModel, ModelValidations & Record<Key, Validation<TItem, TModel>[]>>;
     },
 
     include<TIncludeModel extends TModel, IncludeValidations extends object = InferValidations<Validator<TIncludeModel>>>(
@@ -105,7 +98,7 @@ export function createValidator<TModel extends object, ModelValidations extends 
         keyValidations.push({
           key: key as KeyOf<TModel>,
           validations: validations as Validation<TModel[KeyOf<TModel>], TModel>[],
-          cascadeMode: validatorConfig.propertyCascadeMode || 'Continue'
+          cascadeMode: validatorConfig.propertyCascadeMode ?? 'Continue'
         });
         updateValidations(this);
       });
@@ -134,7 +127,7 @@ export function createValidator<TModel extends object, ModelValidations extends 
         keyValidations.push({
           key: key as KeyOf<TModel>,
           validations: (validations as Validation<TModel[KeyOf<TModel>], TModel>[]).map(v => v.when(predicate)),
-          cascadeMode: validatorConfig.propertyCascadeMode || 'Continue'
+          cascadeMode: validatorConfig.propertyCascadeMode ?? 'Continue'
         });
       });
       updateValidations(validator);
@@ -157,7 +150,7 @@ export function createValidator<TModel extends object, ModelValidations extends 
             keyValidations.push({
               key: key as KeyOf<TModel>,
               validations: (validations as Validation<TModel[KeyOf<TModel>], TModel>[]).map(v => v.when((m, c) => !predicate(m, c))),
-              cascadeMode: validatorConfig.propertyCascadeMode || 'Continue'
+              cascadeMode: validatorConfig.propertyCascadeMode ?? 'Continue'
             });
           });
           updateValidations(validator);
@@ -186,7 +179,7 @@ export function createValidator<TModel extends object, ModelValidations extends 
         keyValidations.push({
           key: key as KeyOf<TModel>,
           validations: (validations as Validation<TModel[KeyOf<TModel>], TModel>[]).map(v => v.whenAsync(predicate)),
-          cascadeMode: validatorConfig.propertyCascadeMode || 'Continue'
+          cascadeMode: validatorConfig.propertyCascadeMode ?? 'Continue'
         });
       });
       updateValidations(validator);
@@ -211,7 +204,7 @@ export function createValidator<TModel extends object, ModelValidations extends 
               validations: (validations as Validation<TModel[KeyOf<TModel>], TModel>[]).map(v =>
                 v.whenAsync(async (m, c) => !(await predicate(m, c)))
               ),
-              cascadeMode: validatorConfig.propertyCascadeMode || 'Continue'
+              cascadeMode: validatorConfig.propertyCascadeMode ?? 'Continue'
             });
           });
           updateValidations(validator);
@@ -345,8 +338,8 @@ function applyConditions<TModel extends object, TValue>(...validations: Validati
 
 function overridePropertyNames<TValue, TModel extends object>(keyValidations: Validation<TValue, TModel>[]): void {
   const lastPropertyNameOverride = getLastElement(keyValidations, v => v.metadata.propertyNameOverride !== undefined);
-  if (lastPropertyNameOverride) {
-    const propertyNameOverride = lastPropertyNameOverride.metadata.propertyNameOverride as string;
+  if (lastPropertyNameOverride?.metadata?.propertyNameOverride) {
+    const propertyNameOverride = lastPropertyNameOverride.metadata.propertyNameOverride;
     keyValidations.forEach(v => {
       if (v.metadata.propertyNameOverride === undefined) {
         v.metadata.propertyNameOverride = propertyNameOverride;

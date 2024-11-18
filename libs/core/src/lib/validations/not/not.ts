@@ -8,5 +8,5 @@ import { createValidation } from '../create-validation';
  * @returns The inverted validation function.
  */
 export function not<TValue = unknown, TModel = unknown>(validation: SyncValidation<TValue, TModel>): SyncValidation<TValue, TModel> {
-  return createValidation(value => !validation(value), validation.metadata.message || '');
+  return createValidation(value => !validation(value), validation.metadata.message ?? '');
 }

@@ -9,9 +9,17 @@ module.exports = tseslint.config(
   ...nx.configs['flat/angular-template'],
   {
     files: ['**/*.ts'],
-    extends: [
-      ...angular.configs.tsRecommended,
-    ],
+    rules: {},
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.*?.json'],
+        tsconfigRootDir: __dirname
+      }
+    }
+  },
+  {
+    files: ['**/*.ts'],
+    extends: [...angular.configs.tsRecommended],
     processor: angular.processInlineTemplates,
     rules: {
       '@angular-eslint/directive-selector': [
@@ -19,25 +27,22 @@ module.exports = tseslint.config(
         {
           type: 'attribute',
           prefix: 'app',
-          style: 'camelCase',
-        },
+          style: 'camelCase'
+        }
       ],
       '@angular-eslint/component-selector': [
         'error',
         {
           type: 'element',
           prefix: 'app',
-          style: 'kebab-case',
-        },
-      ],
-    },
-  },{
-    files: ['**/*.html'],
-    extends: [
-      ...angular.configs.templateRecommended,
-      ...angular.configs.templateAccessibility,
-    ],
-    rules: {
-    },
+          style: 'kebab-case'
+        }
+      ]
+    }
   },
+  {
+    files: ['**/*.html'],
+    extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
+    rules: {}
+  }
 );

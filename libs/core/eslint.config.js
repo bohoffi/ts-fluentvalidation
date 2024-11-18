@@ -8,8 +8,17 @@ module.exports = tseslint.config(
     rules: {},
     languageOptions: {
       parserOptions: {
-        project: ['libs/core/tsconfig.*?.json']
+        project: ['./tsconfig.*?.json'],
+        tsconfigRootDir: __dirname
       }
+    }
+  },
+  {
+    files: ['**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-redundant-type-constituents': 'error',
+      '@typescript-eslint/prefer-reduce-type-parameter': 'error',
+      '@typescript-eslint/unified-signatures': 'error'
     }
   },
   {

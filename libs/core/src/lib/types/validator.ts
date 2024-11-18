@@ -34,7 +34,7 @@ export interface Validator<TModel extends object, ModelValidations extends objec
   ruleFor<Key extends KeyOf<TModel>>(
     key: Key,
     ...validations: Validation<TModel[Key], TModel>[]
-  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }>;
+  ): Validator<TModel, ModelValidations & Record<Key, Validation<TModel[Key], TModel>[]>>;
 
   /**
    * Adds one or more validations for the given key optionally preceded with the specified cascade mode.
@@ -45,7 +45,7 @@ export interface Validator<TModel extends object, ModelValidations extends objec
   ruleFor<Key extends KeyOf<TModel>>(
     key: Key,
     ...cascadeModeAndValidations: [CascadeMode, ...Validation<TModel[Key], TModel>[]]
-  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<TModel[Key], TModel>[] }>;
+  ): Validator<TModel, ModelValidations & Record<Key, Validation<TModel[Key], TModel>[]>>;
 
   /**
    * Adds one or more array validations for the given key.
@@ -56,7 +56,7 @@ export interface Validator<TModel extends object, ModelValidations extends objec
   ruleForEach<Key extends ArrayKeyOf<TModel>>(
     key: Key,
     ...validations: Validation<InferArrayElement<TModel[Key]>, TModel>[]
-  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<InferArrayElement<TModel[Key]>, TModel>[] }>;
+  ): Validator<TModel, ModelValidations & Record<Key, Validation<InferArrayElement<TModel[Key]>, TModel>[]>>;
 
   /**
    * Adds one or more array validations for the given key optionally preceded with the specified cascade mode.
@@ -67,7 +67,7 @@ export interface Validator<TModel extends object, ModelValidations extends objec
   ruleForEach<Key extends ArrayKeyOf<TModel>>(
     key: Key,
     ...cascadeModeAndValidations: [CascadeMode, ...Validation<InferArrayElement<TModel[Key]>, TModel>[]]
-  ): Validator<TModel, ModelValidations & { [P in Key]: Validation<InferArrayElement<TModel[Key]>, TModel>[] }>;
+  ): Validator<TModel, ModelValidations & Record<Key, Validation<InferArrayElement<TModel[Key]>, TModel>[]>>;
 
   /**
    * Includes the validations from the given validator.
@@ -98,19 +98,6 @@ export interface Validator<TModel extends object, ModelValidations extends objec
    * @param callback - The callback to define conditional rules.
    */
   when<TConditionalModel extends TModel = TModel, ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>>(
-    predicate: (model: TModel) => boolean,
-    callback: (
-      validator: Validator<TModel, ModelValidations>
-    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
-  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
-
-  /**
-   * Defines a `when` condition for several rules.
-   *
-   * @param predicate - The condition to check.
-   * @param callback - The callback to define conditional rules.
-   */
-  when<TConditionalModel extends TModel = TModel, ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>>(
     predicate: ValidationPredicate<TModel>,
     callback: (
       validator: Validator<TModel, ModelValidations>
@@ -119,22 +106,6 @@ export interface Validator<TModel extends object, ModelValidations extends objec
 
   /**
    * Defines an async `when` condition for several rules.
-   *
-   * @param predicate - The condition to check.
-   * @param callback - The callback to define conditional rules.
-   */
-  whenAsync<
-    TConditionalModel extends TModel = TModel,
-    ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>
-  >(
-    predicate: (model: TModel) => Promise<boolean>,
-    callback: (
-      validator: Validator<TModel, ModelValidations>
-    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
-  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
-
-  /**
-   * Defines an `when` condition for several rules.
    *
    * @param predicate - The condition to check.
    * @param callback - The callback to define conditional rules.
@@ -156,36 +127,7 @@ export interface Validator<TModel extends object, ModelValidations extends objec
    * @param callback - The callback to define conditional rules.
    */
   unless<TConditionalModel extends TModel = TModel, ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>>(
-    predicate: (model: TModel) => boolean,
-    callback: (
-      validator: Validator<TModel, ModelValidations>
-    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
-  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
-
-  /**
-   * Defines an `unless` condition for several rules.
-   *
-   * @param predicate - The condition to check.
-   * @param callback - The callback to define conditional rules.
-   */
-  unless<TConditionalModel extends TModel = TModel, ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>>(
     predicate: ValidationPredicate<TModel>,
-    callback: (
-      validator: Validator<TModel, ModelValidations>
-    ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>
-  ): OtherwisableValidator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>;
-
-  /**
-   * Defines an async `unless` condition for several rules.
-   *
-   * @param predicate - The condition to check.
-   * @param callback - The callback to define conditional rules.
-   */
-  unlessAsync<
-    TConditionalModel extends TModel = TModel,
-    ConditionalValidations extends object = InferValidations<Validator<TConditionalModel>>
-  >(
-    predicate: (model: TModel) => Promise<boolean>,
     callback: (
       validator: Validator<TModel, ModelValidations>
     ) => Validator<TModel & TConditionalModel, ModelValidations & ConditionalValidations>

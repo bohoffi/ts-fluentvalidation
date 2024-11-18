@@ -21,7 +21,7 @@ export function validateKeySync<
 >(
   validationContext: ValidationContext<TModel>,
   key: Key,
-  keyValidations: ReadonlyArray<KeyValidation>,
+  keyValidations: KeyValidation[],
   keyCascadeMode: CascadeMode,
   throwOnFailures?: boolean
 ): void {
@@ -36,8 +36,8 @@ export function validateKeySync<
       validateCollectionPropertySync(
         validationContext,
         key as ArrayKeyOf<TModel>,
-        propertyValue as TModel[ArrayKeyOf<TModel>] & any[],
-        validation,
+        propertyValue as TModel[ArrayKeyOf<TModel>][],
+        validation as Validation<TModel[ArrayKeyOf<TModel>], TModel>,
         keyCascadeMode
       );
     } else {
@@ -60,7 +60,7 @@ function validatePropertySync<TModel extends object, Key extends KeyOf<TModel>, 
   validation: KeyValidation
 ): void {
   if (isValidatorValidation(validation) && propertyValue != null && typeof propertyValue === 'object') {
-    const result = validation.validator.validate(createValidationContext(propertyValue, validation.metadata.propertyNameOverride || key));
+    const result = validation.validator.validate(createValidationContext(propertyValue, validation.metadata.propertyNameOverride ?? key));
     validationContext.addFailures(...result.failures);
     return;
   }
@@ -74,7 +74,7 @@ function validatePropertySync<TModel extends object, Key extends KeyOf<TModel>, 
 function validateCollectionPropertySync<
   TModel extends object,
   Key extends ArrayKeyOf<TModel>,
-  TProperty extends TModel[Key] & Array<any>,
+  TProperty extends TModel[Key][],
   TItem extends TProperty[0],
   KeyValidation extends Validation<TItem, TModel>
 >(
@@ -91,8 +91,8 @@ function validateCollectionPropertySync<
       continue;
     }
 
-    if (!validation(item)) {
-      const failure = failureForValidation<TModel, TItem>(validationContext, key, item, validation, index);
+    if (!validation(item as TItem)) {
+      const failure = failureForValidation<TModel, TItem>(validationContext, key, item as TItem, validation, index);
       validationContext.addFailures(failure);
     }
     if (validationContext.failures.length > 0 && keyCascadeMode === 'Stop') {
