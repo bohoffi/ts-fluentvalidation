@@ -80,7 +80,10 @@ export class TestValidationFailures extends Array<ValidationFailure> {
    * @returns An error if the actual custom state does not match the expected custom state.
    */
   public withCustomState(customState: unknown, equalityFn: ValueEqualityFn<unknown> = defaultEqualityFn): this {
-    return this.with(failure => equalityFn(failure.customState, customState), `Expected custom state to be "${customState}"`);
+    return this.with(
+      failure => equalityFn(failure.customState, customState),
+      `Expected custom state to be "${JSON.stringify(customState)}"`
+    );
   }
 
   /**
@@ -92,7 +95,10 @@ export class TestValidationFailures extends Array<ValidationFailure> {
    * @throws An error if the actual custom state does match the expected custom state.
    */
   public withoutCustomState(customState: unknown, equalityFn: ValueEqualityFn<unknown> = defaultEqualityFn): this {
-    return this.with(failure => !equalityFn(failure.customState, customState), `Expected no custom state to be "${customState}"`);
+    return this.with(
+      failure => !equalityFn(failure.customState, customState),
+      `Expected no custom state to be "${JSON.stringify(customState)}"`
+    );
   }
 
   private with(predicate: (failure: ValidationFailure) => boolean, message: string): this {

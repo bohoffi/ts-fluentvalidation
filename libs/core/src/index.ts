@@ -4,6 +4,7 @@ export { ValidationFailure, ValidationResult } from './lib/result';
 export {
   ApplyConditionTo,
   AsyncValidation,
+  AsyncValidationPredicate,
   BooleanProperty,
   CascadeMode,
   LengthProperty,
@@ -15,6 +16,7 @@ export {
   Validation,
   ValidationBase,
   ValidationMetadata,
+  ValidationPredicate,
   Validator,
   ValidatorConfig
 } from './lib/types';

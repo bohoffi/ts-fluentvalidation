@@ -47,9 +47,9 @@ describe(validateKeyAsync.name, () => {
 
   describe('throwOnFailures', () => {
     it('should throw a ValidationError when throwOnFailures is true', async () => {
-      expect(async () => await validateKeyAsync(validationContext, 'name', [minLengthValidationFn], 'Continue', true)).rejects.toThrow(
-        ValidationError
-      );
+      await expect(
+        async () => await validateKeyAsync(validationContext, 'name', [minLengthValidationFn], 'Continue', true)
+      ).rejects.toThrow(ValidationError);
     });
   });
 

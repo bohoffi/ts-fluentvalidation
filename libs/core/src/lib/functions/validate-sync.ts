@@ -1,5 +1,4 @@
 import { AsyncValidatorInvokedSynchronouslyError } from '../errors/async-validator-invoked-synchronously-error';
-import { KeyOf } from '../types/ts-helpers';
 import { ValidatorConfig } from '../types/types';
 import { KeyValidations } from '../types/validations';
 import { ValidationContext } from '../validation-context';
@@ -31,8 +30,8 @@ export function validateSync<TModel extends object>(
   }
 
   for (const { key, validations, cascadeMode } of validationEntries) {
-    const keyCascadeMode = validatorConfig.propertyCascadeMode || cascadeMode || 'Continue';
-    validateKeySync(validationContext, key as KeyOf<TModel>, validations, keyCascadeMode, validatorConfig.throwOnFailures);
+    const keyCascadeMode = validatorConfig.propertyCascadeMode ?? cascadeMode ?? 'Continue';
+    validateKeySync(validationContext, key, validations, keyCascadeMode, validatorConfig.throwOnFailures);
 
     if (validationContext.failures.length > 0 && validatorConfig.cascadeMode === 'Stop') {
       break;

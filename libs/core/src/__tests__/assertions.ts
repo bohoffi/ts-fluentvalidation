@@ -25,7 +25,7 @@ export function expectValidationsForWithLength<T extends object, Validations ext
   validationsKey: KeyOf<Validator<T, Validations>['validations']>,
   length: number
 ): void {
-  expect((validator.validations as any)[validationsKey]).toHaveLength(length);
+  expect((validator.validations as Record<string, Validation<T[KeyOf<T>], T>[]>)[validationsKey]).toHaveLength(length);
 }
 
 export function expectValidationToPass<TValue, TModel>(validation: SyncValidation<TValue, TModel>, value: TValue): void {
@@ -101,7 +101,9 @@ export function expectValidationsMetadataToBeDefined<T extends object, Validatio
   validationIndex: number,
   metadataKey: KeyOf<ValidationMetadata<boolean, T>>
 ): void {
-  expect((validator.validations as any)[validationsKey][validationIndex].metadata[metadataKey]).toBeDefined();
+  expect(
+    (validator.validations as Record<string, Validation<T[KeyOf<T>], T>[]>)[validationsKey][validationIndex].metadata[metadataKey]
+  ).toBeDefined();
 }
 
 export function expectValidationsMetadataToBeUndefined<T extends object, Validations extends object = InferValidations<Validator<T>>>(
@@ -110,7 +112,9 @@ export function expectValidationsMetadataToBeUndefined<T extends object, Validat
   validationIndex: number,
   metadataKey: KeyOf<ValidationMetadata<boolean, T>>
 ): void {
-  expect((validator.validations as any)[validationsKey][validationIndex].metadata[metadataKey]).toBeUndefined();
+  expect(
+    (validator.validations as Record<string, Validation<T[KeyOf<T>], T>[]>)[validationsKey][validationIndex].metadata[metadataKey]
+  ).toBeUndefined();
 }
 
 export function expectValidationsMetadataToBe<T extends object, E, Validations extends object = InferValidations<Validator<T>>>(
@@ -120,5 +124,7 @@ export function expectValidationsMetadataToBe<T extends object, E, Validations e
   metadataKey: KeyOf<ValidationMetadata<boolean, T>>,
   expected: E
 ): void {
-  expect((validator.validations as any)[validationsKey][validationIndex].metadata[metadataKey]).toBe(expected);
+  expect(
+    (validator.validations as Record<string, Validation<T[KeyOf<T>], T>[]>)[validationsKey][validationIndex].metadata[metadataKey]
+  ).toBe(expected);
 }

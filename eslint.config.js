@@ -1,24 +1,17 @@
-const { FlatCompat } = require('@eslint/eslintrc');
-const js = require('@eslint/js');
-const baseConfig = require('./eslint.base.config.js');
+const nx = require('@nx/eslint-plugin');
+const eslint = require('@eslint/js');
+const jest = require('eslint-plugin-jest');
+const tseslint = require('typescript-eslint');
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended
-});
-
-module.exports = [
-  ...baseConfig,
+module.exports = tseslint.config(
+  ...nx.configs['flat/base'],
+  ...nx.configs['flat/typescript'],
+  ...nx.configs['flat/javascript'],
   {
-    files: ['**/*.json'],
-    // Override or add rules here
-    rules: {},
-    languageOptions: {
-      parser: require('jsonc-eslint-parser')
-    }
+    ignores: ['**/dist']
   },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    files: ['**/*.ts'],
     rules: {
       '@nx/enforce-module-boundaries': [
         'error',
@@ -36,26 +29,32 @@ module.exports = [
     }
   },
   {
-    files: ['**/*.ts', '**/*.tsx'],
-    // Override or add rules here
-    rules: {}
+    files: ['**/*.ts'],
+    extends: [eslint.configs.recommended, ...tseslint.configs.recommendedTypeChecked, ...tseslint.configs.stylisticTypeChecked],
+    rules: {
+      '@typescript-eslint/explicit-member-accessibility': [
+        'error',
+        {
+          accessibility: 'explicit',
+          overrides: {
+            constructors: 'no-public'
+          }
+        }
+      ],
+      '@typescript-eslint/explicit-function-return-type': 'error',
+      '@typescript-eslint/no-deprecated': 'error'
+    }
   },
   {
-    files: ['**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
+    files: ['**/*.spec.ts'],
+    ...jest.configs['flat/recommended'],
+    ...jest.configs['flat/style']
   },
-  ...compat
-    .config({
-      env: {
-        jest: true
-      }
-    })
-    .map(config => ({
-      ...config,
-      files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx'],
-      rules: {
-        ...config.rules
-      }
-    }))
-];
+  {
+    files: ['**/*.json'],
+    rules: {},
+    languageOptions: {
+      parser: require('jsonc-eslint-parser')
+    }
+  }
+);

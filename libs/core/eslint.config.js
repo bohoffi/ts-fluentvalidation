@@ -1,33 +1,25 @@
-// const { FlatCompat } = require('@eslint/eslintrc');
-// const js = require('@eslint/js');
-const baseConfig = require('../../eslint.base.config.js');
+const baseConfig = require('../../eslint.config.js');
+const tseslint = require('typescript-eslint');
 
-// const compat = new FlatCompat({
-//   baseDirectory: __dirname,
-//   recommendedConfig: js.configs.recommended
-// });
-
-module.exports = [
+module.exports = tseslint.config(
   ...baseConfig,
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    // Override or add rules here
+    files: ['**/*.ts'],
     rules: {},
     languageOptions: {
       parserOptions: {
-        project: ['libs/core/tsconfig.*?.json']
+        project: ['./tsconfig.*?.json'],
+        tsconfigRootDir: __dirname
       }
     }
   },
   {
-    files: ['**/*.ts', '**/*.tsx'],
-    // Override or add rules here
-    rules: {}
-  },
-  {
-    files: ['**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
+    files: ['**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-redundant-type-constituents': 'error',
+      '@typescript-eslint/prefer-reduce-type-parameter': 'error',
+      '@typescript-eslint/unified-signatures': 'error'
+    }
   },
   {
     files: ['**/*.json'],
@@ -43,4 +35,4 @@ module.exports = [
       parser: require('jsonc-eslint-parser')
     }
   }
-];
+);
