@@ -1,9 +1,11 @@
 {
   "name": "@ts-fluentvalidation/angular",
   "version": "1.0.0-rc.1",
-  "description": "Core library of @ts-fluentvalidation providing validations in a fluent syntax.",
+  "description": "Angular specific integration of @ts-fluentvalidation.",
   "keywords": [
     "typescript",
+    "angular",
+    "forms",
     "validation",
     "fluent",
     "fluentvalidation"
@@ -21,8 +23,8 @@
   },
   "homepage": "https://bohoffi.github.io/ts-fluentvalidation/",
   "peerDependencies": {
-    "@angular/common": "^18.2.0",
-    "@angular/core": "^18.2.0"
+    "@angular/forms": "18.2.5",
+    "@ts-fluentvalidation/core": "1.0.0-rc.1"
   },
   "sideEffects": false
 }

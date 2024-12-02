@@ -7,6 +7,8 @@ export {
   AsyncValidationPredicate,
   BooleanProperty,
   CascadeMode,
+  InferValidations,
+  KeyOf,
   LengthProperty,
   NumberProperty,
   OtherwisableValidator,
