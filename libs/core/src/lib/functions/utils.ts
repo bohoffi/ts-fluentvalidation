@@ -2,6 +2,7 @@ import { ValidationFailure } from '../result/validation-failure';
 import { Validation } from '../types';
 import { ValidationContext } from '../validation-context';
 import { DEFAULT_PLACEHOLDERS, formatMessage } from '../validations/message-formatter';
+import { i18n } from '../i18n/i18n';
 
 /**
  * Wraps a value as an array if it is not already an array.
@@ -35,7 +36,7 @@ export function failureForValidation<TModel, TValue>(
     : propertyNameForFailure;
   return {
     propertyName: computedPropertyName,
-    message: formatMessage(validation.metadata.message ?? 'Validation failed', {
+    message: formatMessage(validation.metadata.message ?? i18n.getMessage(validation.metadata.errorCode ?? 'default'), {
       ...validation.metadata.placeholders,
       [DEFAULT_PLACEHOLDERS.propertyName]: validation.metadata.propertyName ?? computedPropertyName,
       [DEFAULT_PLACEHOLDERS.propertyValue]: propertyValue

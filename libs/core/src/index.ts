@@ -56,3 +56,4 @@ export {
 } from './lib/validations';
 
 export { VERSION } from './lib/version';
+export { i18n } from './lib/i18n/i18n';
