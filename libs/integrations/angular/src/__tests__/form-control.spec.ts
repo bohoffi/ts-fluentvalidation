@@ -38,7 +38,7 @@ describe(toValidatorFn.name, () => {
     const result = validatorFn(control);
 
     expect(result).toEqual({
-      firstName: [`'firstName' must equal John.`]
+      equals: `'firstName' must equal John.`
     });
   });
 
@@ -49,7 +49,8 @@ describe(toValidatorFn.name, () => {
     const result = validatorFn(control);
 
     expect(result).toEqual({
-      lastName: [`'lastName' must equal Doe.`, `'lastName' must have a minimum length of 4.`]
+      equals: `'lastName' must equal Doe.`,
+      minLength: `'lastName' must have a minimum length of 4.`
     });
   });
 
@@ -60,7 +61,7 @@ describe(toValidatorFn.name, () => {
     const result = validatorFn(control);
 
     expect(result).toEqual({
-      lastName: [`'lastName' must equal Doe.`]
+      equals: `'lastName' must equal Doe.`
     });
   });
 
@@ -68,7 +69,7 @@ describe(toValidatorFn.name, () => {
     const control = new FormControl<string>('Jane', toValidatorFn(personValidator, 'firstName'));
 
     expect(control.errors).toEqual({
-      firstName: [`'firstName' must equal John.`]
+      equals: `'firstName' must equal John.`
     });
   });
 });
@@ -110,7 +111,7 @@ describe(toAsyncValidatorFn.name, () => {
     const result = await asyncValidatorFn(control);
 
     expect(result).toEqual({
-      firstName: [`'firstName' must equal John.`]
+      mustAsync: `'firstName' must equal John.`
     });
   });
 
@@ -121,7 +122,7 @@ describe(toAsyncValidatorFn.name, () => {
     const result = await asyncValidatorFn(control);
 
     expect(result).toEqual({
-      lastName: [`'lastName' must equal Doe.`, `'lastName' must have a minimum length of 4.`]
+      mustAsync: `'lastName' must have a minimum length of 4.`
     });
   });
 
@@ -132,7 +133,7 @@ describe(toAsyncValidatorFn.name, () => {
     const result = await validatorFn(control);
 
     expect(result).toEqual({
-      lastName: [`'lastName' must equal Doe.`]
+      mustAsync: `'lastName' must equal Doe.`
     });
   });
 
@@ -145,7 +146,7 @@ describe(toAsyncValidatorFn.name, () => {
     tick();
 
     expect(control.errors).toEqual({
-      firstName: [`'firstName' must equal John.`]
+      mustAsync: `'firstName' must equal John.`
     });
   }));
 });
