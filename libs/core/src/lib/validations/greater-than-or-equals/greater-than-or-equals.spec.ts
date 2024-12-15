@@ -34,7 +34,6 @@ describe(greaterThanOrEquals.name, () => {
 
   it('should return with default metadata', () => {
     const validation = greaterThanOrEquals(42);
-    expectValidationMessageToBe(validation, `'{propertyName}' must be greater than or equal to {comparisonValue}.`);
     expectValidationErrorCodeToBe(validation, greaterThanOrEquals.name);
   });
 

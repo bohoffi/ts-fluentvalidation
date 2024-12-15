@@ -11,7 +11,7 @@ import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
  */
 export function minLength<TValue extends LengthProperty, TModel>(minLength: number, message?: string): SyncValidation<TValue, TModel> {
   return createValidation<TValue, TModel>(value => (value?.length ?? 0) >= minLength, {
-    message: message ?? `'{propertyName}' must have a minimum length of {minLength}.`,
+    message: message,
     errorCode: 'minLength'
   }).withPlaceholder(DEFAULT_PLACEHOLDERS.minLength, minLength);
 }

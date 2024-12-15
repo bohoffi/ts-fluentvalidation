@@ -40,7 +40,6 @@ describe(minLength.name, () => {
 
   it('should return with default metadata', () => {
     const validation = minLength(42);
-    expectValidationMessageToBe(validation, `'{propertyName}' must have a minimum length of {minLength}.`);
     expectValidationErrorCodeToBe(validation, minLength.name);
   });
 

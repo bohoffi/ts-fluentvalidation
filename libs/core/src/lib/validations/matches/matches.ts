@@ -10,7 +10,7 @@ import { createValidation } from '../create-validation';
  */
 export function matches<TValue extends StringProperty, TModel>(pattern: RegExp, message?: string): SyncValidation<TValue, TModel> {
   return createValidation(value => pattern.test(value ?? ''), {
-    message: message ?? `'{propertyName}' must match pattern.`,
+    message: message,
     errorCode: matches.name
   });
 }

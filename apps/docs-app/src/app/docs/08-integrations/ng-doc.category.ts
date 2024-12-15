@@ -4,7 +4,7 @@ const Integrations: NgDocCategory = {
   title: 'Integrations',
   route: `integrations`,
   expandable: true,
-  order: 7
+  order: 8
 };
 
 export default Integrations;

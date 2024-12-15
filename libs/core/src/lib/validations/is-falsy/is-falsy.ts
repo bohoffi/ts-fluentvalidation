@@ -8,5 +8,5 @@ import { not } from '../not/not';
  * @param message - The message to display if the validation fails.
  */
 export function isFalsy<TValue, TModel>(message?: string): SyncValidation<TValue, TModel> {
-  return not<TValue, TModel>(isTruthy(message ?? `'{propertyName}' must be falsy.`)).withErrorCode(isFalsy.name);
+  return not<TValue, TModel>(isTruthy(message)).withErrorCode(isFalsy.name);
 }

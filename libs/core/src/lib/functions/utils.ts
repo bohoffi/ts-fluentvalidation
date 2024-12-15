@@ -1,8 +1,8 @@
+import { i18n } from '../i18n/i18n';
 import { ValidationFailure } from '../result/validation-failure';
 import { Validation } from '../types';
 import { ValidationContext } from '../validation-context';
 import { DEFAULT_PLACEHOLDERS, formatMessage } from '../validations/message-formatter';
-import { i18n } from '../i18n/i18n';
 
 /**
  * Wraps a value as an array if it is not already an array.

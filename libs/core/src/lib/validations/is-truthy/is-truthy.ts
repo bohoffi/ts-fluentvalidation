@@ -8,7 +8,7 @@ import { createValidation } from '../create-validation';
  */
 export function isTruthy<TValue, TModel>(message?: string): SyncValidation<TValue, TModel> {
   return createValidation(value => Boolean(value), {
-    message: message ?? `'{propertyName}' must be truthy.`,
+    message: message,
     errorCode: isTruthy.name
   });
 }
