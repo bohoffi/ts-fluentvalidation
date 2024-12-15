@@ -1,0 +1,30 @@
+{
+  "name": "@ts-fluentvalidation/angular",
+  "version": "1.0.0-rc.1",
+  "description": "Angular specific integration of @ts-fluentvalidation.",
+  "keywords": [
+    "typescript",
+    "angular",
+    "forms",
+    "validation",
+    "fluent",
+    "fluentvalidation"
+  ],
+  "author": {
+    "name": "bohoffi",
+    "email": "bo.hoffi@gmail.com",
+    "url": "https://bohoffi.github.io/"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bohoffi/ts-fluentvalidation.git",
+    "directory": "libs/core"
+  },
+  "homepage": "https://bohoffi.github.io/ts-fluentvalidation/",
+  "peerDependencies": {
+    "@angular/forms": "18.2.5",
+    "@ts-fluentvalidation/core": "1.0.0-rc.1"
+  },
+  "sideEffects": false
+}

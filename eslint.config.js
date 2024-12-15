@@ -17,11 +17,15 @@ module.exports = tseslint.config(
         'error',
         {
           enforceBuildableLibDependency: true,
-          allow: [],
+          allow: ['@ng-doc/generated'],
           depConstraints: [
             {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*']
+              sourceTag: 'type:application',
+              onlyDependOnLibsWithTags: ['type:integration', 'type:core']
+            },
+            {
+              sourceTag: 'type:integration',
+              onlyDependOnLibsWithTags: ['type:core']
             }
           ]
         }

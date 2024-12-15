@@ -7,7 +7,7 @@ import { ChangelogOptions, NxReleaseArgs, VersionOptions } from 'nx/src/command-
 import { commitChanges, VersionData } from 'nx/src/command-line/release/utils/shared';
 import * as yargs from 'yargs';
 
-type Project = 'core';
+type Project = 'core' | 'angular';
 
 const projectMap: Record<
   Project,
@@ -21,6 +21,11 @@ const projectMap: Record<
     packageName: '@ts-fluentvalidation/core',
     versionFilePath: 'libs/core/src/lib/version.ts',
     outputPath: 'dist/libs/core'
+  },
+  angular: {
+    packageName: '@ts-fluentvalidation/angular',
+    versionFilePath: 'libs/integrations/angular/src/lib/version.ts',
+    outputPath: 'dist/libs/integrations/angular'
   }
 };
 
