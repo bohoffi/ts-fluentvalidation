@@ -1,0 +1,17 @@
+<form [formGroup]="form" style="display: flex; flex-direction: column">
+  <label for="firstName">First Name</label>
+  <input #firstName [formControl]="form.controls.firstName" />
+  @if (form.controls.firstName.hasError('equals')) {
+  <div style="color: red">{{form.controls.firstName.errors?.['equals']}}</div>
+  } @else if (form.controls.firstName.hasError('length')) {
+  <div style="color: red">{{form.controls.firstName.errors?.['length']}}</div>
+  }
+
+  <label for="lastName">Last Name</label>
+  <input #lastName [formControl]="form.controls.lastName" />
+  @if (form.controls.lastName.hasError('equals')) {
+  <div style="color: red">{{form.controls.lastName.errors?.['equals']}}</div>
+  } @else if (form.controls.lastName.hasError('mustAsync')) {
+  <div style="color: red">{{form.controls.lastName.errors?.['mustAsync']}}</div>
+  }
+</form>

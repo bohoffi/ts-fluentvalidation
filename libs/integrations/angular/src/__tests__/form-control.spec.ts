@@ -1,6 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
-import { createValidator, equals, minLength } from '@ts-fluentvalidation/core';
+import { createValidator, equals, minLength, mustAsync } from '@ts-fluentvalidation/core';
 import { toAsyncValidatorFn, toValidatorFn } from '../lib/form-control';
 
 interface Person {
@@ -74,7 +74,16 @@ describe(toValidatorFn.name, () => {
 });
 
 describe(toAsyncValidatorFn.name, () => {
-  const personValidator = createValidator<Person>().ruleFor('firstName', equals('John')).ruleFor('lastName', equals('Doe'), minLength(4));
+  const personValidator = createValidator<Person>()
+    .ruleFor(
+      'firstName',
+      mustAsync(firstName => Promise.resolve(firstName === 'John'), "'firstName' must equal John.")
+    )
+    .ruleFor(
+      'lastName',
+      mustAsync(lastName => Promise.resolve(lastName === 'Doe'), "'lastName' must equal Doe."),
+      mustAsync(lastName => Promise.resolve(lastName.length >= 4), "'lastName' must have a minimum length of 4.")
+    );
 
   it('should return null when the control value is empty', async () => {
     const control = new FormControl<string>('');

@@ -1,8 +1,8 @@
 import { AbstractControl, AsyncValidatorFn, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { CascadeMode, InferValidations, KeyOf, Validator } from '@ts-fluentvalidation/core';
+import { CascadeMode, InferValidations, KeyOf, ValidationResult, Validator } from '@ts-fluentvalidation/core';
 
 /**
- * Converts a `@ts-fluentvalidation` property validation to an Angular validator function.
+ * Converts a `@ts-fluentvalidation/core` property validation to an Angular validator function.
  *
  * @example
  * ```typescript
@@ -16,7 +16,7 @@ import { CascadeMode, InferValidations, KeyOf, Validator } from '@ts-fluentvalid
  * console.log(control.errors); // { firstName: [`'firstName' must equal John.`] }
  * ```
  *
- * @param validator The `@ts-fluentvalidation` validator to create the validator function from.
+ * @param validator The `@ts-fluentvalidation/core` validator to create the validator function from.
  * @param validationKey The key of the validation to transform.
  * @param cascadeMode Determines if all validations should be processed. Defaults to `Continue`.
  * @returns Angular validator function
@@ -41,12 +41,12 @@ export function toValidatorFn<T extends object, V extends InferValidations<Valid
         config.propertyCascadeMode = cascadeMode;
       }
     );
-    return result.isValid ? null : result.toDictionary();
+    return toControlErrors(result, validationKey);
   };
 }
 
 /**
- * Converts a `@ts-fluentvalidation` property validation to an Angular async validator function.
+ * Converts a `@ts-fluentvalidation/core` property validation to an Angular async validator function.
  *
  * @example
  * ```typescript
@@ -62,7 +62,7 @@ export function toValidatorFn<T extends object, V extends InferValidations<Valid
  * console.log(control.errors); // { firstName: [`'firstName' must equal John.`] }
  * ```
  *
- * @param validator The `@ts-fluentvalidation` validator to create the async validator function from.
+ * @param validator The `@ts-fluentvalidation/core` validator to create the async validator function from.
  * @param validationKey The key of the validation to transform.
  * @param cascadeMode Determines if all validations should be processed. Defaults to `Continue`.
  * @returns Angular async validator function
@@ -86,7 +86,7 @@ export function toAsyncValidatorFn<T extends object, V extends InferValidations<
         config.propertyCascadeMode = cascadeMode;
       }
     );
-    return result.isValid ? null : result.toDictionary();
+    return toControlErrors(result, validationKey);
   };
 }
 
@@ -95,4 +95,22 @@ export function toAsyncValidatorFn<T extends object, V extends InferValidations<
  */
 function isEmptyInputValue(value: unknown): boolean {
   return value == null || ((typeof value === 'string' || Array.isArray(value)) && value.length === 0);
+}
+
+/**
+ * Converts the validation result to Angular validation errors.
+ *
+ * @param validationResult Validation result to convert.
+ * @param propertyName Name of the property to extract the errors for.
+ * @returns Angular validation errors.
+ */
+function toControlErrors(validationResult: ValidationResult, propertyName: string): ValidationErrors | null {
+  return validationResult.isValid
+    ? null
+    : validationResult.failures
+        .filter(failure => failure.propertyName === propertyName && failure.errorCode)
+        .reduce<ValidationErrors>((acc, { errorCode, message }) => {
+          acc[errorCode!] = message;
+          return acc;
+        }, {});
 }

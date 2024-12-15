@@ -12,6 +12,11 @@ const Api: NgDocApi = {
       name: '@ts-fluentvalidation/core/testing',
       route: 'core-testing',
       include: 'libs/core/src/testing/index.ts'
+    },
+    {
+      name: '@ts-fluentvalidation/angular',
+      route: 'angular',
+      include: 'libs/integrations/angular/src/index.ts'
     }
   ]
 };

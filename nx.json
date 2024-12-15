@@ -53,8 +53,13 @@
     }
   },
   "release": {
+    "projectsRelationship": "fixed",
     "version": {
-      "preVersionCommand": "npx nx run-many -t build"
+      "preVersionCommand": "npx nx run-many -t build",
+      "generatorOptions": {
+        "packageRoot": "dist/{projectRoot}",
+        "currentVersionResolver": "git-tag"
+      }
     }
   },
   "plugins": [

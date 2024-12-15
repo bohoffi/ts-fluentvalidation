@@ -1,5 +1,5 @@
 {
-  "name": "angular",
+  "name": "@ts-fluentvalidation/angular",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/integrations/angular/src",
   "prefix": "lib",
