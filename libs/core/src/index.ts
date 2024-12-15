@@ -4,8 +4,11 @@ export { ValidationFailure, ValidationResult } from './lib/result';
 export {
   ApplyConditionTo,
   AsyncValidation,
+  AsyncValidationPredicate,
   BooleanProperty,
   CascadeMode,
+  InferValidations,
+  KeyOf,
   LengthProperty,
   NumberProperty,
   OtherwisableValidator,
@@ -15,6 +18,7 @@ export {
   Validation,
   ValidationBase,
   ValidationMetadata,
+  ValidationPredicate,
   Validator,
   ValidatorConfig
 } from './lib/types';

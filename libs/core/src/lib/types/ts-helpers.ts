@@ -1,9 +1,14 @@
+type PropertyKey<T extends object> = Extract<keyof T, string> & string;
+export type Callable = (...args: never) => unknown;
+
 /**
- * Represents a type that extracts the key values of an object type `T`.
- * The key values are represented as strings.
+ * Represents a type that extracts the keys of an object type `T` which are no functions.
+ * The keys are represented as strings.
  * For example, if `T` has a key `order`, `KeyOf<T>` would allow strings like `order`.
  */
-export type KeyOf<T extends object> = Extract<keyof T, string> & string;
+export type KeyOf<T extends object> = {
+  [K in PropertyKey<T>]: T[K] extends Callable ? never : K;
+}[PropertyKey<T>];
 
 /**
  * Represents a type that extracts the nested key values of an object type `T`.
@@ -11,12 +16,12 @@ export type KeyOf<T extends object> = Extract<keyof T, string> & string;
  * For example, if `T` has a key `order` with a nested key `id`, `NestedKeyOf<T>` would allow strings like `order.id`.
  */
 export type NestedKeyOf<T extends object> = {
-  [K in KeyOf<T>]: T[K] extends object
-    ? KeyOf<{
+  [K in PropertyKey<T>]: T[K] extends object
+    ? PropertyKey<{
         [N in KeyOf<T[K]> as `${K}.${N}`]: never;
       }>
     : never;
-}[KeyOf<T>];
+}[PropertyKey<T>];
 
 /**
  * Represents a type that extracts the array property values of an object type `T`.
@@ -25,7 +30,7 @@ export type NestedKeyOf<T extends object> = {
  * @returns A union type of array property values of `T`.
  */
 export type ArrayKeyOf<T extends object> = {
-  [K in KeyOf<T>]: T[K] extends Array<unknown> ? K : never;
+  [K in KeyOf<T>]: T[K] extends unknown[] ? K : never;
 }[KeyOf<T>];
 
 /**
@@ -41,9 +46,9 @@ export type IndexedArrayKeyOf<T extends object> = `${ArrayKeyOf<T>}[${number}]`;
  * For example, if `T` has a key `order` for an array property, `IndexedNestedArrayKeyOf<T>` would allow strings like `order[0].id`, `order[1].id`, etc.
  */
 export type IndexedNestedArrayKeyOf<T extends object> = {
-  [K in ArrayKeyOf<T>]: T[K] extends Array<infer I>
+  [K in ArrayKeyOf<T>]: T[K] extends (infer I)[]
     ? I extends object
-      ? KeyOf<{
+      ? PropertyKey<{
           [N in KeyOf<I> as `${K}[${number}].${N}`]: never;
         }>
       : never
@@ -52,8 +57,6 @@ export type IndexedNestedArrayKeyOf<T extends object> = {
 
 export type EmptyObject = NonNullable<unknown>;
 export type Nullish<T> = T | null | undefined;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Callable = (...args: any) => any;
 export type IsAsyncCallable<T extends Callable> = ReturnType<T> extends Promise<unknown> ? true : false;
 
 /**

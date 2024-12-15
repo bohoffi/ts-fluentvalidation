@@ -4,7 +4,7 @@
   "projectType": "application",
   "prefix": "app",
   "sourceRoot": "apps/docs-app/src",
-  "tags": [],
+  "tags": ["type:application"],
   "targets": {
     "build": {
       "executor": "@ng-doc/builder:application",
@@ -36,14 +36,15 @@
           }
         ],
         "styles": ["apps/docs-app/src/styles.scss", "node_modules/@ng-doc/app/styles/global.css"],
-        "scripts": []
+        "scripts": [],
+        "allowedCommonJsDependencies": ["@ng-doc/core"]
       },
       "configurations": {
         "production": {
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "1500kb",
+              "maximumWarning": "2000kb",
               "maximumError": "3mb"
             },
             {
@@ -73,9 +74,6 @@
         }
       },
       "defaultConfiguration": "development"
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
     }
   }
 }

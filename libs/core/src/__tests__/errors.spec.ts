@@ -16,7 +16,7 @@ describe('errors', () => {
 
         expect(() => unsetValidator.validate(testPerson)).not.toThrow();
       });
-      it('should not throw error when validating asynchronously with throwOnFailures set to false or undefined', async () => {
+      it('should not throw error when validating asynchronously with throwOnFailures set to false or undefined', () => {
         const unsetValidator = createValidator<Person>().ruleFor('lastName', notEmpty());
 
         expect(async () => await unsetValidator.validateAsync(testPerson)).not.toThrow();
@@ -25,12 +25,12 @@ describe('errors', () => {
         expect(() => validator.validate(testPerson)).toThrow(ValidationError);
       });
       it('should throw error when validating asynchronously with throwOnFailures set to true', async () => {
-        expect(async () => await validator.validateAsync(testPerson)).rejects.toThrow(ValidationError);
+        await expect(async () => await validator.validateAsync(testPerson)).rejects.toThrow(ValidationError);
       });
       it('should not throw error when throwOnFailures is overwritten by validate() call', () => {
         expect(() => validator.validate(testPerson, config => (config.throwOnFailures = false))).not.toThrow();
       });
-      it('should not throw error when throwOnFailures is overwritten by validateAsync() call', async () => {
+      it('should not throw error when throwOnFailures is overwritten by validateAsync() call', () => {
         expect(async () => await validator.validateAsync(testPerson, config => (config.throwOnFailures = false))).not.toThrow();
       });
     });
@@ -45,11 +45,11 @@ describe('errors', () => {
     });
     describe('validateAsync() - config - throwOnFailures', () => {
       const validator = createValidator<Person>().ruleFor('lastName', notEmpty());
-      it('should not throw error when throwOnFailures is false or undefined', async () => {
-        expect(() => validator.validate(testPerson)).not.toThrow();
+      it('should not throw error when throwOnFailures is false or undefined', () => {
+        expect(async () => await validator.validateAsync(testPerson)).not.toThrow();
       });
       it('should throw error when throwOnFailures is true', async () => {
-        expect(async () => await validator.validateAsync(testPerson, config => (config.throwOnFailures = true))).rejects.toThrow(
+        await expect(async () => await validator.validateAsync(testPerson, config => (config.throwOnFailures = true))).rejects.toThrow(
           ValidationError
         );
       });
@@ -63,7 +63,7 @@ describe('errors', () => {
       it('validateAndThrowAsync()', async () => {
         const validator = createValidator<Person>().ruleFor('lastName', notEmpty());
 
-        expect(async () => await validator.validateAndThrowAsync(testPerson)).rejects.toThrow(ValidationError);
+        await expect(async () => await validator.validateAndThrowAsync(testPerson)).rejects.toThrow(ValidationError);
       });
     });
   });

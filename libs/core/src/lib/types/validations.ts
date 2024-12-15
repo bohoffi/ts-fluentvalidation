@@ -280,5 +280,19 @@ export function isValidatorValidation<TValue, TModel>(
   return typeof validation === 'function' && 'validator' in validation;
 }
 
+/**
+ * A function that determines if the validation should be applied based on the model.
+ *
+ * @param model - The model to validate.
+ * @param validationContext - The validation context.
+ * @returns True if the validation should be applied; otherwise, false.
+ */
 export type ValidationPredicate<TModel> = (model: TModel, validationContext: ValidationContext<TModel>) => boolean;
+/**
+ * An asynchronous function that determines if the validation should be applied based on the model.
+ *
+ * @param model - The model to validate.
+ * @param validationContext - The validation context.
+ * @returns Promise resolving to True if the validation should be applied; otherwise, false.
+ */
 export type AsyncValidationPredicate<TModel> = (model: TModel, validationContext: ValidationContext<TModel>) => Promise<boolean>;

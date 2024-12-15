@@ -18,6 +18,7 @@ export {
 export { ApplyConditionTo, CascadeMode, Severity, ValidatorConfig } from './types';
 export {
   AsyncValidation,
+  AsyncValidationPredicate,
   AsyncValidatorValidation,
   SyncValidation,
   SyncValidatorValidation,
@@ -25,6 +26,7 @@ export {
   ValidationBase,
   ValidationFunction,
   ValidationMetadata,
+  ValidationPredicate,
   isValidatorValidation
 } from './validations';
 export { InferValidations, OtherwisableValidator, Validator } from './validator';

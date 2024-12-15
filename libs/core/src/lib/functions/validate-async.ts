@@ -1,4 +1,3 @@
-import { KeyOf } from '../types/ts-helpers';
 import { ValidatorConfig } from '../types/types';
 import { KeyValidations } from '../types/validations';
 import { ValidationContext } from '../validation-context';
@@ -21,8 +20,8 @@ export async function validateAsync<TModel extends object>(
   const validationEntries = includedProperties ? validations.filter(({ key }) => includedProperties?.includes(key)) : validations;
 
   for (const { key, validations, cascadeMode } of validationEntries) {
-    const keyCascadeMode = validatorConfig.propertyCascadeMode || cascadeMode || 'Continue';
-    await validateKeyAsync(validationContext, key as KeyOf<TModel>, validations, keyCascadeMode, validatorConfig.throwOnFailures);
+    const keyCascadeMode = validatorConfig.propertyCascadeMode ?? cascadeMode ?? 'Continue';
+    await validateKeyAsync(validationContext, key, validations, keyCascadeMode, validatorConfig.throwOnFailures);
 
     if (validationContext.failures.length > 0 && validatorConfig.cascadeMode === 'Stop') {
       break;
