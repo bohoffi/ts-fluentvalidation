@@ -29,15 +29,15 @@ export function failureForValidation<TModel, TValue>(
   validation: Validation<TValue, TModel>,
   index?: number
 ): ValidationFailure {
-  const propertyNameForFailure = appendIndexIfSet(validation.metadata.propertyNameOverride || propertyNameFromModel, index);
+  const propertyNameForFailure = appendIndexIfSet(validation.metadata.propertyNameOverride ?? propertyNameFromModel, index);
   const computedPropertyName = validationContext.parentPropertyName
     ? `${validationContext.parentPropertyName}.${propertyNameForFailure}`
     : propertyNameForFailure;
   return {
     propertyName: computedPropertyName,
-    message: formatMessage(validation.metadata.message || 'Validation failed', {
+    message: formatMessage(validation.metadata.message ?? 'Validation failed', {
       ...validation.metadata.placeholders,
-      [DEFAULT_PLACEHOLDERS.propertyName]: validation.metadata.propertyName || computedPropertyName,
+      [DEFAULT_PLACEHOLDERS.propertyName]: validation.metadata.propertyName ?? computedPropertyName,
       [DEFAULT_PLACEHOLDERS.propertyValue]: propertyValue
     }),
     errorCode: validation.metadata.errorCode,

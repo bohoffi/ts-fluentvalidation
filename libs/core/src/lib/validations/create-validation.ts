@@ -9,42 +9,20 @@ import {
   ValidationMetadata,
   ValidatorValidation
 } from '../types/validations';
+import { ValidatorCore } from '../types/validator-core';
 import { ValidationContext } from '../validation-context';
 
 type ValidationOptions<TModel> = Pick<ValidationMetadata<boolean, TModel>, 'message' | 'errorCode'>;
 
-/**
- * Creates a synchronous validation function.
- *
- * @template TValue The type of the value to be validated.
- * @template TModel The type of the model being validated.
- * @param fn The validation function that takes a value of type TValue and returns a boolean indicating whether the value is valid.
- * @returns The created validation function.
- */
-export function createValidation<TValue, TModel = unknown>(fn: (value: TValue) => boolean): SyncValidation<TValue, TModel>;
-/**
- * Creates a synchronous validation function with a message.
- *
- * @template TValue The type of the value to be validated.
- * @template TModel The type of the model being validated.
- * @param fn The validation function that takes a value of type TValue and returns a boolean indicating whether the value is valid.
- * @param message The message to use when the validation fails.
- * @returns The created validation function.
- */
-export function createValidation<TValue, TModel = unknown>(fn: (value: TValue) => boolean, message: string): SyncValidation<TValue, TModel>;
 /**
  * Creates a synchronous validation function with options.
  *
  * @template TValue The type of the value to be validated.
  * @template TModel The type of the model being validated.
  * @param fn The validation function that takes a value of type TValue and returns a boolean indicating whether the value is valid.
- * @param options The options for the validation function.
+ * @param messageOrOptions The message to use when the validation fails or options for the validation function.
  * @returns The created validation function.
  */
-export function createValidation<TValue, TModel = unknown>(
-  fn: (value: TValue) => boolean,
-  options: ValidationOptions<TModel>
-): SyncValidation<TValue, TModel>;
 export function createValidation<TValue, TModel = unknown>(
   fn: (value: TValue) => boolean,
   messageOrOptions?: string | ValidationOptions<TModel>
@@ -53,40 +31,14 @@ export function createValidation<TValue, TModel = unknown>(
 }
 
 /**
- * Creates an asynchronous validation function.
- *
- * @template TValue The type of the value to be validated.
- * @template TModel The type of the model being validated.
- * @param fn The asynchronous validation function that takes a value of type TValue and returns a promise that resolves to a boolean indicating whether the value is valid.
- * @returns The created asynchronous validation function.
- */
-export function createAsyncValidation<TValue, TModel = unknown>(fn: (value: TValue) => Promise<boolean>): AsyncValidation<TValue, TModel>;
-/**
- * Creates an asynchronous validation function with a mesage.
- *
- * @template TValue The type of the value to be validated.
- * @template TModel The type of the model being validated.
- * @param fn The asynchronous validation function that takes a value of type TValue and returns a promise that resolves to a boolean indicating whether the value is valid.
- * @param message The message to use when the validation fails.
- * @returns The created asynchronous validation function.
- */
-export function createAsyncValidation<TValue, TModel = unknown>(
-  fn: (value: TValue) => Promise<boolean>,
-  message: string
-): AsyncValidation<TValue, TModel>;
-/**
  * Creates an asynchronous validation function with options.
  *
  * @template TValue The type of the value to be validated.
  * @template TModel The type of the model being validated.
  * @param fn The asynchronous validation function that takes a value of type TValue and returns a promise that resolves to a boolean indicating whether the value is valid.
- * @param options The options for the validation function.
+ * @param messageOrOptions The message to use when the validation fails or options for the validation function.
  * @returns The created asynchronous validation function.
  */
-export function createAsyncValidation<TValue, TModel = unknown>(
-  fn: (value: TValue) => Promise<boolean>,
-  options: ValidationOptions<TModel>
-): AsyncValidation<TValue, TModel>;
 export function createAsyncValidation<TValue, TModel = unknown>(
   fn: (value: TValue) => Promise<boolean>,
   messageOrOptions?: string | ValidationOptions<TModel>
@@ -104,9 +56,9 @@ function createValidationBase<
   isAsync: TAsync,
   messageOrOptions?: string | ValidationOptions<TModel>
 ): ValidationBase<TValue, TValidationFunction, TModel> {
-  const { message, ...otherOptions } = typeof messageOrOptions === 'string' ? { message: messageOrOptions } : messageOrOptions || {};
+  const { message, ...otherOptions } = typeof messageOrOptions === 'string' ? { message: messageOrOptions } : messageOrOptions ?? {};
 
-  const validation = (value: TValue) => fn(value);
+  const validation = (value: TValue): ReturnType<ValidationFunction<TValue>> => fn(value);
   validation.metadata = {
     isAsync: isAsync as IsAsyncCallable<TValidationFunction>,
     message,
@@ -153,13 +105,19 @@ function createValidationBase<
       _condition = condition;
     } else {
       const original = validation.metadata.condition;
-      _condition = (model, validationContext) => original(model, validationContext) && condition(model, validationContext);
+      _condition = (model, validationContext): boolean => original(model, validationContext) && condition(model, validationContext);
     }
 
     const updatedValidation = createWithMetadata({ condition: _condition, applyConditionTo });
     return updatedValidation;
   }
 
+  /**
+   * Applies an asynchronous condition when to execute the validation.
+   *
+   * @param predicate - The condition to apply.
+   * @param applyConditionTo - The target to which the condition should be applied.
+   */
   function applyAsyncCondition(
     condition: (model: TModel, validationContext: ValidationContext<TModel>) => Promise<boolean>,
     applyAsyncConditionTo: ApplyConditionTo = 'AllValidators'
@@ -169,7 +127,7 @@ function createValidationBase<
       _asyncCondition = condition;
     } else {
       const original = validation.metadata.asyncCondition;
-      _asyncCondition = async (model, validationContext) =>
+      _asyncCondition = async (model, validationContext): Promise<boolean> =>
         (await original(model, validationContext)) && (await condition(model, validationContext));
     }
 
@@ -228,7 +186,8 @@ function createValidationBase<
       const withNameValidation = createWithMetadata<TModel>({ propertyName });
 
       if (isValidatorValidation(validation)) {
-        (withNameValidation as unknown as ValidatorValidation<TValue, TValidationFunction, TModel>).validator = validation.validator;
+        (withNameValidation as unknown as ValidatorValidation<TValue, TValidationFunction, TModel>).validator =
+          validation.validator as unknown as ValidatorCore<TValue & object>;
       }
 
       return withNameValidation;
@@ -239,7 +198,7 @@ function createValidationBase<
 
       if (isValidatorValidation(validation)) {
         (overridePropertyNameValidation as unknown as ValidatorValidation<TValue, TValidationFunction, TModel>).validator =
-          validation.validator;
+          validation.validator as unknown as ValidatorCore<TValue & object>;
       }
 
       return overridePropertyNameValidation;
@@ -253,16 +212,16 @@ function createValidationBase<
       severityOrProvider: Severity | ((model: TModel, value: TValue) => Severity)
     ): ValidationBase<TValue, TValidationFunction, TModel> {
       return createWithMetadata({
-        severityProvider: (typeof severityOrProvider === 'function' ? severityOrProvider : () => severityOrProvider) as (
+        severityProvider: (typeof severityOrProvider === 'function' ? severityOrProvider : (): Severity => severityOrProvider) as (
           model: TModel,
           value: unknown
         ) => Severity
       });
     },
 
-    withState(stateProvider: unknown | ((model: TModel, value: TValue) => unknown)): ValidationBase<TValue, TValidationFunction, TModel> {
+    withState(stateProvider: object | ((model: TModel, value: TValue) => unknown)): ValidationBase<TValue, TValidationFunction, TModel> {
       return createWithMetadata({
-        customStateProvider: (typeof stateProvider === 'function' ? stateProvider : () => stateProvider) as (
+        customStateProvider: (typeof stateProvider === 'function' ? stateProvider : (): unknown => stateProvider) as (
           model: TModel,
           value: unknown
         ) => unknown

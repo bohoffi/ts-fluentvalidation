@@ -25,11 +25,11 @@ export class TestValidationResult<T extends object> implements ValidationResult 
     this.validationResult.addFailures(...validationFailures);
   }
 
-  public toString(separator = '\n') {
+  public toString(separator = '\n'): string {
     return this.validationResult.toString(separator);
   }
 
-  public toDictionary() {
+  public toDictionary(): Record<string, string[]> {
     return this.validationResult.toDictionary();
   }
 
@@ -39,14 +39,15 @@ export class TestValidationResult<T extends object> implements ValidationResult 
    * @param propertyName - The property name to check.
    * @throws {@link TestValidationError} if there is no validation error for the specified property.
    * @returns The TestValidationFailures for the specified property.
+   *
+   * @remarks even though the special key types are string the extra overloads enables type support (e.g. for auto-completion)
    */
   public shouldHaveValidationErrorFor(propertyName: string): TestValidationFailures;
   public shouldHaveValidationErrorFor(
+    // eslint-disable-next-line @typescript-eslint/unified-signatures
     propertyName: KeyOf<T> | IndexedArrayKeyOf<T> | NestedKeyOf<T> | IndexedNestedArrayKeyOf<T>
   ): TestValidationFailures;
-  public shouldHaveValidationErrorFor(
-    propertyName: string | KeyOf<T> | IndexedArrayKeyOf<T> | NestedKeyOf<T> | IndexedNestedArrayKeyOf<T>
-  ): TestValidationFailures {
+  public shouldHaveValidationErrorFor(propertyName: string): TestValidationFailures {
     const validationFailures = this.failures.filter(failure => failure.propertyName === propertyName);
     if (validationFailures.length) {
       return new TestValidationFailures(...validationFailures);
@@ -61,12 +62,13 @@ export class TestValidationResult<T extends object> implements ValidationResult 
    * @param propertyName - The property name to validate.
    * @throws {@link TestValidationError} if there is a validation error for the specified property.
    * @returns The current TestValidationResult instance.
+   *
+   * @remarks even though the special key types are string the extra overloads enables type support (e.g. for auto-completion)
    */
   public shouldNotHaveValidationErrorFor(propertyName: string): this;
+  // eslint-disable-next-line @typescript-eslint/unified-signatures
   public shouldNotHaveValidationErrorFor(propertyName: KeyOf<T> | IndexedArrayKeyOf<T> | NestedKeyOf<T> | IndexedNestedArrayKeyOf<T>): this;
-  public shouldNotHaveValidationErrorFor(
-    propertyName: string | KeyOf<T> | IndexedArrayKeyOf<T> | NestedKeyOf<T> | IndexedNestedArrayKeyOf<T>
-  ): this {
+  public shouldNotHaveValidationErrorFor(propertyName: string): this {
     if (this.failures.some(failure => failure.propertyName === propertyName)) {
       throw new TestValidationError(`Expected no validation error for property ${propertyName}`);
     }

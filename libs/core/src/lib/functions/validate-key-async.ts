@@ -39,8 +39,8 @@ export async function validateKeyAsync<
       await validateCollectionPropertyAsync(
         validationContext,
         key as ArrayKeyOf<TModel>,
-        propertyValue as TModel[ArrayKeyOf<TModel>] & any[],
-        validation,
+        propertyValue as TModel[ArrayKeyOf<TModel>][],
+        validation as Validation<TModel[ArrayKeyOf<TModel>], TModel>,
         keyCascadeMode
       );
     } else {
@@ -64,7 +64,7 @@ async function validatePropertyAsync<
 >(validationContext: ValidationContext<TModel>, key: Key, propertyValue: TModel[Key], validation: KeyValidation): Promise<void> {
   if (isValidatorValidation(validation) && propertyValue != null && typeof propertyValue === 'object') {
     const result = await validation.validator.validateAsync(
-      createValidationContext(propertyValue, validation.metadata.propertyNameOverride || key)
+      createValidationContext(propertyValue, validation.metadata.propertyNameOverride ?? key)
     );
     validationContext.addFailures(...result.failures);
     return;
@@ -79,7 +79,7 @@ async function validatePropertyAsync<
 async function validateCollectionPropertyAsync<
   TModel extends object,
   Key extends ArrayKeyOf<TModel>,
-  TProperty extends TModel[Key] & Array<any>,
+  TProperty extends TModel[Key][],
   TItem extends TProperty[0],
   KeyValidation extends Validation<TItem, TModel>
 >(
@@ -96,8 +96,8 @@ async function validateCollectionPropertyAsync<
       continue;
     }
 
-    if (!(await validation(item))) {
-      const failure = failureForValidation<TModel, TItem>(validationContext, key, item, validation, index);
+    if (!(await validation(item as TItem))) {
+      const failure = failureForValidation<TModel, TItem>(validationContext, key, item as TItem, validation, index);
       validationContext.addFailures(failure);
     }
     if (validationContext.failures.length > 0 && keyCascadeMode === 'Stop') {

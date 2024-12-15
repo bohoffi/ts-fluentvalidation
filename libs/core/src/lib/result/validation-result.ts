@@ -33,17 +33,17 @@ export interface ValidationResult {
 export function createValidationResult(failures: ValidationFailure[] = []): ValidationResult {
   return {
     failures,
-    get isValid() {
+    get isValid(): boolean {
       return failures.length === 0;
     },
-    addFailures(...validationFailures: ValidationFailure[]) {
+    addFailures(...validationFailures: ValidationFailure[]): void {
       failures.push(...validationFailures);
     },
-    toString(separator = '\n') {
+    toString(separator = '\n'): string {
       return failures.map(e => e.message).join(separator);
     },
-    toDictionary() {
-      return failures.reduce((acc, { propertyName, message }) => {
+    toDictionary(): Record<string, string[]> {
+      return failures.reduce<Record<string, string[]>>((acc, { propertyName, message }) => {
         if (!acc[propertyName]) {
           acc[propertyName] = [];
         }
@@ -51,7 +51,7 @@ export function createValidationResult(failures: ValidationFailure[] = []): Vali
         acc[propertyName].push(message);
 
         return acc;
-      }, {} as Record<string, string[]>);
+      }, {});
     }
   };
 }

@@ -108,7 +108,11 @@ describe(createValidation.name, () => {
     });
 
     it('should create a validation function with a severity provider using model', () => {
-      const isNonEmptyString = createValidation<string, Person>(value => value.length > 0).withSeverity<Person>(model => 'Warning');
+      let severityModel: Person | undefined = undefined;
+      const isNonEmptyString = createValidation<string, Person>(value => value.length > 0).withSeverity<Person>(model => {
+        severityModel = model;
+        return 'Warning';
+      });
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = testValidate(validator, testPerson);
 
@@ -116,12 +120,17 @@ describe(createValidation.name, () => {
       expectResultInvalid(result);
       expectFailureLength(result, 1);
       result.shouldHaveValidationErrorFor('lastName').withSeverity('Warning');
+      expect(severityModel).toBe(testPerson);
     });
 
     it('should create a validation function with a severity provider using model and value', () => {
-      const isNonEmptyString = createValidation<string, Person>(value => value.length > 0).withSeverity<Person, string>(
-        (model, value) => 'Warning'
-      );
+      let severityModel: Person | undefined = undefined;
+      let severityValue: string | undefined = undefined;
+      const isNonEmptyString = createValidation<string, Person>(value => value.length > 0).withSeverity<Person, string>((model, value) => {
+        severityModel = model;
+        severityValue = value;
+        return 'Warning';
+      });
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = testValidate(validator, testPerson);
 
@@ -129,6 +138,8 @@ describe(createValidation.name, () => {
       expectResultInvalid(result);
       expectFailureLength(result, 1);
       result.shouldHaveValidationErrorFor('lastName').withSeverity('Warning');
+      expect(severityModel).toBe(testPerson);
+      expect(severityValue).toBe(testPerson.lastName);
     });
   });
 
@@ -147,7 +158,11 @@ describe(createValidation.name, () => {
     });
 
     it('should create a validation function with custom state provider using model', () => {
-      const isNonEmptyString = createValidation<string, Person>(value => value.length > 0).withState<Person>(model => customState);
+      let stateModel: Person | undefined = undefined;
+      const isNonEmptyString = createValidation<string, Person>(value => value.length > 0).withState<Person>(model => {
+        stateModel = model;
+        return customState;
+      });
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = testValidate(validator, testPerson);
 
@@ -155,12 +170,17 @@ describe(createValidation.name, () => {
       expectResultInvalid(result);
       expectFailureLength(result, 1);
       result.shouldHaveValidationErrorFor('lastName').withCustomState(customState);
+      expect(stateModel).toBe(testPerson);
     });
 
     it('should create a validation function with custom state provider using model and value', () => {
-      const isNonEmptyString = createValidation<string, Person>(value => value.length > 0).withState<Person, string>(
-        (model, value) => customState
-      );
+      let stateModel: Person | undefined = undefined;
+      let stateValue: string | undefined = undefined;
+      const isNonEmptyString = createValidation<string, Person>(value => value.length > 0).withState<Person, string>((model, value) => {
+        stateModel = model;
+        stateValue = value;
+        return customState;
+      });
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = testValidate(validator, testPerson);
 
@@ -168,22 +188,24 @@ describe(createValidation.name, () => {
       expectResultInvalid(result);
       expectFailureLength(result, 1);
       result.shouldHaveValidationErrorFor('lastName').withCustomState(customState);
+      expect(stateModel).toBe(testPerson);
+      expect(stateValue).toBe(testPerson.lastName);
     });
   });
 });
 
 describe(createAsyncValidation.name, () => {
   describe('validation creation', () => {
-    it('should create a validation function that returns true for valid values', () => {
+    it('should create a validation function that returns true for valid values', async () => {
       const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0));
 
-      expectValidationToPassAsync(isNonEmptyString, 'valid');
+      await expectValidationToPassAsync(isNonEmptyString, 'valid');
     });
 
-    it('should create a validation function that returns false for invalid values', () => {
+    it('should create a validation function that returns false for invalid values', async () => {
       const isNonEmptyString = createAsyncValidation<string>(value => Promise.resolve(value.length > 0));
 
-      expectValidationToFailAsync(isNonEmptyString, '');
+      await expectValidationToFailAsync(isNonEmptyString, '');
     });
 
     it('should create a validation function with a message', () => {
@@ -253,8 +275,12 @@ describe(createAsyncValidation.name, () => {
     });
 
     it('should create a validation function with a severity provider using model', async () => {
+      let severityModel: Person | undefined = undefined;
       const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withSeverity<Person>(
-        model => 'Warning'
+        model => {
+          severityModel = model;
+          return 'Warning';
+        }
       );
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = await testValidateAsync(validator, testPerson);
@@ -263,13 +289,20 @@ describe(createAsyncValidation.name, () => {
       expectResultInvalid(result);
       expectFailureLength(result, 1);
       result.shouldHaveValidationErrorFor('lastName').withSeverity('Warning');
+      expect(severityModel).toBe(testPerson);
     });
 
     it('should create a validation function with a severity provider using model and value', async () => {
+      let severityModel: Person | undefined = undefined;
+      let severityValue: string | undefined = undefined;
       const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withSeverity<
         Person,
         string
-      >((model, value) => 'Warning');
+      >((model, value) => {
+        severityModel = model;
+        severityValue = value;
+        return 'Warning';
+      });
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = await testValidateAsync(validator, testPerson);
 
@@ -277,6 +310,8 @@ describe(createAsyncValidation.name, () => {
       expectResultInvalid(result);
       expectFailureLength(result, 1);
       result.shouldHaveValidationErrorFor('lastName').withSeverity('Warning');
+      expect(severityModel).toBe(testPerson);
+      expect(severityValue).toBe(testPerson.lastName);
     });
   });
 
@@ -295,8 +330,12 @@ describe(createAsyncValidation.name, () => {
     });
 
     it('should create a validation function with custom state provider using model', async () => {
+      let stateModel: Person | undefined = undefined;
       const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withState<Person>(
-        model => customState
+        model => {
+          stateModel = model;
+          return customState;
+        }
       );
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = await testValidateAsync(validator, testPerson);
@@ -305,11 +344,18 @@ describe(createAsyncValidation.name, () => {
       expectResultInvalid(result);
       expectFailureLength(result, 1);
       result.shouldHaveValidationErrorFor('lastName').withCustomState(customState);
+      expect(stateModel).toBe(testPerson);
     });
 
     it('should create a validation function with custom state provider using model and value', async () => {
+      let stateModel: Person | undefined = undefined;
+      let stateValue: string | undefined = undefined;
       const isNonEmptyString = createAsyncValidation<string, Person>(value => Promise.resolve(value.length > 0)).withState<Person, string>(
-        (model, value) => customState
+        (model, value) => {
+          stateModel = model;
+          stateValue = value;
+          return customState;
+        }
       );
       const validator = createValidator<Person>().ruleFor('lastName', isNonEmptyString);
       const result = await testValidateAsync(validator, testPerson);
@@ -318,6 +364,8 @@ describe(createAsyncValidation.name, () => {
       expectResultInvalid(result);
       expectFailureLength(result, 1);
       result.shouldHaveValidationErrorFor('lastName').withCustomState(customState);
+      expect(stateModel).toBe(testPerson);
+      expect(stateValue).toBe(testPerson.lastName);
     });
   });
 });
