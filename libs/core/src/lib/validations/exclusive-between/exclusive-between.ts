@@ -16,7 +16,7 @@ export function exclusiveBetween<TValue extends NumberProperty, TModel>(
   message?: string
 ): SyncValidation<TValue, TModel> {
   return createValidation<TValue, TModel>(value => (value ?? 0) > lowerBound && (value ?? 0) < upperBound, {
-    message: message ?? `'{propertyName}' must be between {lowerBound} and {upperBound} exclusively.`,
+    message: message,
     errorCode: exclusiveBetween.name
   })
     .withPlaceholder(DEFAULT_PLACEHOLDERS.lowerBound, lowerBound)

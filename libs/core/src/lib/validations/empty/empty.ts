@@ -9,7 +9,7 @@ import { createValidation } from '../create-validation';
  */
 export function empty<TValue extends LengthProperty, TModel>(message?: string): SyncValidation<TValue, TModel> {
   return createValidation(value => (value?.length ?? 0) === 0, {
-    message: message ?? `'{propertyName}' must be empty.`,
+    message: message,
     errorCode: empty.name
   });
 }

@@ -13,7 +13,7 @@ export function notEquals<TValue, TModel, TComparison extends TValue>(
   comparisonValue: TComparison,
   message?: string
 ): SyncValidation<TValue, TModel> {
-  return not<TValue, TModel>(equals(comparisonValue, message ?? `'{propertyName}' must not equal {comparisonValue}.`))
+  return not<TValue, TModel>(equals(comparisonValue, message))
     .withErrorCode(notEquals.name)
     .withPlaceholder(DEFAULT_PLACEHOLDERS.comparisonValue, comparisonValue);
 }

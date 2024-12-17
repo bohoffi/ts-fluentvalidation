@@ -29,7 +29,6 @@ describe(isNull.name, () => {
 
   it('should return with default metadata', () => {
     const validation = isNull();
-    expectValidationMessageToBe(validation, `'{propertyName}' must be null.`);
     expectValidationErrorCodeToBe(validation, isNull.name);
   });
 });

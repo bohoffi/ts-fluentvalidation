@@ -11,7 +11,7 @@ import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
  */
 export function lessThan<TValue extends NumberProperty, TModel>(comparisonValue: number, message?: string): SyncValidation<TValue, TModel> {
   return createValidation<TValue, TModel>(value => (value ?? 0) < comparisonValue, {
-    message: message ?? `'{propertyName}' must be less than {comparisonValue}.`,
+    message: message,
     errorCode: lessThan.name
   }).withPlaceholder(DEFAULT_PLACEHOLDERS.comparisonValue, comparisonValue);
 }

@@ -21,7 +21,7 @@ export function length<TValue extends LengthProperty, TModel>(
       return valueLength >= minLength && valueLength <= maxLength;
     },
     {
-      message: message ?? `'{propertyName}' must have a length between (inclusive) {minLength} and {maxLength}.`,
+      message: message,
       errorCode: length.name
     }
   )

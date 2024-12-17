@@ -22,11 +22,11 @@ export {
   Validator,
   ValidatorConfig
 } from './lib/types';
-export { ValidationContext, createValidationContext } from './lib/validation-context';
+export { createValidationContext, ValidationContext } from './lib/validation-context';
 export {
-  DEFAULT_PLACEHOLDERS,
   createAsyncValidation,
   createValidation,
+  DEFAULT_PLACEHOLDERS,
   empty,
   equals,
   exclusiveBetween,
@@ -55,4 +55,5 @@ export {
   setValidatorAsync
 } from './lib/validations';
 
+export { i18n, I18n } from './lib/i18n/i18n';
 export { VERSION } from './lib/version';

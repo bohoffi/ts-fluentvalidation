@@ -19,7 +19,6 @@ describe(isTrue.name, () => {
 
   it('should return with default metadata', () => {
     const validation = isTrue();
-    expectValidationMessageToBe(validation, `'{propertyName}' must be true.`);
     expectValidationErrorCodeToBe(validation, isTrue.name);
   });
 });

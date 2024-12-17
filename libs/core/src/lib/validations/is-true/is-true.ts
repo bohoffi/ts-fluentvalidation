@@ -9,7 +9,7 @@ import { createValidation } from '../create-validation';
  */
 export function isTrue<TValue extends BooleanProperty, TModel>(message?: string): SyncValidation<TValue, TModel> {
   return createValidation(value => value === true, {
-    message: message ?? `'{propertyName}' must be true.`,
+    message: message,
     errorCode: isTrue.name
   });
 }

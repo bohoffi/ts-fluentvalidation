@@ -34,7 +34,6 @@ describe(lessThanOrEquals.name, () => {
 
   it('should return with default metadata', () => {
     const validation = lessThanOrEquals(42);
-    expectValidationMessageToBe(validation, `'{propertyName}' must be less than or equal to {comparisonValue}.`);
     expectValidationErrorCodeToBe(validation, lessThanOrEquals.name);
   });
 

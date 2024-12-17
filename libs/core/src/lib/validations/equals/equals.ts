@@ -13,7 +13,7 @@ export function equals<TValue, TModel, TComparison extends TValue>(
   message?: string
 ): SyncValidation<TValue, TModel> {
   return createValidation<TValue, TModel>(value => value === comparisonValue, {
-    message: message ?? `'{propertyName}' must equal {comparisonValue}.`,
-    errorCode: equals.name
+    errorCode: equals.name,
+    message
   }).withPlaceholder(DEFAULT_PLACEHOLDERS.comparisonValue, comparisonValue);
 }
