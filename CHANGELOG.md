@@ -1,3 +1,13 @@
+## 1.0.0-rc.3 (2024-12-17)
+
+### 🚀 Features
+
+- **core:** #24 - add localization ([#24](https://github.com/bohoffi/ts-fluentvalidation/issues/24))
+
+### ❤️  Thank You
+
+- bohoffi @bohoffi
+
 ## 1.0.0-rc.2 (2024-12-15)
 
 ### 🚀 Features
