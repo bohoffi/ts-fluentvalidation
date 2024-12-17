@@ -9,5 +9,5 @@ import { not } from '../not/not';
  * @param message - The message to display if the validation fails.
  */
 export function notEmpty<TValue extends LengthProperty, TModel>(message?: string): SyncValidation<TValue, TModel> {
-  return not<TValue, TModel>(empty(message ?? `'{propertyName}' must not be empty.`)).withErrorCode(notEmpty.name);
+  return not<TValue, TModel>(empty(message)).withErrorCode(notEmpty.name);
 }

@@ -32,7 +32,6 @@ describe(length.name, () => {
 
   it('should return with default metadata', () => {
     const validation = length(1, 3);
-    expectValidationMessageToBe(validation, `'{propertyName}' must have a length between (inclusive) {minLength} and {maxLength}.`);
     expectValidationErrorCodeToBe(validation, length.name);
   });
 

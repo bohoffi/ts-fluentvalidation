@@ -24,7 +24,6 @@ describe(notEquals.name, () => {
 
   it('should return with default metadata', () => {
     const validation = notEquals(42);
-    expectValidationMessageToBe(validation, `'{propertyName}' must not equal {comparisonValue}.`);
     expectValidationErrorCodeToBe(validation, notEquals.name);
   });
 

@@ -32,7 +32,6 @@ describe(maxLength.name, () => {
 
   it('should return with default metadata', () => {
     const validation = maxLength(42);
-    expectValidationMessageToBe(validation, `'{propertyName}' must have a maximum length of {maxLength}.`);
     expectValidationErrorCodeToBe(validation, maxLength.name);
   });
 

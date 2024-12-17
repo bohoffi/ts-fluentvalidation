@@ -22,3 +22,6 @@ The output would be:
 Property: lastName Error Code: ERR123
 Property: firstName Error Code: notEmpty
 ```
+
+> **Warning**
+> Overwriting the error code will result in a fallback validation message `Validation Failed` if you didn't add it to the `I18n` object like described in `*Localization#Supporting-custom-error-codes`

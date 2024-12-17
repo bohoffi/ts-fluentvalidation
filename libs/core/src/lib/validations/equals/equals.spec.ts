@@ -24,7 +24,6 @@ describe(equals.name, () => {
 
   it('should return with default metadata', () => {
     const validation = equals(42);
-    expectValidationMessageToBe(validation, `'{propertyName}' must equal {comparisonValue}.`);
     expectValidationErrorCodeToBe(validation, equals.name);
   });
 

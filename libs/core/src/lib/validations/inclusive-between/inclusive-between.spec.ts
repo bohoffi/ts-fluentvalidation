@@ -54,7 +54,6 @@ describe(inclusiveBetween.name, () => {
 
   it('should return with default metadata', () => {
     const validation = inclusiveBetween(4, 2);
-    expectValidationMessageToBe(validation, `'{propertyName}' must be between {lowerBound} and {upperBound} inclusively.`);
     expectValidationErrorCodeToBe(validation, inclusiveBetween.name);
   });
 

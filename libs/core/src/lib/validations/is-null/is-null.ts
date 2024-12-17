@@ -8,7 +8,7 @@ import { createValidation } from '../create-validation';
  */
 export function isNull<TValue, TModel>(message?: string): SyncValidation<TValue, TModel> {
   return createValidation(value => value === null, {
-    message: message ?? `'{propertyName}' must be null.`,
+    message: message,
     errorCode: isNull.name
   });
 }

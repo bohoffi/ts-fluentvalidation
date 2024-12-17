@@ -36,7 +36,6 @@ describe(exclusiveBetween.name, () => {
 
   it('should return with default metadata', () => {
     const validation = exclusiveBetween(4, 2);
-    expectValidationMessageToBe(validation, `'{propertyName}' must be between {lowerBound} and {upperBound} exclusively.`);
     expectValidationErrorCodeToBe(validation, exclusiveBetween.name);
   });
 
