@@ -11,7 +11,7 @@ import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
  */
 export function maxLength<TValue extends LengthProperty, TModel>(maxLength: number, message?: string): SyncValidation<TValue, TModel> {
   return createValidation<TValue, TModel>(value => (value?.length ?? 0) <= maxLength, {
-    message: message ?? `'{propertyName}' must have a maximum length of {maxLength}.`,
+    message: message,
     errorCode: 'maxLength'
   }).withPlaceholder(DEFAULT_PLACEHOLDERS.maxLength, maxLength);
 }

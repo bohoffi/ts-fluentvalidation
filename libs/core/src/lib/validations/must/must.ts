@@ -9,7 +9,7 @@ import { createValidation } from '../create-validation';
  */
 export function must<TValue, TModel = unknown>(predicate: (value: TValue) => boolean, message?: string): SyncValidation<TValue, TModel> {
   return createValidation<TValue, TModel>(predicate, {
-    message: message ?? `'{propertyName}' must meet the specified criteria.`,
+    message: message,
     errorCode: must.name
   });
 }

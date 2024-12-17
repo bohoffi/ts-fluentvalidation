@@ -1,6 +1,6 @@
 {
   "name": "@ts-fluentvalidation/core",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.3",
   "description": "Core library of @ts-fluentvalidation providing validations in a fluent syntax.",
   "keywords": [
     "typescript",
