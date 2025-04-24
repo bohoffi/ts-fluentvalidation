@@ -32,7 +32,7 @@ export function validateKeySync<
     }
 
     const propertyValue = validationContext.modelToValidate[key];
-    if (Array.isArray(propertyValue)) {
+    if (validation.metadata.isEach && Array.isArray(propertyValue)) {
       validateCollectionPropertySync(
         validationContext,
         key as ArrayKeyOf<TModel>,

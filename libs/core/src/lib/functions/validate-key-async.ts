@@ -35,7 +35,7 @@ export async function validateKeyAsync<
     }
 
     const propertyValue = validationContext.modelToValidate[key];
-    if (Array.isArray(propertyValue)) {
+    if (validation.metadata.isEach && Array.isArray(propertyValue)) {
       await validateCollectionPropertyAsync(
         validationContext,
         key as ArrayKeyOf<TModel>,

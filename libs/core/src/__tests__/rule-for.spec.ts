@@ -1,9 +1,9 @@
 import { createValidator } from '../lib/create-validator';
 import { AsyncValidation, SyncValidation } from '../lib/types';
-import { minLength, must, mustAsync, notEmpty } from '../lib/validations';
+import { greaterThan, minLength, must, mustAsync, notEmpty } from '../lib/validations';
 import { testValidate, testValidateAsync } from '../testing/src/test-validate';
 import { expectFailureLength, expectResultInvalid, expectValidationsFor, expectValidationsForWithLength } from './assertions';
-import { createPersonWith, Person } from './fixtures';
+import { createPersonWith, ObjectWithArray, Person } from './fixtures';
 
 describe('ruleFor', () => {
   describe('add validations', () => {
@@ -110,6 +110,32 @@ describe('ruleFor', () => {
       expectFailureLength(result, 2);
       result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must not be empty.`);
       result.shouldHaveValidationErrorFor('firstName').withMessage(`'firstName' must have a minimum length of 1.`);
+    });
+  });
+
+  describe('array-level validation', () => {
+    it('validate min length of array', () => {
+      const validator = createValidator<ObjectWithArray>()
+        .ruleFor('name', notEmpty())
+        .ruleFor('scores', minLength(1))
+        .ruleForEach('scores', greaterThan(0));
+      const result = testValidate(validator, { name: 'test', scores: [] });
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 1);
+      result.shouldHaveValidationErrorFor('scores').withMessage(`'scores' must have a minimum length of 1.`);
+    });
+
+    it('validate sum of array', () => {
+      const validator = createValidator<ObjectWithArray>()
+        .ruleFor('name', notEmpty())
+        .ruleFor('scores', must((s: number[]) => s.reduce((a, b) => a + b, 0) % 2 === 0).withMessage('The sum of the scores must be even.'))
+        .ruleForEach('scores', greaterThan(0));
+      const result = testValidate(validator, { name: 'test', scores: [1, 2] });
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 1);
+      result.shouldHaveValidationErrorFor('scores').withMessage('The sum of the scores must be even.');
     });
   });
 });
