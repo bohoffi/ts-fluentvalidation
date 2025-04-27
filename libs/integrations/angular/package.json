@@ -1,6 +1,6 @@
 {
   "name": "@ts-fluentvalidation/angular",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.4",
   "description": "Angular specific integration of @ts-fluentvalidation.",
   "keywords": [
     "typescript",
@@ -24,7 +24,7 @@
   "homepage": "https://bohoffi.github.io/ts-fluentvalidation/",
   "peerDependencies": {
     "@angular/forms": ">= 18.0.0",
-    "@ts-fluentvalidation/core": "1.0.0-rc.3"
+    "@ts-fluentvalidation/core": "1.0.0-rc.4"
   },
   "sideEffects": false
 }
