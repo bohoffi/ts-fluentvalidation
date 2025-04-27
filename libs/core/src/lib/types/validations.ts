@@ -8,6 +8,10 @@ import { ValidatorCore } from './validator-core';
  */
 export interface ValidationMetadata<TAsync extends boolean, TModel> {
   /**
+   * True if called from ruleForEach, false otherwise.
+   */
+  isEach?: boolean;
+  /**
    * Indicates if the validation is asynchronous.
    */
   isAsync: TAsync;

@@ -81,6 +81,10 @@ export function createValidator<TModel extends object, ModelValidations extends 
       overridePropertyNames(validations);
       applyConditions(...validations);
 
+      validations.forEach(v => {
+        v.metadata.isEach = true;
+      });
+
       keyValidations.push({
         key,
         validations: validations as Validation<TModel[KeyOf<TModel>], TModel>[],
