@@ -20,6 +20,11 @@ export interface Order {
   amount: number;
 }
 
+export interface ObjectWithArray {
+  name: string;
+  scores: number[];
+}
+
 export function createPersonWith(overrides: Partial<Person> = {}): Person {
   return {
     firstName: faker.person.firstName(),
