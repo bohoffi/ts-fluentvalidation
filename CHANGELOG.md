@@ -1,3 +1,13 @@
+## 1.0.0-rc.4 (2025-04-27)
+
+### 🩹 Fixes
+
+- **core:** support for array-level validation ([576a93b](https://github.com/bohoffi/ts-fluentvalidation/commit/576a93b))
+
+### ❤️  Thank You
+
+- gagiD
+
 ## 1.0.0-rc.3 (2024-12-17)
 
 ### 🚀 Features

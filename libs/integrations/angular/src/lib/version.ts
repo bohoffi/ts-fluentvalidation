@@ -21,4 +21,4 @@ class Version {
 /**
  * Represents the current version of the library.
  */
-export const VERSION = new Version('1.0.0-rc.3');
+export const VERSION = new Version('1.0.0-rc.4');
