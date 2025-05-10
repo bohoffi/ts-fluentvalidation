@@ -207,9 +207,6 @@
     },
     "targetVersion": "latest",
     "confirmedPackageUpdates": true,
-    "runningMigrations": [
-      "remove-legacy-cache"
-    ],
     "completedMigrations": {
       "remove-legacy-cache": {
         "type": "successful",
@@ -220,9 +217,31 @@
             "type": "UPDATE"
           }
         ],
-        "ref": "1ce1a479b25bb921700485432ee8f2c343942a1f",
+        "ref": "27259c6f61bbfc2351b6d5b60bbfa44c77e487c0",
+        "nextSteps": []
+      },
+      "remove-custom-tasks-runner": {
+        "type": "successful",
+        "name": "remove-custom-tasks-runner",
+        "changedFiles": [],
+        "ref": "27259c6f61bbfc2351b6d5b60bbfa44c77e487c0",
+        "nextSteps": []
+      },
+      "release-version-config-changes": {
+        "type": "successful",
+        "name": "release-version-config-changes",
+        "changedFiles": [
+          {
+            "path": "nx.json",
+            "type": "UPDATE"
+          }
+        ],
+        "ref": "0d4f5263a1511f29dafb4ca0477f837195e6ad2d",
         "nextSteps": []
       }
-    }
+    },
+    "runningMigrations": [
+      "release-version-config-changes"
+    ]
   }
 }
