@@ -1,7 +1,7 @@
 {
   "name": "ts-fluentvalidation",
   "scripts": {
-    "release": "ts-node ./tools/scripts/release.ts",
+    "release": "tsx ./tools/scripts/release.ts",
     "prepare": "husky"
   },
   "private": true,
@@ -91,6 +91,7 @@
     "prettier": "^2.6.2",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
+    "tsx": "^4.19.4",
     "typescript": "5.7.3",
     "typescript-eslint": "8.32.0",
     "verdaccio": "6.1.2",
