@@ -293,12 +293,54 @@
             "type": "UPDATE"
           }
         ],
-        "ref": "992d4647c399eb1a11272302134231369ccc2968",
+        "ref": "2bd32541eb30ca60b66e3c3358c66d183ad4aace",
+        "nextSteps": []
+      },
+      "add-localize-polyfill-to-targets": {
+        "type": "successful",
+        "name": "add-localize-polyfill-to-targets",
+        "changedFiles": [],
+        "ref": "2bd32541eb30ca60b66e3c3358c66d183ad4aace",
+        "nextSteps": []
+      },
+      "update-angular-ssr-imports-to-use-node-entry-point": {
+        "type": "skipped"
+      },
+      "disable-angular-eslint-prefer-standalone": {
+        "type": "skipped"
+      },
+      "remove-angular-eslint-rules": {
+        "type": "skipped"
+      },
+      "remove-tailwind-config-from-ng-packagr-executors": {
+        "type": "successful",
+        "name": "remove-tailwind-config-from-ng-packagr-executors",
+        "changedFiles": [],
+        "ref": "2bd32541eb30ca60b66e3c3358c66d183ad4aace",
+        "nextSteps": []
+      },
+      "ensure-nx-module-federation-package": {
+        "type": "successful",
+        "name": "ensure-nx-module-federation-package",
+        "changedFiles": [],
+        "ref": "2bd32541eb30ca60b66e3c3358c66d183ad4aace",
+        "nextSteps": []
+      },
+      "update-angular-cli-version-19-1-0": {
+        "type": "successful",
+        "name": "update-angular-cli-version-19-1-0",
+        "changedFiles": [
+          {
+            "path": "package.json",
+            "type": "UPDATE"
+          }
+        ],
+        "ref": "305cc74b92a8280f5cf43b04ba829c6b220917d2",
         "nextSteps": []
       }
     },
     "runningMigrations": [
-      "update-angular-cli-version-19-0-0"
+      "update-angular-cli-version-19-1-0"
     ]
   }
 }
