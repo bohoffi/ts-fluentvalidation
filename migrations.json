@@ -206,6 +206,23 @@
       "subject": "Merge pull request #86 from bohoffi/release/1.0.x"
     },
     "targetVersion": "latest",
-    "confirmedPackageUpdates": true
+    "confirmedPackageUpdates": true,
+    "runningMigrations": [
+      "remove-legacy-cache"
+    ],
+    "completedMigrations": {
+      "remove-legacy-cache": {
+        "type": "successful",
+        "name": "remove-legacy-cache",
+        "changedFiles": [
+          {
+            "path": "nx.json",
+            "type": "UPDATE"
+          }
+        ],
+        "ref": "1ce1a479b25bb921700485432ee8f2c343942a1f",
+        "nextSteps": []
+      }
+    }
   }
 }
