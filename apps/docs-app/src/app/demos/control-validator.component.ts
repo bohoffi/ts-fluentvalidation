@@ -22,7 +22,6 @@ const personValidator = createValidator<Person>()
   );
 
 @Component({
-  standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './control-validator.component.html',
   styleUrl: './control-validator.component.scss',

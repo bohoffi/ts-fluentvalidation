@@ -345,9 +345,7 @@ function overridePropertyNames<TValue, TModel extends object>(keyValidations: Va
   if (lastPropertyNameOverride?.metadata?.propertyNameOverride) {
     const propertyNameOverride = lastPropertyNameOverride.metadata.propertyNameOverride;
     keyValidations.forEach(v => {
-      if (v.metadata.propertyNameOverride === undefined) {
-        v.metadata.propertyNameOverride = propertyNameOverride;
-      }
+      v.metadata.propertyNameOverride ??= propertyNameOverride;
     });
   }
 }
