@@ -236,12 +236,69 @@
             "type": "UPDATE"
           }
         ],
-        "ref": "0d4f5263a1511f29dafb4ca0477f837195e6ad2d",
+        "ref": "f290fe50dd4ed5214566306eff416771a563720d",
+        "nextSteps": []
+      },
+      "release-changelog-config-changes": {
+        "type": "successful",
+        "name": "release-changelog-config-changes",
+        "changedFiles": [],
+        "ref": "f290fe50dd4ed5214566306eff416771a563720d",
+        "nextSteps": []
+      },
+      "replace-getJestProjects-with-getJestProjectsAsync-v21": {
+        "type": "successful",
+        "name": "replace-getJestProjects-with-getJestProjectsAsync-v21",
+        "changedFiles": [],
+        "ref": "f290fe50dd4ed5214566306eff416771a563720d",
+        "nextSteps": []
+      },
+      "remove-tsconfig-option-from-jest-executor": {
+        "type": "successful",
+        "name": "remove-tsconfig-option-from-jest-executor",
+        "changedFiles": [],
+        "ref": "f290fe50dd4ed5214566306eff416771a563720d",
+        "nextSteps": []
+      },
+      "update-typescript-eslint-v8.13.0": {
+        "type": "successful",
+        "name": "update-typescript-eslint-v8.13.0",
+        "changedFiles": [],
+        "ref": "f290fe50dd4ed5214566306eff416771a563720d",
+        "nextSteps": []
+      },
+      "add-file-extensions-to-overrides": {
+        "type": "successful",
+        "name": "add-file-extensions-to-overrides",
+        "changedFiles": [],
+        "ref": "f290fe50dd4ed5214566306eff416771a563720d",
+        "nextSteps": []
+      },
+      "update-20-2-0-update-module-federation-config-import": {
+        "type": "skipped"
+      },
+      "update-20-2-0-update-with-module-federation-import": {
+        "type": "successful",
+        "name": "update-20-2-0-update-with-module-federation-import",
+        "changedFiles": [],
+        "ref": "f290fe50dd4ed5214566306eff416771a563720d",
+        "nextSteps": []
+      },
+      "update-angular-cli-version-19-0-0": {
+        "type": "successful",
+        "name": "update-angular-cli-version-19-0-0",
+        "changedFiles": [
+          {
+            "path": "package.json",
+            "type": "UPDATE"
+          }
+        ],
+        "ref": "992d4647c399eb1a11272302134231369ccc2968",
         "nextSteps": []
       }
     },
     "runningMigrations": [
-      "release-version-config-changes"
+      "update-angular-cli-version-19-0-0"
     ]
   }
 }
