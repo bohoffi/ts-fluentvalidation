@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { NgDocNavbarComponent, NgDocRootComponent, NgDocSidebarComponent, NgDocThemeToggleComponent } from '@ng-doc/app';
-import { NgDocIconComponent, NgDocButtonIconComponent } from '@ng-doc/ui-kit';
+import { NgDocButtonIconComponent, NgDocIconComponent } from '@ng-doc/ui-kit';
 import { VERSION } from '@ts-fluentvalidation/core';
 
 @Component({
-  standalone: true,
   imports: [
     RouterLink,
     RouterOutlet,
