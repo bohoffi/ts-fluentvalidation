@@ -23,7 +23,7 @@ export { notNull } from './not-null/not-null';
 export { not } from './not/not';
 export { required } from './required/required';
 export { setValidatorAsync } from './set-validator-async/set-validator-async';
-export { setValidator } from './set-valildator/set-validator';
+export { setValidator } from './set-validator/set-validator';
 
 export { createAsyncValidation, createValidation } from './create-validation';
 export { DEFAULT_PLACEHOLDERS } from './message-formatter';
