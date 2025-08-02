@@ -46,5 +46,5 @@ export function createValidationContext<T>(model: T, parentPropertyName?: string
 }
 
 export function isValidationContext<T>(value: unknown): value is ValidationContext<T> {
-  return value != null && typeof value === 'object' && 'failures' in value && 'modelToValidate' in value;
+  return value != null && typeof value === 'object' && !Array.isArray(value) && 'failures' in value && 'modelToValidate' in value;
 }
