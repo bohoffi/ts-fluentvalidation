@@ -39,8 +39,8 @@ describe('Type Safety Improvements', () => {
       // Use type-safe property access
       expect(Object.keys(validator.validations)).toContain('name');
       expect(Object.keys(validator.validations)).toContain('email');
-      expect((validator.validations as any).name).toHaveLength(2);
-      expect((validator.validations as any).email).toHaveLength(1);
+      expect((validator.validations as Record<string, unknown[]>)['name']).toHaveLength(2);
+      expect((validator.validations as Record<string, unknown[]>)['email']).toHaveLength(1);
     });
   });
 
@@ -179,7 +179,7 @@ describe('Type Safety Improvements', () => {
       validator.ruleFor('name', required());
       
       // Validations should be protected from direct manipulation
-      const validations = validator.validations as any;
+      const validations = validator.validations as Record<string, unknown>;
       expect(validations).toBeDefined();
       expect(typeof validations).toBe('object');
     });

@@ -13,7 +13,7 @@ import { createValidationContext, isValidationContext, ValidationContext } from 
  * @param value - The value to check
  * @returns True if the value is a validator
  */
-function isValidatorLike(value: unknown): value is Validator<any, any> {
+function isValidatorLike(value: unknown): value is Validator<object, object> {
   return (
     typeof value === 'object' &&
     value !== null &&
