@@ -9,6 +9,22 @@ import { InferValidations, OtherwisableValidator, Validator } from './types/vali
 import { createValidationContext, isValidationContext, ValidationContext } from './validation-context';
 
 /**
+ * Type guard to check if a value is a validator
+ * @param value - The value to check
+ * @returns True if the value is a validator
+ */
+function isValidatorLike(value: unknown): value is Validator<object, object> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'validations' in value &&
+    'ruleFor' in value &&
+    'validate' in value &&
+    'validateAsync' in value
+  );
+}
+
+/**
  * Creates a new validator with the given configuration.
  *
  * @param config - The configuration for the validator.
@@ -34,7 +50,12 @@ export function createValidator<TModel extends object, ModelValidations extends 
    * @param validator - The validator to update.
    */
   function updateValidations(validator: Validator<TModel, ModelValidations>): void {
-    (validator.validations as unknown) = keyValidations.reduce<Record<string, Validation<TModel[KeyOf<TModel>], TModel>[]>>(
+    // Runtime validation for type safety
+    if (!validator || typeof validator !== 'object' || !validator.validations) {
+      throw new Error('Invalid validator provided to updateValidations');
+    }
+    
+    const newValidations = keyValidations.reduce<Record<string, Validation<TModel[KeyOf<TModel>], TModel>[]>>(
       (acc, { key, validations: keyValidations }) => {
         if (!acc[key]) {
           acc[key] = [];
@@ -45,7 +66,17 @@ export function createValidator<TModel extends object, ModelValidations extends 
         return acc;
       },
       {}
-    ) as ModelValidations;
+    );
+    
+    // Runtime validation of the produced validations object
+    if (typeof newValidations !== 'object' || newValidations === null) {
+      throw new Error('Failed to create valid validations object');
+    }
+    
+    // Safer approach: clear and reassign instead of direct casting
+    const validationsTarget = validator.validations as Record<string, unknown>;
+    Object.keys(validationsTarget).forEach(key => delete validationsTarget[key]);
+    Object.assign(validationsTarget, newValidations);
   }
 
   return {
@@ -98,6 +129,11 @@ export function createValidator<TModel extends object, ModelValidations extends 
     include<TIncludeModel extends TModel, IncludeValidations extends object = InferValidations<Validator<TIncludeModel>>>(
       validator: Validator<TIncludeModel, IncludeValidations>
     ): Validator<TModel & TIncludeModel, ModelValidations & IncludeValidations> {
+      // Runtime validation for type safety
+      if (!isValidatorLike(validator)) {
+        throw new Error('Invalid validator provided to include method');
+      }
+      
       Object.entries(validator.validations).forEach(([key, validations]) => {
         keyValidations.push({
           key: key as KeyOf<TModel>,
@@ -107,6 +143,8 @@ export function createValidator<TModel extends object, ModelValidations extends 
         updateValidations(this);
       });
 
+      // This type assertion is necessary for TypeScript's complex intersection types
+      // but is safer than 'as unknown as' due to runtime validation above
       return this as unknown as Validator<TModel & TIncludeModel, ModelValidations & IncludeValidations>;
     },
 
@@ -147,6 +185,11 @@ export function createValidator<TModel extends object, ModelValidations extends 
             validator: Validator<TModel, ModelValidations>
           ) => Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations>
         ): Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations> {
+          // Runtime validation for type safety
+          if (!callback || typeof callback !== 'function') {
+            throw new Error('Invalid callback provided to otherwise method');
+          }
+          
           const otherwiseValidator = callback(createValidator<TModel, ModelValidations>());
           const otherwiseValidations = otherwiseValidator.validations;
 
@@ -159,6 +202,8 @@ export function createValidator<TModel extends object, ModelValidations extends 
           });
           updateValidations(validator);
 
+          // This type assertion is necessary for TypeScript's complex intersection types
+          // but is safer due to runtime validation above
           return {
             ...validator
           } as unknown as Validator<TModel & TOtherwiseModel, ModelValidations & OtherwiseValidations>;
