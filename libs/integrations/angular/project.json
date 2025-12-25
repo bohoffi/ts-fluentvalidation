@@ -16,8 +16,7 @@
       "configurations": {
         "production": {
           "tsConfig": "libs/integrations/angular/tsconfig.lib.prod.json"
-        },
-        "development": {}
+        }
       },
       "defaultConfiguration": "production"
     },
