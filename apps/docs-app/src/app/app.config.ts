@@ -1,6 +1,5 @@
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
 import { ApplicationConfig } from '@angular/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import {
   NG_DOC_DEFAULT_PAGE_PROCESSORS,
@@ -21,7 +20,6 @@ export const appConfig: ApplicationConfig = {
     provideSearchEngine(NgDocDefaultSearchEngine),
     providePageSkeleton(NG_DOC_DEFAULT_PAGE_SKELETON),
     provideMainPageProcessor(NG_DOC_DEFAULT_PAGE_PROCESSORS),
-    provideAnimations(),
     provideHttpClient(withInterceptorsFromDi(), withFetch()),
     provideRouter(
       [
