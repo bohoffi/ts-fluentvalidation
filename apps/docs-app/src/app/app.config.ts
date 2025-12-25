@@ -1,5 +1,5 @@
 import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http';
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import {
   NG_DOC_DEFAULT_PAGE_PROCESSORS,
@@ -15,6 +15,7 @@ import { DocsComponent } from './docs.component';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZoneChangeDetection(),
     provideNgDocContext(),
     provideNgDocApp(),
     provideSearchEngine(NgDocDefaultSearchEngine),
