@@ -3,10 +3,7 @@
   "defaultProject": "docs-app",
   "defaultBase": "origin/develop",
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -23,40 +20,21 @@
   "targetDefaults": {
     "@nx/esbuild:esbuild": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     },
     "@nx/js:tsc": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     },
     "@angular-devkit/build-angular:application": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     },
     "@nx/jest:jest": {
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/jest.preset.js"
-      ],
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
       "cache": true,
       "options": {
         "passWithNoTests": true
@@ -70,13 +48,8 @@
     },
     "@nx/angular:package": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "release": {
@@ -85,9 +58,7 @@
       "preVersionCommand": "npx nx run-many -t build",
       "currentVersionResolver": "git-tag",
       "preserveLocalDependencyProtocols": false,
-      "manifestRootsToUpdate": [
-        "dist/{projectRoot}"
-      ]
+      "manifestRootsToUpdate": ["dist/{projectRoot}"]
     }
   },
   "plugins": [
@@ -116,7 +87,59 @@
       "unitTestRunner": "jest"
     },
     "@nx/angular:component": {
-      "style": "scss"
+      "style": "scss",
+      "type": "component"
+    },
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@nx/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@nx/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@nx/angular:scam": {
+      "type": "component"
+    },
+    "@nx/angular:scam-directive": {
+      "type": "directive"
+    },
+    "@nx/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@nx/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@nx/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@nx/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@nx/angular:resolver": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   }
 }
