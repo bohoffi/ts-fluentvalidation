@@ -45,3 +45,4 @@ Thumbs.db
 
 # NgDoc files
 /ng-doc
+.claude/worktrees
