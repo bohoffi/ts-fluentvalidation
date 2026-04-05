@@ -45,3 +45,5 @@ Thumbs.db
 
 # NgDoc files
 /ng-doc
+.claude/worktrees
+.claude/settings.local.json
