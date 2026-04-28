@@ -44,3 +44,54 @@ describe(lessThanOrEquals.name, () => {
     });
   });
 });
+
+describe(lessThanOrEquals.name + ':model', () => {
+  interface TestModel {
+    age: number;
+    maxAge: number;
+  }
+
+  it('should return true when value is less than the property returned by the predicate', () => {
+    const validation = lessThanOrEquals<number, TestModel>(model => model.maxAge);
+    const model: TestModel = { age: 17, maxAge: 18 };
+    expect(validation(model.age, model)).toBe(true);
+  });
+
+  it('should return true when value equals the property returned by the predicate', () => {
+    const validation = lessThanOrEquals<number, TestModel>(model => model.maxAge);
+    const model: TestModel = { age: 18, maxAge: 18 };
+    expect(validation(model.age, model)).toBe(true);
+  });
+
+  it('should return false when value is greater than the property returned by the predicate', () => {
+    const validation = lessThanOrEquals<number, TestModel>(model => model.maxAge);
+    const model: TestModel = { age: 19, maxAge: 18 };
+    expect(validation(model.age, model)).toBe(false);
+  });
+
+  it('should set the error code', () => {
+    const validation = lessThanOrEquals<number, TestModel>(model => model.maxAge);
+    expectValidationErrorCodeToBe(validation, lessThanOrEquals.name);
+  });
+
+  it('should accept a custom message', () => {
+    const validation = lessThanOrEquals<number, TestModel>(model => model.maxAge, 'Age must not exceed max age');
+    expectValidationMessageToBe(validation, 'Age must not exceed max age');
+  });
+
+  it('should set comparisonProperty placeholder to the extracted property name', () => {
+    const validation = lessThanOrEquals<number, TestModel>(model => model.maxAge);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonProperty]: 'maxAge'
+    });
+  });
+
+  it('should resolve comparisonValue from the model via the placeholder provider', () => {
+    const validation = lessThanOrEquals<number, TestModel>(model => model.maxAge);
+    const model: TestModel = { age: 17, maxAge: 18 };
+    validation(model.age, model);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonValue]: 18
+    });
+  });
+});

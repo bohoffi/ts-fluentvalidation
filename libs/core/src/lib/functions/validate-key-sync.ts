@@ -65,7 +65,8 @@ function validatePropertySync<TModel extends object, Key extends KeyOf<TModel>, 
     return;
   }
 
-  if (!validation(propertyValue)) {
+  const isValid = validation(propertyValue, validationContext.modelToValidate);
+  if (!isValid) {
     const failure = failureForValidation(validationContext, key, propertyValue, validation);
     validationContext.addFailures(failure);
   }

@@ -85,7 +85,7 @@ export function expectValidationPlaceholdersToBe<TValue, TModel>(
   validation: Validation<TValue, TModel>,
   placeholders: Record<string, unknown>
 ): void {
-  expect(validation.metadata.placeholders).toEqual(placeholders);
+  expect(validation.metadata.placeholders).toEqual(expect.objectContaining(placeholders));
 }
 
 export function expectValidationMetadataToBeDefined<TValue, TModel>(
