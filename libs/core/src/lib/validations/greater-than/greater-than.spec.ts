@@ -91,6 +91,7 @@ describe(greaterThan.name + ':model', () => {
     const model: TestModel = { salary: 5000, minSalary: 3000 };
     validation(model.salary, model);
     expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonProperty]: 'minSalary',
       [DEFAULT_PLACEHOLDERS.comparisonValue]: 3000
     });
   });

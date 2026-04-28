@@ -8,20 +8,19 @@ import { createValidation } from '../create-validation';
  * @param message - The message to display if the validation fails.
  */
 export function must<TValue, TModel>(predicate: (value: TValue, model: TModel) => boolean, message?: string): SyncValidation<TValue, TModel>;
-
 /**
  * Creates a validation function that checks if the value meets the specified criteria.
  *
  * @param predicate - The predicate to check against.
  * @param message - The message to display if the validation fails.
  */
+// eslint-disable-next-line @typescript-eslint/unified-signatures
 export function must<TValue, TModel = unknown>(predicate: (value: TValue) => boolean, message?: string): SyncValidation<TValue, TModel>;
-
-export function must<TValue, TModel>(
-  predicate: ((value: TValue, model: TModel) => boolean) | ((value: TValue) => boolean),
+export function must<TValue, TModel = unknown>(
+  predicate: (value: TValue, model?: TModel) => boolean,
   message?: string
 ): SyncValidation<TValue, TModel> {
-  return createValidation<TValue, TModel>(predicate as (value: TValue, model?: TModel) => boolean, {
+  return createValidation<TValue, TModel>(predicate, {
     message,
     errorCode: must.name
   });

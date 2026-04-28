@@ -1,5 +1,5 @@
+import { getPropertyName } from '../functions/expression';
 import { SyncValidation } from '../types/validations';
-import { extractPropertyName } from './comparison-utils';
 import { createValidationBase } from './create-validation';
 import { DEFAULT_PLACEHOLDERS } from './message-formatter';
 
@@ -25,7 +25,7 @@ export function createComparisonValidation<TValue, TModel, TComparison>(
 ): SyncValidation<TValue, TModel> {
   if (typeof comparisonValueOrPredicate === 'function') {
     const predicate = comparisonValueOrPredicate as (model: TModel) => TComparison;
-    const comparisonPropertyName = extractPropertyName(predicate) ?? predicate.toString();
+    const comparisonPropertyName = getPropertyName(predicate);
 
     const validation: SyncValidation<TValue, TModel> = createValidationBase<
       TValue,
@@ -47,7 +47,7 @@ export function createComparisonValidation<TValue, TModel, TComparison>(
   }
 
   return createValidationBase<TValue, (value: TValue, model?: unknown) => boolean, TModel, false>(
-    value => compareFn(value, comparisonValueOrPredicate as TComparison),
+    value => compareFn(value, comparisonValueOrPredicate),
     false,
     { errorCode, message }
   ).withPlaceholder(DEFAULT_PLACEHOLDERS.comparisonValue, comparisonValueOrPredicate);

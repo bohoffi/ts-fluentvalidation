@@ -75,6 +75,7 @@ describe(equals.name + ':model', () => {
     const model: TestModel = { password: 'secret', passwordConfirmation: 'abc' };
     validation(model.password, model);
     expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonProperty]: 'passwordConfirmation',
       [DEFAULT_PLACEHOLDERS.comparisonValue]: 'abc'
     });
   });

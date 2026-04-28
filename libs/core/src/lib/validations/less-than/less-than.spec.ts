@@ -91,6 +91,7 @@ describe(lessThan.name + ':model', () => {
     const model: TestModel = { score: 80, maxScore: 100 };
     validation(model.score, model);
     expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonProperty]: 'maxScore',
       [DEFAULT_PLACEHOLDERS.comparisonValue]: 100
     });
   });

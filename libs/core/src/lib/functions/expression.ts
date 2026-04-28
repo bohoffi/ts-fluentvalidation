@@ -8,18 +8,18 @@
 export function getPropertyName<T>(expression: (instance: T) => unknown): string {
   let accessedProperty = "";
 
-  const handler: ProxyHandler<any> = {
-    get(target, prop) {
+  const handler: ProxyHandler<Record<string, unknown>> = {
+    get(_target, prop): unknown {
       if (typeof prop === 'symbol' || prop === 'valueOf' || prop === 'toString') {
-        return () => 1;
+        return (): number => 1;
       }
 
       accessedProperty = prop.toString();
-      return new Proxy({}, handler);
+      return new Proxy({} as Record<string, unknown>, handler);
     }
   };
 
-  const proxy = new Proxy({} as any, handler);
+  const proxy = new Proxy({} as Record<string, unknown>, handler) as T;
 
   try {
     expression(proxy);

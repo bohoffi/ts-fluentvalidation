@@ -91,6 +91,7 @@ describe(greaterThanOrEquals.name + ':model', () => {
     const model: TestModel = { quantity: 10, minQuantity: 5 };
     validation(model.quantity, model);
     expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonProperty]: 'minQuantity',
       [DEFAULT_PLACEHOLDERS.comparisonValue]: 5
     });
   });

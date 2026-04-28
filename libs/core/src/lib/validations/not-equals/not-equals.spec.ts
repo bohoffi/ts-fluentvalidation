@@ -75,6 +75,7 @@ describe(notEquals.name + ':model', () => {
     const model: TestModel = { username: 'alice', reservedName: 'admin' };
     validation(model.username, model);
     expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonProperty]: 'reservedName',
       [DEFAULT_PLACEHOLDERS.comparisonValue]: 'admin'
     });
   });

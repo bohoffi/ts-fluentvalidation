@@ -91,6 +91,7 @@ describe(lessThanOrEquals.name + ':model', () => {
     const model: TestModel = { age: 17, maxAge: 18 };
     validation(model.age, model);
     expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonProperty]: 'maxAge',
       [DEFAULT_PLACEHOLDERS.comparisonValue]: 18
     });
   });
