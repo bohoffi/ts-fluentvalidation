@@ -413,6 +413,63 @@ describe('Validator', () => {
     });
   });
 
+  describe('comparisonPropertyName', () => {
+    const invalidPerson = createPersonWith({ firstName: 'John', lastName: 'Doe' });
+
+    it('should resolve {comparisonProperty} placeholder in message', () => {
+      const validator = createValidator<Person>().ruleFor(
+        'lastName',
+        equals<string, Person, string>(person => person.firstName).withMessage('{comparisonProperty} must match')
+      );
+
+      const result = testValidate(validator, invalidPerson);
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 1);
+      result.shouldHaveValidationErrorFor('lastName').withMessage('firstName must match');
+    });
+
+    it('should resolve {comparisonValue} placeholder dynamically in message', () => {
+      const validator = createValidator<Person>().ruleFor(
+        'lastName',
+        equals<string, Person, string>(person => person.firstName).withMessage('Must equal {comparisonValue}')
+      );
+
+      const result = testValidate(validator, invalidPerson);
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 1);
+      result.shouldHaveValidationErrorFor('lastName').withMessage(`Must equal ${invalidPerson.firstName}`);
+    });
+
+    it('should not affect the propertyName in the validation error', () => {
+      const validator = createValidator<Person>().ruleFor(
+        'lastName',
+        equals<string, Person, string>(person => person.firstName)
+      );
+
+      const result = testValidate(validator, invalidPerson);
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 1);
+      result.shouldHaveValidationErrorFor('lastName');
+      result.shouldNotHaveValidationErrorFor('firstName');
+    });
+
+    it('should not bleed comparisonProperty to further ruleFor calls', () => {
+      const validator = createValidator<Person>()
+        .ruleFor('lastName', equals<string, Person, string>(person => person.firstName).withMessage('{comparisonProperty}'))
+        .ruleFor('firstName', equals<string, Person, string>(person => person.lastName).withMessage('{comparisonProperty}'));
+
+      const result = testValidate(validator, invalidPerson);
+
+      expectResultInvalid(result);
+      expectFailureLength(result, 2);
+      result.shouldHaveValidationErrorFor('lastName').withMessage('firstName');
+      result.shouldHaveValidationErrorFor('firstName').withMessage('lastName');
+    });
+  });
+
   describe('conditional validator', () => {
     describe('when', () => {
       it('should add conditional validations', () => {
