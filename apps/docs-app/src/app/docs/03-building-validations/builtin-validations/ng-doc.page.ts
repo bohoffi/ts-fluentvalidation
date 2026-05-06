@@ -29,13 +29,13 @@ const validationCategories: ValidationCategory[] = [
     validations: [
       {
         name: 'equals',
-        description: 'Checks if a value equals a specified comparison value.',
-        example: "validator.ruleFor('lastName', equals<string, Person>('John'))",
+        description: 'Checks if a value equals a specified comparison value or a property of the parent model.',
+        example: "// Static value\nvalidator.ruleFor('lastName', equals<string, Person, string>('John'))\n\n// Model property\nvalidator.ruleFor('password', equals<string, Person, string>(person => person.passwordConfirmation))",
         exampleErrorMessage: `*'name' must equal John.*`,
         parameters: [
           {
             name: '`comparisonValue`',
-            description: 'The value to compare against.'
+            description: 'The static value to compare against, or a `(model) => value` predicate to compare against a property of the parent model.'
           }
         ],
         placeholders: [
@@ -45,7 +45,11 @@ const validationCategories: ValidationCategory[] = [
           },
           {
             name: '`{comparisonValue}`',
-            description: 'The value to compare against.'
+            description: 'The comparison value. When a predicate is used, this is resolved dynamically at validation time.'
+          },
+          {
+            name: '`{comparisonProperty}`',
+            description: 'Name of the property being compared against. Only available when a model predicate is used.'
           }
         ]
       },
@@ -105,13 +109,13 @@ const validationCategories: ValidationCategory[] = [
       },
       {
         name: 'notEquals',
-        description: 'Checks if a value is not equal to a specified comparison value.',
-        example: "validator.ruleFor('lastName', notEquals<string, Person>('John'))",
+        description: 'Checks if a value is not equal to a specified comparison value or a property of the parent model.',
+        example: "// Static value\nvalidator.ruleFor('lastName', notEquals<string, Person, string>('John'))\n\n// Model property\nvalidator.ruleFor('lastName', notEquals<string, Person, string>(person => person.firstName))",
         exampleErrorMessage: `*'name' must not equal John.*`,
         parameters: [
           {
             name: '`comparisonValue`',
-            description: 'The value to compare against.'
+            description: 'The static value to compare against, or a `(model) => value` predicate to compare against a property of the parent model.'
           }
         ],
         placeholders: [
@@ -121,7 +125,11 @@ const validationCategories: ValidationCategory[] = [
           },
           {
             name: '`{comparisonValue}`',
-            description: 'The value to compare against.'
+            description: 'The comparison value. When a predicate is used, this is resolved dynamically at validation time.'
+          },
+          {
+            name: '`{comparisonProperty}`',
+            description: 'Name of the property being compared against. Only available when a model predicate is used.'
           }
         ]
       },
@@ -291,13 +299,13 @@ const validationCategories: ValidationCategory[] = [
       },
       {
         name: 'greaterThanOrEquals',
-        description: 'Checks if the value is greater than or equal to the specified value.',
-        example: "validator.ruleFor('age', greaterThanOrEquals(18))",
+        description: 'Checks if the value is greater than or equal to the specified value or a property of the parent model.',
+        example: "// Static value\nvalidator.ruleFor('age', greaterThanOrEquals(18))\n\n// Model property\nvalidator.ruleFor('age', greaterThanOrEquals<number, Person>(person => person.minAge))",
         exampleErrorMessage: `*'age' must be greater than or equal to 18.*`,
         parameters: [
           {
-            name: 'comparisonValue`',
-            description: 'The value to compare against.'
+            name: '`comparisonValue`',
+            description: 'The static value to compare against, or a `(model) => value` predicate to compare against a property of the parent model.'
           }
         ],
         placeholders: [
@@ -307,19 +315,23 @@ const validationCategories: ValidationCategory[] = [
           },
           {
             name: '`{comparisonValue}`',
-            description: 'The value to compare against.'
+            description: 'The comparison value. When a predicate is used, this is resolved dynamically at validation time.'
+          },
+          {
+            name: '`{comparisonProperty}`',
+            description: 'Name of the property being compared against. Only available when a model predicate is used.'
           }
         ]
       },
       {
         name: 'greaterThan',
-        description: 'Checks if the value is greater than the specified value.',
-        example: "validator.ruleFor('age', greaterThan(18))",
+        description: 'Checks if the value is greater than the specified value or a property of the parent model.',
+        example: "// Static value\nvalidator.ruleFor('age', greaterThan(18))\n\n// Model property\nvalidator.ruleFor('age', greaterThan<number, Person>(person => person.minAge))",
         exampleErrorMessage: `*'age' must be greater than 18.*`,
         parameters: [
           {
             name: '`comparisonValue`',
-            description: 'The value to compare against.'
+            description: 'The static value to compare against, or a `(model) => value` predicate to compare against a property of the parent model.'
           }
         ],
         placeholders: [
@@ -329,7 +341,11 @@ const validationCategories: ValidationCategory[] = [
           },
           {
             name: '`{comparisonValue}`',
-            description: 'The value to compare against.'
+            description: 'The comparison value. When a predicate is used, this is resolved dynamically at validation time.'
+          },
+          {
+            name: '`{comparisonProperty}`',
+            description: 'Name of the property being compared against. Only available when a model predicate is used.'
           }
         ]
       },
@@ -365,13 +381,13 @@ const validationCategories: ValidationCategory[] = [
       },
       {
         name: 'lessThanOrEquals',
-        description: 'Checks if the value is less than or equal to the specified value.',
-        example: "validator.ruleFor('age', lessThanOrEquals(65))",
+        description: 'Checks if the value is less than or equal to the specified value or a property of the parent model.',
+        example: "// Static value\nvalidator.ruleFor('age', lessThanOrEquals(65))\n\n// Model property\nvalidator.ruleFor('age', lessThanOrEquals<number, Person>(person => person.maxAge))",
         exampleErrorMessage: `*'age' must be less than or equal to 65.*`,
         parameters: [
           {
             name: '`comparisonValue`',
-            description: 'The value to compare against.'
+            description: 'The static value to compare against, or a `(model) => value` predicate to compare against a property of the parent model.'
           }
         ],
         placeholders: [
@@ -381,19 +397,23 @@ const validationCategories: ValidationCategory[] = [
           },
           {
             name: '`{comparisonValue}`',
-            description: 'The value to compare against.'
+            description: 'The comparison value. When a predicate is used, this is resolved dynamically at validation time.'
+          },
+          {
+            name: '`{comparisonProperty}`',
+            description: 'Name of the property being compared against. Only available when a model predicate is used.'
           }
         ]
       },
       {
         name: 'lessThan',
-        description: 'Checks if the value is less than the specified value.',
-        example: "validator.ruleFor('age', lessThan(65))",
+        description: 'Checks if the value is less than the specified value or a property of the parent model.',
+        example: "// Static value\nvalidator.ruleFor('age', lessThan(65))\n\n// Model property\nvalidator.ruleFor('age', lessThan<number, Person>(person => person.maxAge))",
         exampleErrorMessage: `*'age' must be less than 65.*`,
         parameters: [
           {
             name: '`comparisonValue`',
-            description: 'The value to compare against.'
+            description: 'The static value to compare against, or a `(model) => value` predicate to compare against a property of the parent model.'
           }
         ],
         placeholders: [
@@ -403,7 +423,11 @@ const validationCategories: ValidationCategory[] = [
           },
           {
             name: '`{comparisonValue}`',
-            description: 'The value to compare against.'
+            description: 'The comparison value. When a predicate is used, this is resolved dynamically at validation time.'
+          },
+          {
+            name: '`{comparisonProperty}`',
+            description: 'Name of the property being compared against. Only available when a model predicate is used.'
           }
         ]
       }
