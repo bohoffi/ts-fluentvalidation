@@ -91,13 +91,13 @@ const validationCategories: ValidationCategory[] = [
       },
       {
         name: 'must',
-        description: 'Checks the value against a given predicate.',
-        example: "validator.ruleFor('lastName', must(name => name.startsWith('J')))",
+        description: 'Checks the value against a given predicate. An additional overload accepts the parent model as the second argument, which is useful for cross-property validation.',
+        example: "// Simple predicate\nvalidator.ruleFor('lastName', must(name => name.startsWith('J')))\n\n// With access to the parent model\nvalidator.ruleFor('lastName', must<string, Person>((lastName, person) => lastName !== person.firstName))",
         exampleErrorMessage: `*'name' must meet the specified criteria.*`,
         parameters: [
           {
             name: '`predicate`',
-            description: 'The predicate to check against.'
+            description: 'The predicate to check against. Can optionally receive the parent model as the second argument: `(value, model) => boolean`.'
           }
         ],
         placeholders: [
