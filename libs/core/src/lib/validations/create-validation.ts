@@ -40,10 +40,10 @@ export function createValidation<TValue, TModel = unknown>(
  * @returns The created asynchronous validation function.
  */
 export function createAsyncValidation<TValue, TModel = unknown>(
-  fn: (value: TValue) => Promise<boolean>,
+  fn: (value: TValue, model?: TModel) => Promise<boolean>,
   messageOrOptions?: string | ValidationOptions<TModel>
 ): AsyncValidation<TValue, TModel> {
-  return createValidationBase<TValue, (value: TValue, model?: unknown) => Promise<boolean>, TModel, true>(fn, true, messageOrOptions);
+  return createValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel, true>(fn, true, messageOrOptions);
 }
 
 export function createValidationBase<
