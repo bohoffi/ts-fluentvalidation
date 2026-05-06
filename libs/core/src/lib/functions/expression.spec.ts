@@ -17,8 +17,12 @@ describe(getPropertyName.name, () => {
     expect(getPropertyName<TestModel>(x => x.age)).toBe('age');
   });
 
-  it('should return the top-level property name for a nested accessor', () => {
+  it('should return the name of the property accessed by a property selector expression', () => {
     expect(getPropertyName<TestModel>(x => x.address)).toBe('address');
+  });
+
+it('should return the name of the nested property accessed by a property selector expression', () => {
+    expect(getPropertyName<TestModel>(x => x.address.city)).toBe('city');
   });
 });
 
