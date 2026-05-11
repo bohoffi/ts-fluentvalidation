@@ -1,20 +1,21 @@
 import { NumberProperty } from '../../types/properties';
 import { SyncValidation } from '../../types/validations';
-import { createValidation } from '../create-validation';
-import { DEFAULT_PLACEHOLDERS } from '../message-formatter';
+import { createComparisonValidation } from '../create-comparison-validation';
 
 /**
- * Creates a validation function that checks if the value is greater than or equal to the specified value.
+ * Creates a validation function that checks if the value is greater than or equal to the specified value or a property of the model.
  *
- * @param comparisonValue - The value to compare against.
+ * @param comparisonValueOrPredicate - The value to compare against, or a function that returns the value from the model.
  * @param message - The message to display if the validation fails.
  */
 export function greaterThanOrEquals<TValue extends NumberProperty, TModel>(
-  comparisonValue: number,
+  comparisonValueOrPredicate: number | ((model: TModel) => number),
   message?: string
 ): SyncValidation<TValue, TModel> {
-  return createValidation<TValue, TModel>(value => (value ?? 0) >= comparisonValue, {
-    message: message,
-    errorCode: greaterThanOrEquals.name
-  }).withPlaceholder(DEFAULT_PLACEHOLDERS.comparisonValue, comparisonValue);
+  return createComparisonValidation<TValue, TModel, number>(
+    (value, comp) => (value ?? 0) >= comp,
+    greaterThanOrEquals.name,
+    comparisonValueOrPredicate,
+    message
+  );
 }

@@ -78,7 +78,9 @@ export interface ValidationMetadata<TAsync extends boolean, TModel> {
   customStateProvider?: (model: TModel, value: unknown) => unknown;
 }
 
-export type ValidationFunction<TValue> = ((value: TValue) => boolean) | ((value: TValue) => Promise<boolean>);
+export type ValidationFunction<TValue> =
+  | ((value: TValue, model?: unknown) => boolean)
+  | ((value: TValue, model?: unknown) => Promise<boolean>);
 
 /**
  * Represents the base for a validation.
@@ -246,14 +248,14 @@ export type Validation<TValue, TModel> =
  * @template TValue - The type of the value to validate.
  * @template TModel - The type of the model being validated.
  */
-export type SyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => boolean, TModel>;
+export type SyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue, model?: unknown) => boolean, TModel>;
 /**
  * Represents an asynchronous validation.
  *
  * @template TValue - The type of the value to validate.
  * @template TModel - The type of the model being validated.
  */
-export type AsyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel>;
+export type AsyncValidation<TValue, TModel> = ValidationBase<TValue, (value: TValue, model?: unknown) => Promise<boolean>, TModel>;
 
 export type ValidatorValidation<TValue, TValidationFunction extends ValidationFunction<TValue>, TModel> = Omit<
   ValidationBase<TValue, TValidationFunction, TModel>,

@@ -70,7 +70,8 @@ async function validatePropertyAsync<
     return;
   }
 
-  if (!(await validation(propertyValue))) {
+  const isValid = await validation(propertyValue, validationContext.modelToValidate);
+  if (!isValid) {
     const failure = failureForValidation(validationContext, key, propertyValue, validation);
     validationContext.addFailures(failure);
   }
