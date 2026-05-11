@@ -56,7 +56,7 @@
     "projectsRelationship": "fixed",
     "version": {
       "preVersionCommand": "npx nx run-many -t build",
-      "currentVersionResolver": "git-tag",
+      "currentVersionResolver": "disk",
       "preserveLocalDependencyProtocols": false,
       "manifestRootsToUpdate": ["dist/{projectRoot}"]
     }
