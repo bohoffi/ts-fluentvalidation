@@ -44,6 +44,7 @@ The placeholder available in all validations is:
 Used in comparison validations (`equals()`, `notEquals()`, `greaterThan()`, `greaterThanOrEquals()`, etc.):
 
 - `{comparisonValue}` - Value to compare against
+- `{comparisonProperty}` - Name of the property being compared against (only available when a model predicate is used, e.g. `equals(person => person.firstName)`)
 
 Used in length validations (`length()`, `minLength()`, `maxLength()`):
 

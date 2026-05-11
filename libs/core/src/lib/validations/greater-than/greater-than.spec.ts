@@ -44,3 +44,55 @@ describe(greaterThan.name, () => {
     });
   });
 });
+
+describe(greaterThan.name + ':model', () => {
+  interface TestModel {
+    salary: number;
+    minSalary: number;
+  }
+
+  it('should return true when value is greater than the property returned by the predicate', () => {
+    const validation = greaterThan<number, TestModel>(model => model.minSalary);
+    const model: TestModel = { salary: 5000, minSalary: 3000 };
+    expect(validation(model.salary, model)).toBe(true);
+  });
+
+  it('should return false when value equals the property returned by the predicate', () => {
+    const validation = greaterThan<number, TestModel>(model => model.minSalary);
+    const model: TestModel = { salary: 3000, minSalary: 3000 };
+    expect(validation(model.salary, model)).toBe(false);
+  });
+
+  it('should return false when value is less than the property returned by the predicate', () => {
+    const validation = greaterThan<number, TestModel>(model => model.minSalary);
+    const model: TestModel = { salary: 2000, minSalary: 3000 };
+    expect(validation(model.salary, model)).toBe(false);
+  });
+
+  it('should set the error code', () => {
+    const validation = greaterThan<number, TestModel>(model => model.minSalary);
+    expectValidationErrorCodeToBe(validation, greaterThan.name);
+  });
+
+  it('should accept a custom message', () => {
+    const validation = greaterThan<number, TestModel>(model => model.minSalary, 'Salary must exceed minimum salary');
+    expectValidationMessageToBe(validation, 'Salary must exceed minimum salary');
+  });
+
+  it('should set comparisonProperty placeholder to the extracted property name', () => {
+    const validation = greaterThan<number, TestModel>(model => model.minSalary);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonProperty]: 'minSalary'
+    });
+  });
+
+  it('should resolve comparisonValue from the model via the placeholder provider', () => {
+    const validation = greaterThan<number, TestModel>(model => model.minSalary);
+    const model: TestModel = { salary: 5000, minSalary: 3000 };
+    validation(model.salary, model);
+    expectValidationPlaceholdersToBe(validation, {
+      [DEFAULT_PLACEHOLDERS.comparisonProperty]: 'minSalary',
+      [DEFAULT_PLACEHOLDERS.comparisonValue]: 3000
+    });
+  });
+});
