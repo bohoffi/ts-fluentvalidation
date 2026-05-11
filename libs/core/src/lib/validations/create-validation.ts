@@ -24,7 +24,7 @@ type ValidationOptions<TModel> = Pick<ValidationMetadata<boolean, TModel>, 'mess
  * @returns The created validation function.
  */
 export function createValidation<TValue, TModel = unknown>(
-  fn: (value: TValue) => boolean,
+  fn: (value: TValue, model?: TModel) => boolean,
   messageOrOptions?: string | ValidationOptions<TModel>
 ): SyncValidation<TValue, TModel> {
   return createValidationBase<TValue, (value: TValue) => boolean, TModel, false>(fn, false, messageOrOptions);
@@ -40,13 +40,13 @@ export function createValidation<TValue, TModel = unknown>(
  * @returns The created asynchronous validation function.
  */
 export function createAsyncValidation<TValue, TModel = unknown>(
-  fn: (value: TValue) => Promise<boolean>,
+  fn: (value: TValue, model?: TModel) => Promise<boolean>,
   messageOrOptions?: string | ValidationOptions<TModel>
 ): AsyncValidation<TValue, TModel> {
   return createValidationBase<TValue, (value: TValue) => Promise<boolean>, TModel, true>(fn, true, messageOrOptions);
 }
 
-function createValidationBase<
+export function createValidationBase<
   TValue,
   TValidationFunction extends ValidationFunction<TValue>,
   TModel,
@@ -58,7 +58,7 @@ function createValidationBase<
 ): ValidationBase<TValue, TValidationFunction, TModel> {
   const { message, ...otherOptions } = typeof messageOrOptions === 'string' ? { message: messageOrOptions } : messageOrOptions ?? {};
 
-  const validation = (value: TValue): ReturnType<ValidationFunction<TValue>> => fn(value);
+  const validation = (value: TValue, model?: unknown): ReturnType<ValidationFunction<TValue>> => fn(value, model);
   validation.metadata = {
     isAsync: isAsync as IsAsyncCallable<TValidationFunction>,
     message,

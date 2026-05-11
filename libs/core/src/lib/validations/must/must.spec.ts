@@ -28,3 +28,32 @@ describe(must.name, () => {
     expectValidationErrorCodeToBe(validation, must.name);
   });
 });
+
+describe(must.name + ':model', () => {
+  interface TestModel {
+    forename: string;
+    surname: string;
+  }
+
+  it('should return true when model predicate passes', () => {
+    const validation = must<string, TestModel>((value, model) => value !== model.forename);
+    const model: TestModel = { forename: 'foo', surname: 'bar' };
+    expect(validation(model.surname, model)).toBe(true);
+  });
+
+  it('should return false when model predicate fails', () => {
+    const validation = must<string, TestModel>((value, model) => value !== model.forename);
+    const model: TestModel = { forename: 'foo', surname: 'foo' };
+    expect(validation(model.surname, model)).toBe(false);
+  });
+
+  it('should set the error code', () => {
+    const validation = must<string, TestModel>((value, model) => value !== model.forename);
+    expectValidationErrorCodeToBe(validation, must.name);
+  });
+
+  it('should accept a custom message', () => {
+    const validation = must<string, TestModel>((value, model) => value !== model.forename, 'Must differ from forename');
+    expectValidationMessageToBe(validation, 'Must differ from forename');
+  });
+});

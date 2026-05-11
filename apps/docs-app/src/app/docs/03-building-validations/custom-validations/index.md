@@ -39,6 +39,24 @@ const validator = createValidator<Person>().ruleFor('lastName', must(shouldNotSt
 
 So far so easy but even though the logic itself is reusable we are limited to a reference value of `John` and still have to repeat the validation message everytime we use the function.
 
+### Model predicate overload
+
+There is an additional overload for `must()` that also accepts the parent model as the second argument. This is useful when you want to compare the current property against another property on the same model:
+
+```typescript
+export interface Person {
+  firstName: string;
+  lastName: string;
+}
+
+const validator = createValidator<Person>().ruleFor(
+  'lastName',
+  must<string, Person>((lastName, person) => lastName !== person.firstName, 'Last name must differ from first name.')
+);
+```
+
+Note that in this particular example, it would be better to use the cross-property version of `notEquals()`.
+
 ## Extensibility (Writing a Custom Validation)
 
 If you want to increase reusability of validations you can wrap existing validations in functions. Let's reuse the example from above where a `string` property should not start with a certain reference value:

@@ -28,3 +28,32 @@ describe(mustAsync.name, () => {
     expectValidationErrorCodeToBe(validation, mustAsync.name);
   });
 });
+
+describe(mustAsync.name + ':model', () => {
+  interface TestModel {
+    forename: string;
+    surname: string;
+  }
+
+  it('should return true when model predicate passes', async () => {
+    const validation = mustAsync<string, TestModel>((value, model) => Promise.resolve(value !== model.forename));
+    const model: TestModel = { forename: 'foo', surname: 'bar' };
+    expect(await validation(model.surname, model)).toBe(true);
+  });
+
+  it('should return false when model predicate fails', async () => {
+    const validation = mustAsync<string, TestModel>((value, model) => Promise.resolve(value !== model.forename));
+    const model: TestModel = { forename: 'foo', surname: 'foo' };
+    expect(await validation(model.surname, model)).toBe(false);
+  });
+
+  it('should set the error code', () => {
+    const validation = mustAsync<string, TestModel>((value, model) => Promise.resolve(value !== model.forename));
+    expectValidationErrorCodeToBe(validation, mustAsync.name);
+  });
+
+  it('should accept a custom message', () => {
+    const validation = mustAsync<string, TestModel>((value, model) => Promise.resolve(value !== model.forename), 'Must differ from forename');
+    expectValidationMessageToBe(validation, 'Must differ from forename');
+  });
+});

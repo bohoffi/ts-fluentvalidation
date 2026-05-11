@@ -5,6 +5,7 @@ export const DEFAULT_PLACEHOLDERS = {
   propertyName: 'propertyName',
   propertyValue: 'propertyValue',
   comparisonValue: 'comparisonValue',
+  comparisonProperty: 'comparisonProperty',
   maxLength: 'maxLength',
   minLength: 'minLength',
   lowerBound: 'lowerBound',

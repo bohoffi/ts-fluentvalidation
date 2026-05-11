@@ -1,3 +1,28 @@
+## 1.0.0-rc.5 (2026-05-11)
+
+### 🚀 Features
+
+- #112 - configure Nx agent skills ([#112](https://github.com/bohoffi/ts-fluentvalidation/issues/112))
+- align with FluenValidationApi ([83bf234](https://github.com/bohoffi/ts-fluentvalidation/commit/83bf234))
+- **core:** add model predicate to mustAsync ([c641dcd](https://github.com/bohoffi/ts-fluentvalidation/commit/c641dcd))
+
+### 🩹 Fixes
+
+- update isValidationContext function to use 'unknown' type instead of 'any' ([82f02b9](https://github.com/bohoffi/ts-fluentvalidation/commit/82f02b9))
+- remove deprecated animations provider ([4639a57](https://github.com/bohoffi/ts-fluentvalidation/commit/4639a57))
+- update jest-environment-node to version 30.2.0 ([bbe6fe3](https://github.com/bohoffi/ts-fluentvalidation/commit/bbe6fe3))
+- lint and ts errors ([69cc28f](https://github.com/bohoffi/ts-fluentvalidation/commit/69cc28f))
+- **core:** rename set-valildator directory to set-validator ([53a010b](https://github.com/bohoffi/ts-fluentvalidation/commit/53a010b))
+- **core:** replace unsafe type casting with runtime validation ([789e148](https://github.com/bohoffi/ts-fluentvalidation/commit/789e148))
+- **core:** replace any with unknown types to resolve linting issues ([25c2225](https://github.com/bohoffi/ts-fluentvalidation/commit/25c2225))
+- **core:** clarify expression test for nested property name ([9ac83ba](https://github.com/bohoffi/ts-fluentvalidation/commit/9ac83ba))
+
+### ❤️ Thank You
+
+- bohoffi @bohoffi
+- Copilot
+- gagiD
+
 ## 1.0.0-rc.4 (2025-04-27)
 
 ### 🩹 Fixes

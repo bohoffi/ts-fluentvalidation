@@ -45,7 +45,6 @@ export function createValidationContext<T>(model: T, parentPropertyName?: string
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isValidationContext<T>(value: any): value is ValidationContext<T> {
-  return value != null && 'failures' in value && 'modelToValidate' in value;
+export function isValidationContext<T>(value: unknown): value is ValidationContext<T> {
+  return value != null && typeof value === 'object' && !Array.isArray(value) && 'failures' in value && 'modelToValidate' in value;
 }
